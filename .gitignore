@@ -1,0 +1,35 @@
+# Constructed based on earlier work which in turn was largely
+# based on my standard .hgignore that evolved over time
+
+.vs/
+.vscode/
+
+.git/
+.hg/
+
+Generated/*.cs
+packages/
+*.nupkg
+*.suo
+*.user
+
+bin/
+obj/
+lib/
+
+_*/
+Backup/
+UpgradeLog.htm
+TestResults/
+*.psess
+*.vsp
+*~
+*.orig
+
+local.settings.json
+
+/dist
+node_modules/
+
+
+
