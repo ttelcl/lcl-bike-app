@@ -19,8 +19,8 @@ in a GIT repository, but I think that in this case it is educational.
 ![Cumulative distrigrams of distance and duration](distrigrams-full.png)
 
 In case you haven't seen plots like this before: The X-axis shows the percentile
-axis and the Y-axis the value for the variable (distance or durantion, with
-separate lines for each of the months). So you can easily read the median distance
+axis and the Y-axis the value for the variable (distance or duration, with
+separate graph lines for each of the months). So you can easily read the median distance
 and duration from the plots, for example: that's the value at 50. You can see that
 the median distance for all three months is just above 2000m. And the median
 duration is about 660 seconds.
@@ -34,8 +34,11 @@ would suggest discussing these things with the customer, but I guess that in
 this case I just have to make decisions by myself. Here are a few observations
 and some conclusions I drew.
 
-* I scaled the plots so you get a decent overview, but that means some of the top
-and bottom gets cut off.
+* Please note that I scaled the plots so you get a decent overview, but that means
+some of the top and bottom gets cut off.
+* The plots for the three data months are very similar. For the distance distribution
+plots you can barely see that there are in fact three plots: they are mostly just
+on top of each other.
 * There is something suspicious going on at the start of the distributions.
     * For the distance, there are actual a handful of rows with "distance" being
     very large negative values (order of magnitude: 4000 km negative). It would
