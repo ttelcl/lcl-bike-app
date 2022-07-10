@@ -12,4 +12,4 @@ This repository will receive my submission to the City Bike pre-assignment
 This section provides some information about the development process (including
 links to more detailed information)
 
-* Step 1: [review the data](design-and-implementation-notes/DataReview.md)
+* Phase 1: [Reviewing the data files](design-and-implementation-notes/DataReview.md)

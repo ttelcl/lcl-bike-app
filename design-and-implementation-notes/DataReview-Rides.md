@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Before starting to use the data and wildly start coding, let's first take a 
+Before starting to use the data and start coding, let's first take a 
 step back and see if there anything relevant we can learn about the data. The
 assignment wisely calls for a data validation step while importing data into
 the app and suggests dropping out any records for rides shorter than 10 meters.
@@ -18,15 +18,25 @@ in a GIT repository, but I think that in this case it is educational.
 
 ![Cumulative distrigrams of distance and duration](distrigrams-full.png)
 
-In case you haven't seen plots like this before: The X-axis shows the percentile
-axis and the Y-axis the value for the variable (distance or duration, with
-separate graph lines for each of the months). So you can easily read the median distance
-and duration from the plots, for example: that's the value at 50. You can see that
-the median distance for all three months is just above 2000m. And the median
-duration is about 660 seconds.
+There are several ways to visualize distribution plots. My prefered way
+of visualizing these (demonstrated above) has the following properties:
 
-One way to think about these plots are that they are simply all data samples
-sorted by value, and then remapped to fit an X-axis running from 0 to 100.
+* The X-axis shows the percentile axis (so: the range is frpm 0% to 100%)
+* The Y-axis shows the value for the variable (distance or duration, with
+separate graph lines for each of the months).
+
+Here are two ways to think about these such plots:
+* One interpretation is that they are simply all data samples sorted by value, and then
+remapped to fit an X-axis running from 0 to 100.
+* Another interpretation is to think of them is as a cumulative distribution, flipped
+around the diagonal (the two axes turned around).
+
+Having the percentile axis horizontal makes it easier to stack multiple independent
+plots vertically (like in this case the plots for distance and duration)
+
+You can easily read, for example, the median distance and duration from the plots: that's
+the value at 50. You can see that the median distance for all three months is just above
+2000m. And the median duration is about 660 seconds.
 
 So why show this plot? Well, there are some things visible that may inform what
 a decent data validation stage could filter out. Under normal circumstances I
@@ -72,13 +82,14 @@ some distance value are just blank.
 
 ## Step 2: checking the times
 
-Since start and stop times are given for the ride, what is the point in
-providing the duration of the ride? You can calculate the duration from
-this two times, isn't it? Well ... it turns out that the duration 
+Since start and stop times are given for the ride, what is the point in also
+including the duration of the ride in the data? You can calculate the duration from
+these two times, isn't it? Well ... it turns out that the duration 
 calculated from the start and end times does not exactly match the given
 duration. Sometimes it is a few seconds short, sometimes a few seconds
 too long.
 
 I do not know why these durations are different, I recommend discussing
-this matter with the customer. For now it seems that it is not a good
-idea to throw away the given duration value to conserve space...
+this matter with the customer. For now it seems that it is _not_ a good
+idea to throw away the given duration value during data import to
+conserve space...
