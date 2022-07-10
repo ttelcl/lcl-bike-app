@@ -1,4 +1,4 @@
-# Observations when looking at station ids and names
+# Station IDs and names Review
 
 ## Methodology:
 
@@ -8,8 +8,8 @@ for the rides, and tried matching them to the IDs and names in the station list.
 ## My observations:
 
 * For the vast majority of bike ride entries the station id (for both departure and return)
-can be matched with the "ID" column in the station list, and the station name in the
-ride record matches the Finnish name of the station (column 'Nimi')
+can be matched with the "ID" column in the station list (not the "FID" column), and the
+station name in the ride record matches the Finnish name of the station (column 'Nimi')
 * With one exception, all stations that occur as "departure" also occur as "return"
 at some point. The exception is station 999, named "Bike Production". That name already
 explains why it is a source of rides only :)

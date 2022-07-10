@@ -1,4 +1,4 @@
-# Initial Data Review
+# Rides Data Review
 
 ## Introduction
 
@@ -70,3 +70,15 @@ well, and I would suggest to include upper bounds for duration and distance.
 * In addition to these value bounds, there are also some other checks. In particular,
 some distance value are just blank.
 
+## Step 2: checking the times
+
+Since start and stop times are given for the ride, what is the point in
+providing the duration of the ride? You can calculate the duration from
+this two times, isn't it? Well ... it turns out that the duration 
+calculated from the start and end times does not exactly match the given
+duration. Sometimes it is a few seconds short, sometimes a few seconds
+too long.
+
+I do not know why these durations are different, I recommend discussing
+this matter with the customer. For now it seems that it is not a good
+idea to throw away the given duration value to conserve space...

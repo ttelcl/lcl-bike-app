@@ -6,12 +6,14 @@ files. This document only provides summaries and links to more in-depth analyses
 The aims of this analysis are:
 
 * Derive data validation limits and rules for the ride data.
+* Gain insights on data redundancy or non-redundancy useful for designing the
+data model
 * Check the relation between the station data and the ride data files, to
 help discover potential pitfalls.
 
 ## Ride data validation limits and rules
 
-For an in-depth analysis, see [Ride data review](DataReview-Rides.md).
+For an in-depth analysis, see [Rides data review](DataReview-Rides.md).
 Based on that analysis I came up with the following limits and rules.
 Under normal circumstances such rules and limits should be discussed with
 the customer of course. In particular, limits marked with (*) should be
@@ -26,11 +28,14 @@ limits (which are probably not really open for discussion)
 * (*) Drop any rides with a "Covered Distance" above 8000m
 * (*) Drop any rides with a Duration below 120 seconds 
 * (*) Drop any rides with a Duration above 14400 seconds (4 hours)
+* (*) Discuss why the "duration" values do not match the difference between
+departure and return times to gain better insight in what these three values
+actually are.
 
 ## Station IDs and names
 
 For in-depth observations regarding the IDs and names of bike stations
-see [Station names and ID review](DataReview-Station-Ids-Names.md).
+see [Station IDs and names Review](DataReview-Station-Ids-Names.md).
 Based on that review the following rules are suggested and the following
 discussion topics are highlighted for customer discussion.
 * Drop rides starting or ending at stations 999 and 997. These do not
