@@ -28,7 +28,9 @@ limits (which are probably not really open for discussion)
 * (*) Drop any rides with a "Covered Distance" above 8000m
 * (*) Drop any rides with a Duration below 120 seconds 
 * (*) Drop any rides with a Duration above 14400 seconds (4 hours)
-* (*) Discuss why the "duration" values do not match the difference between
+* (*) Drop any rides where the specified duration is more than 20 seconds off
+from the one you can calculate from departure and return times. Remember to
+discuss why the "duration" values do not match the difference between
 departure and return times to gain better insight in what these three values
 actually are.
 

@@ -93,3 +93,9 @@ I do not know why these durations are different, I recommend discussing
 this matter with the customer. For now it seems that it is _not_ a good
 idea to throw away the given duration value during data import to
 conserve space...
+
+Taking a closer look at the durations as given and the durations as calculated:
+it appears that it is rare (< 2%) that these two durations differ by more than 20
+seconds, but if they do they may differ by many hours. As said, I don't know what
+exactly is happening, but my gut feeling says to ignore any rides where the 
+given and calculated durations differ by more than 20 seconds.
