@@ -19,6 +19,9 @@ Under normal circumstances such rules and limits should be discussed with
 the customer of course. In particular, limits marked with (*) should be
 discussed with the customer.
 
+* Drop any duplicate data rows. As mentioned in the data analysis,
+all data rows occur as two copies )once in the first half of the file,
+once in the second half)
 * Drop any rides with a blank value (no value) for "Covered Distance"
 * (*) Drop any rides with a "Covered Distance" shorter than 400m. The exact
 cut-off limit is open for discussion. This limit also implies the following

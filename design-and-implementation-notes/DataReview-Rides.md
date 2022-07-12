@@ -8,6 +8,12 @@ assignment wisely calls for a data validation step while importing data into
 the app and suggests dropping out any records for rides shorter than 10 meters.
 Is that enough? Are there other validation steps that would make sense?
 
+### In this document:
+
+* [Step 1: look at distributions](#step-1-look-at-distributions)
+* [Step 2: checking the times](#step-2-checking-the-times)
+* [Step 3: checking uniqueness](#step-3-checking-uniqueness)
+
 ## Step 1: look at distributions
 
 One thing I have found useful in the past is to plot the distributions 
@@ -99,3 +105,33 @@ it appears that it is rare (< 2%) that these two durations differ by more than 2
 seconds, but if they do they may differ by many hours. As said, I don't know what
 exactly is happening, but my gut feeling says to ignore any rides where the 
 given and calculated durations differ by more than 20 seconds.
+
+## Step 3: checking uniqueness
+
+It would be nice if there were a way to derive a unique identifier for each ride,
+such that if you attempt to import the same ride again you can detect that.
+
+First, just to get a feeling, lets calculate how many rows typically occur for each
+distinct departure time. 
+
+It turns out that that analysis serendipuously brought another issue to the light!
+Each timestamp occurs 2, 4, 6, 8, 10, 12, 14 or 16 times. Notice something
+conspicuous? It turns out that each data file contains two copies of each ride
+record. It is one of those things that aren't obvious immediately, but once you
+know what to look for it is easy to verify: load a data file in an editor or
+text viewer, copy the first data line, and search for it again (paste the copied
+line in the search box). It turns out that it appears again right in the middle
+of the file: the second half of the file is an exact copy of the first half
+(minus the header line).
+
+Let's see if we can find a combination of columns in the ride data that is
+unique for each ride (except that we know that each ride is duplicated). Such
+a combination could be used to derive a key column that uniquely identifies
+the ride.
+
+I tried several subsets of columns that failed for this purpose. The names
+of the two stations can be omitted (since they are 1-to-1 dependent on the
+station IDs), but other columns seem required to create a robustly unique
+identifier for the row. It is probably best to let the database generate
+a row ID upon insertion, but use a UNIQUE index on all columns except names
+to ensure no duplicates are inserted.
