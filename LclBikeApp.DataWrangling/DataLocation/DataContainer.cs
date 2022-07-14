@@ -67,6 +67,22 @@ namespace LclBikeApp.DataWrangling.DataLocation
     public abstract TextWriter CreateWriteText(string relativeName);
 
     /// <summary>
+    /// Create a new file (or overwrite an existing file) for writing as UTF8 text,
+    /// using a temporary file name based on the specified final name
+    /// </summary>
+    /// <param name="relativeName">
+    /// The path to the file relative to the container root to ultimately produce.
+    /// The file being written is this name with ".tmp" appended.
+    /// </param>
+    /// <returns>
+    /// The opened file
+    /// </returns>
+    public TextWriter CreateWriteTextTmp(string relativeName)
+    {
+      return CreateWriteText(relativeName + ".tmp");
+    }
+
+    /// <summary>
     /// Do the standard "backup shuffle" of a file: delete an existing backup
     /// (if it exists), move the existing target file to the backup, and move
     /// the temporary file to the target file.

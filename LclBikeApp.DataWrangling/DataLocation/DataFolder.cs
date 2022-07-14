@@ -157,9 +157,9 @@ namespace LclBikeApp.DataWrangling.DataLocation
       var bakFullName = Path.Combine(Root, bakName);
       if(File.Exists(bakFullName) && File.Exists(fullName))
       {
-        File.Delete(bakName);
+        File.Delete(bakFullName);
       }
-      if(File.Exists(tmpName))
+      if(File.Exists(tmpFullName))
       {
         // The normal case.
         if(File.Exists(fullName))

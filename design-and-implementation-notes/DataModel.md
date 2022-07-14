@@ -43,6 +43,7 @@ This table stores one row per recorded ride.
 | DepStation | Integer | No | Departure station ID, Reference to Stations.ID |
 | RetStation | Integer | No | Return station ID, Reference to Stations.ID |
 | Duration | Integer | No | Duration in seconds (**) |
+| Distance | Integer (***) | No | Distance in meters |
 
 (*) How to best represent Departure and return time stamps? A DateTime
 may be natural in databases. The timezone does not need to be stored
@@ -53,6 +54,11 @@ to be explicit about the time zone (since those usually imply UTC)
 (**) Logically the duration would not be needed, since you could calculate
 it from Departure and Return times. But as mentioned in the analysis: 
 the duration does not exactly match those!
+
+(***) Almost all ride distances are already expressed in integer meters.
+A very few cases express distance as fractional meters (always
+multiples of 1/3rd of a meter), but these are so rare that extending the
+type to a floating point number doesn't seem worth the bother.
 
 ## Indices
 

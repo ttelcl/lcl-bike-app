@@ -16,7 +16,6 @@ namespace UnitTests.DataWrangling
       _output = output;
     }
 
-
     [Fact]
     public void FolderLocatorTests()
     {
