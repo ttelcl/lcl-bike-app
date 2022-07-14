@@ -4,7 +4,7 @@
 that you can find at https://github.com/ttelcl/LclXsv .
 After exploring a few options to publish this library as NuGet
 package and using that in the bike-app, I realized that the most
-robust and quick way was to simply include this library as in
+robust and quick way was to simply include this library in
 source code form as another visual studio project in this
 solution._
 
