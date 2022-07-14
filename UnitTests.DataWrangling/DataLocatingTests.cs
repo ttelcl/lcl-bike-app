@@ -1,6 +1,6 @@
 using System.Linq;
 
-using LclBikeApp.DataWrangling;
+using LclBikeApp.DataWrangling.DataLocation;
 
 using Xunit;
 using Xunit.Abstractions;

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LclBikeApp.DataWrangling
+namespace LclBikeApp.DataWrangling.DataLocation
 {
   /// <summary>
   /// Implements DataContainer for the normal filesystem, using a single
@@ -31,7 +31,7 @@ namespace LclBikeApp.DataWrangling
     /// </param>
     public DataFolder(
       string root,
-      bool createIfMissing = false):
+      bool createIfMissing = false) :
       base(true)
     {
       Root = Path.GetFullPath(root);
@@ -79,7 +79,7 @@ namespace LclBikeApp.DataWrangling
         var failures =
           FolderLocator.SelfAndAncestorSiblings(shortname, Environment.CurrentDirectory, false);
         throw new DirectoryNotFoundException(
-          $"Cannot locate data folder. None of these exist: {String.Join(", ", failures)}");
+          $"Cannot locate data folder. None of these exist: {string.Join(", ", failures)}");
       }
     }
 

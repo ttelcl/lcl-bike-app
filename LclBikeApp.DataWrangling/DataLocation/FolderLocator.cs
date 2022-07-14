@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LclBikeApp.DataWrangling
+namespace LclBikeApp.DataWrangling.DataLocation
 {
   /// <summary>
   /// Utility class to generate a sequence of folder names, based
@@ -32,7 +32,7 @@ namespace LclBikeApp.DataWrangling
     /// </returns>
     public static IEnumerable<string> SelfAndAncestors(string anchorFolder)
     {
-      if(String.IsNullOrEmpty(anchorFolder))
+      if(string.IsNullOrEmpty(anchorFolder))
       {
         anchorFolder = Environment.CurrentDirectory;
       }
@@ -83,13 +83,13 @@ namespace LclBikeApp.DataWrangling
       string anchorPath,
       bool existingOnly = true)
     {
-      if(String.IsNullOrEmpty(anchorPath))
-      { 
+      if(string.IsNullOrEmpty(anchorPath))
+      {
         anchorPath = Environment.CurrentDirectory;
       }
       foreach(var ancestor in SelfAndAncestors(anchorPath))
       {
-        
+
         var sibling = Path.Combine(ancestor, siblingPath);
         if(!existingOnly || Directory.Exists(sibling))
         {

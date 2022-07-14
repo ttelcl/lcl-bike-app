@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LclBikeApp.DataWrangling
+namespace LclBikeApp.DataWrangling.DataLocation
 {
   /// <summary>
   /// Logically represents the storage medium for data files.
