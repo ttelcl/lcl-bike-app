@@ -135,13 +135,15 @@ namespace LclBikeApp.DataWrangling.RawModel
         {
           var cityText = cursor[CityColumn];
           var city = CityName.ParseCity(cityText);
+          // To avoid mismatched names, make sure to translate any
+          // non-breaking spaces ('\u00A0') to ordinary spaces.
           return new RawStation(
             id,
-            cursor[NameFiColumn]!,
-            cursor[NameSeColumn]!,
-            cursor[NameEnColumn]!,
-            cursor[AddressFiColumn]!,
-            cursor[AddressSeColumn]!,
+            cursor[NameFiColumn]!.Replace('\u00A0', ' '),
+            cursor[NameSeColumn]!.Replace('\u00A0', ' '),
+            cursor[NameEnColumn]!.Replace('\u00A0', ' '),
+            cursor[AddressFiColumn]!.Replace('\u00A0', ' '),
+            cursor[AddressSeColumn]!.Replace('\u00A0', ' '),
             city,
             capacity,
             latitude,

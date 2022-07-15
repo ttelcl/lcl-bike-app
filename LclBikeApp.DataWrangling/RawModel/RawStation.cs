@@ -29,9 +29,9 @@ namespace LclBikeApp.DataWrangling.RawModel
       string addressFi,
       string addressSe,
       CityCode city,
-      int? capacity,
-      double? latitude,
-      double? longitude)
+      int capacity,
+      double latitude,
+      double longitude)
     {
       Id = id;
       NameFi = nameFi;
@@ -83,7 +83,7 @@ namespace LclBikeApp.DataWrangling.RawModel
     /// <summary>
     /// The station capacity (null if unknown)
     /// </summary>
-    public int? Capacity { get; set; } 
+    public int Capacity { get; set; } 
 
     /// <summary>
     /// The latitude of the station if known, null otherwise ("y" in the data file)
@@ -94,7 +94,7 @@ namespace LclBikeApp.DataWrangling.RawModel
     /// to avoid improper use.
     /// </para>
     /// </remarks>
-    public double? Latitude { get; set; }
+    public double Latitude { get; set; }
 
     /// <summary>
     /// The longitude of the station if known, null otherwise ("x" in the data file)
@@ -105,7 +105,7 @@ namespace LclBikeApp.DataWrangling.RawModel
     /// to avoid improper use.
     /// </para>
     /// </remarks>
-    public double? Longitude { get; set; }
+    public double Longitude { get; set; }
 
   }
 }
