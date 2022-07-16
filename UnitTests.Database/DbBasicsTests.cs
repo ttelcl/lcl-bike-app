@@ -51,7 +51,10 @@ namespace UnitTests.Database
 
         // Do a simple query at low level (ADO.NET).
         using(var cmd = new SqlCommand(
-          "SELECT TABLE_SCHEMA, TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES] WHERE TABLE_TYPE = 'BASE TABLE'",
+          @"
+SELECT TABLE_SCHEMA, TABLE_NAME
+FROM [INFORMATION_SCHEMA].[TABLES]
+WHERE TABLE_TYPE = 'BASE TABLE'",
           conn))
         {
           using(var reader = cmd.ExecuteReader())
@@ -93,9 +96,10 @@ namespace UnitTests.Database
         // In the query don't forget to escape the aliases (for example 'schema' is an
         // SQL keyword that would be illegal without the surrounding [])
         var queryResults = conn.Query<TableInfoPoco>(
-          "SELECT TABLE_CATALOG AS [catalog], TABLE_SCHEMA AS [schema], TABLE_NAME as [name] " +
-          "FROM [INFORMATION_SCHEMA].[TABLES] " +
-          "WHERE TABLE_TYPE = 'BASE TABLE'"
+          @"
+SELECT TABLE_CATALOG AS [catalog], TABLE_SCHEMA AS [schema], TABLE_NAME as [name]
+FROM [INFORMATION_SCHEMA].[TABLES]
+WHERE TABLE_TYPE = 'BASE TABLE'"
           );
         results.AddRange(queryResults);
       }

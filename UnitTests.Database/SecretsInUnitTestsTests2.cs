@@ -30,7 +30,7 @@ namespace UnitTests.Database
   The whole point of this exercise is to have a way to get config info that is not safe
   to store in GIT, so you will actually have to create that secret configuration file
   ("secrets.json") to make these tests pass. To do so in Visual Studio 2022, right-click
-  the project node for this test project in Solution Explorer ("UnitTests.DataWrangling")
+  the project node for this test project in Solution Explorer ("UnitTests.Database")
   and select "Manage User Secrets". That will open your secrets.json file.
 
   Alternatively find the location of that file as described in the microsoft article above.
