@@ -1,0 +1,60 @@
+﻿/*
+ * (c) 2022  ttelcl / ttelcl
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+using LclBikeApp.Database.Models;
+
+namespace LclBikeApp.Database
+{
+  /// <summary>
+  /// Defines the API available for interacting with the Citybike DB
+  /// in a database neutral way.
+  /// </summary>
+  public interface ICitybikeDb: IDisposable
+  {
+    /// <summary>
+    /// True after the instance has been disposed
+    /// </summary>
+    bool Disposed { get; }
+
+    /// <summary>
+    /// Initialize the database, creating missing tables if necessary
+    /// and initializing the Cities table to default content
+    /// </summary>
+    /// <param name="erase">
+    /// When true ALL DATABASE CONTENT IS REMOVED first
+    /// (the "factory reset" option).
+    /// </param>
+    void InitDb(bool erase = false);
+
+    /// <summary>
+    /// Load the full cities table from the database
+    /// </summary>
+    AllCities LoadCities();
+
+    /// <summary>
+    /// Enumerate all station records in the DB.
+    /// See also GetStationIds().
+    /// </summary>
+    IEnumerable<Station> GetStations();
+
+    /// <summary>
+    /// Enumerate all known station IDs. To load the full
+    /// station data use GetStations() instead.
+    /// </summary>
+    IEnumerable<int> GetStationIds();
+
+    /// <summary>
+    /// Insert the given stations into the DB, unless they already
+    /// are present. This method does not update existing stations.
+    /// </summary>
+    void AddStations(IEnumerable<Station> stations);
+  }
+}
+
+
