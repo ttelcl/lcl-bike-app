@@ -47,5 +47,24 @@ namespace UnitTests.Database
       }
     }
 
+    [Fact]
+    public void CanLoadCities()
+    {
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(ICitybikeDb db = new CitybikeDbSqlServer(connstring))
+      {
+        var cities = db.LoadCities();
+        Assert.NotNull(cities);
+        _output.WriteLine($"Loaded {cities.All.Count} city records:");
+        Assert.Equal(2, cities.All.Count);
+        foreach(var city in cities.All)
+        {
+          _output.WriteLine($"{city.Id}: {city.CityFi} ({city.CitySe})");
+        }
+      }
+    }
+
   }
 }
