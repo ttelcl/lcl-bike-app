@@ -18,6 +18,7 @@ using XsvLib;
 
 using Xunit;
 using Xunit.Abstractions;
+using LclBikeApp.DataWrangling.Validation;
 
 namespace UnitTests.DataWrangling
 {
@@ -67,6 +68,54 @@ namespace UnitTests.DataWrangling
       }
       df.BackupShuffle(onm);
       Assert.True(df.HasFile(onm));
+    }
+
+    [Fact]
+    public void CanValidateRides()
+    {
+      var df = DataFolder.LocateAsAncestorSibling("datafolder0");
+      Assert.NotNull(df);
+      Assert.Contains("/bin/", df.Root.Replace('\\', '/'));
+
+      var adapter = new StationCursor();
+      var stations = new List<RawStation>();
+      using(var xsv = Xsv.ReadXsv(df.OpenReadText("stations-subset.csv"), ".csv").AsXsvReader())
+      {
+        foreach(var cursor in xsv.ReadCursor(adapter))
+        {
+          Assert.Same(adapter, cursor);
+          Assert.True(cursor.HasData);
+          var station = RawStation.FromCursor(cursor);
+          stations.Add(station);
+        }
+      }
+      Assert.NotEmpty(stations);
+      _output.WriteLine($"Read {stations.Count} stations");
+
+      var rules = new ValidationConfiguration(); // keep default settings
+      var ruleJson = rules.ToJson();
+      Assert.NotNull(ruleJson);
+      Assert.NotEmpty(ruleJson);
+      _output.WriteLine($"Using rules: {ruleJson}");
+
+      var stationIds = stations.Select(x => x.Id).ToList();
+      var validator = new RideValidator(rules, stationIds);
+      var rideCursor = new RideCursor();
+      using(var xsv = Xsv.ReadXsv(df.OpenReadText("rides-subset.csv"), ".csv").AsXsvReader())
+      {
+        foreach(var accepted in validator.Validate(xsv.ReadCursor(rideCursor)))
+        {
+          // we don't have anything to use the RideCursor yet ...
+          _output.WriteLine($"Accepted {accepted.DepStation:D3} -> {accepted.RetStation:D3} @ {accepted.DepTime:s} ");
+        }
+      }
+
+      _output.WriteLine("Statistics:");
+      foreach(var kvp in validator.Statistics)
+      {
+        _output.WriteLine($"{kvp.Value} times '{kvp.Key}'");
+      }
+
     }
 
 
