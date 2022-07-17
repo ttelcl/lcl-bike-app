@@ -36,6 +36,31 @@ namespace LclBikeApp.Database.Models
     }
 
     /// <summary>
+    /// Return the city with the given ID.
+    /// Throws an exception for unknown IDs
+    /// </summary>
+    public City Get(int id)
+    {
+      return _cities[id];
+    }
+
+    /// <summary>
+    /// Return the city with the given ID.
+    /// Returns null for unknown IDs
+    /// </summary>
+    public City? Find(int id)
+    {
+      if(_cities.TryGetValue(id, out var city))
+      {
+        return city;
+      }
+      else
+      {
+        return null;
+      }
+    }
+
+    /// <summary>
     /// The hardcoded default list of cities (0=Helsinki, 1=Espoo)
     /// </summary>
     public static AllCities Default { get; } =
@@ -47,7 +72,7 @@ namespace LclBikeApp.Database.Models
     /// <summary>
     /// Enumerate all cities
     /// </summary>
-    public IEnumerable<City> All => _cities.Values;
+    public IReadOnlyCollection<City> All => _cities.Values;
 
 
     private void Insert(City city)

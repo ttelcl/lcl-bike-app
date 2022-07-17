@@ -116,7 +116,12 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'");
     public AllCities LoadCities()
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      var cities = Connection.Query<City>(@"
+SELECT Id, CityFi, CitySe
+FROM [dbo].[Cities]
+");
+      var allcities = new AllCities(cities);
+      return allcities;
     }
 
     /// <summary>
@@ -124,6 +129,15 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'");
     /// See also GetStationIds().
     /// </summary>
     public IEnumerable<Station> GetStations()
+    {
+      EnsureNotDisposed();
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Enumerate a brief summary for each station in the DB
+    /// </summary>
+    public IEnumerable<StationBasics> GetStationBasics()
     {
       EnsureNotDisposed();
       throw new NotImplementedException();

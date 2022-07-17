@@ -42,9 +42,14 @@ namespace LclBikeApp.Database
 
     /// <summary>
     /// Enumerate all station records in the DB.
-    /// See also GetStationIds().
+    /// See also GetStationIds() and GetStationBasics()
     /// </summary>
     IEnumerable<Station> GetStations();
+
+    /// <summary>
+    /// Enumerate a brief summary for each station in the DB
+    /// </summary>
+    IEnumerable<StationBasics> GetStationBasics();
 
     /// <summary>
     /// Enumerate all known station IDs. To load the full
