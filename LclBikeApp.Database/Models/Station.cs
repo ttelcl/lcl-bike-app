@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LclBikeApp.DataWrangling.RawModel;
+
 namespace LclBikeApp.Database.Models
 {
   /// <summary>
@@ -33,6 +35,32 @@ namespace LclBikeApp.Database.Models
       Capacity=capacity;
       Latitude=latitude;
       Longitude=longitude;
+    }
+
+    /// <summary>
+    /// Return a new Station instance initialized from the given XSV cursor.
+    /// Returns null if no data is loaded in the cursor.
+    /// </summary>
+    public static Station? TryFromCursor(StationCursor cursor)
+    {
+      if(cursor.HasData && cursor.FormatValid)
+      {
+        return new Station(
+          cursor.Id,
+          cursor.NameFi,
+          cursor.NameSe,
+          cursor.NameEn,
+          cursor.AddrFi,
+          cursor.AddrSe,
+          cursor.City,
+          cursor.Capacity,
+          cursor.Latitude,
+          cursor.Longitude);
+      }
+      else
+      {
+        return null;
+      }
     }
 
     /// <summary>

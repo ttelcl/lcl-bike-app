@@ -44,24 +44,27 @@ namespace LclBikeApp.Database
     /// Enumerate all station records in the DB.
     /// See also GetStationIds() and GetStationBasics()
     /// </summary>
-    IEnumerable<Station> GetStations();
+    IReadOnlyList<Station> GetStations();
 
     /// <summary>
     /// Enumerate a brief summary for each station in the DB
     /// </summary>
-    IEnumerable<StationBasics> GetStationBasics();
+    IReadOnlyList<StationBasics> GetStationBasics();
 
     /// <summary>
     /// Enumerate all known station IDs. To load the full
     /// station data use GetStations() instead.
     /// </summary>
-    IEnumerable<int> GetStationIds();
+    IReadOnlyList<int> GetStationIds();
 
     /// <summary>
     /// Insert the given stations into the DB, unless they already
     /// are present. This method does not update existing stations.
     /// </summary>
-    void AddStations(IEnumerable<Station> stations);
+    /// <returns>
+    /// The number of stations inserted
+    /// </returns>
+    int AddStations(IEnumerable<Station> stations);
   }
 }
 

@@ -128,7 +128,7 @@ FROM [dbo].[Cities]
     /// Enumerate all station records in the DB.
     /// See also GetStationIds().
     /// </summary>
-    public IEnumerable<Station> GetStations()
+    public IReadOnlyList<Station> GetStations()
     {
       EnsureNotDisposed();
       throw new NotImplementedException();
@@ -137,30 +137,45 @@ FROM [dbo].[Cities]
     /// <summary>
     /// Enumerate a brief summary for each station in the DB
     /// </summary>
-    public IEnumerable<StationBasics> GetStationBasics()
+    public IReadOnlyList<StationBasics> GetStationBasics()
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      var stationIds = Connection.Query<StationBasics>(@"
+SELECT Id, NameFi AS [Label]
+FROM [dbo].[Stations]
+");
+      return stationIds.ToList().AsReadOnly();
     }
 
     /// <summary>
     /// Enumerate all known station IDs. To load the full
     /// station data use GetStations() instead.
     /// </summary>
-    public IEnumerable<int> GetStationIds()
+    public IReadOnlyList<int> GetStationIds()
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      var stationIds = Connection.Query<int>(@"
+SELECT Id
+FROM [dbo].[Stations]
+");
+      return stationIds.ToList().AsReadOnly();
     }
 
     /// <summary>
     /// Insert the given stations into the DB, unless they already
     /// are present. This method does not update existing stations.
     /// </summary>
-    public void AddStations(IEnumerable<Station> stations)
+    public int AddStations(IEnumerable<Station> stations)
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      var knownStationIds = new HashSet<int>(GetStationIds());
+      var newStations = stations.Where(s => !knownStationIds.Contains(s.Id)).ToList();
+      var sql = @"
+INSERT INTO Stations (Id, NameFi, NameSe, NameEn, AddrFi, AddrSe, City, Capacity, Latitude, Longitude)
+VALUES (@Id, @NameFi, @NameSe, @NameEn, @AddrFi, @AddrSe, @CityId, @Capacity, @Latitude, @Longitude)
+";
+      var count = Connection.Execute(sql, newStations);
+      return count;
     }
 
     private void EnsureNotDisposed()

@@ -18,6 +18,10 @@ using Xunit.Abstractions;
 
 using LclBikeApp.Database;
 using LclBikeApp.Database.ImplementationSqlServer;
+using LclBikeApp.DataWrangling.DataLocation;
+using LclBikeApp.DataWrangling.RawModel;
+using LclBikeApp.Database.Models;
+using XsvLib;
 
 namespace UnitTests.Database
 {
@@ -64,6 +68,57 @@ namespace UnitTests.Database
           _output.WriteLine($"{city.Id}: {city.CityFi} ({city.CitySe})");
         }
       }
+    }
+
+    [SkippableFact]
+    public void CanAddStations()
+    {
+      // Note that Xunit's "Skip" functionality is a bit misused in this test.
+      // The test being flagged as skipped actually means: it was run, but everything was inserted already.
+
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      var df = DataFolder.LocateAsAncestorSibling("sampledata");
+      Assert.NotNull(df);
+      Assert.Contains("/bin/", df.Root.Replace('\\', '/'));
+      Assert.True(df.HasFile("stations-subset.csv"));
+
+      var stationCursor = new StationCursor();
+      var stations = new List<Station>();
+      using(var xsv = Xsv.ReadXsv(df.OpenReadText("stations-subset.csv"), ".csv").AsXsvReader())
+      {
+        foreach(var cursor in xsv.ReadCursor(stationCursor))
+        {
+          var station = Station.TryFromCursor(cursor);
+          if(station != null)
+          {
+            stations.Add(station);
+          }
+        }
+      }
+      Assert.NotEmpty(stations);
+      _output.WriteLine($"Read {stations.Count} stations from the data file");
+
+      var postInsertionKnownIds = new HashSet<int>();
+      var inserted = 0;
+      
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        var knownStationIds = new HashSet<int>(db.GetStationIds());
+        _output.WriteLine($"There were already {knownStationIds.Count} stations in the DB");
+        var newStations = stations.Where(s => !knownStationIds.Contains(s.Id)).ToList();
+        _output.WriteLine($"Number of new stations to insert: {newStations.Count}");
+
+        inserted = db.AddStations(stations);
+        _output.WriteLine($"Inserted {inserted} stations");
+
+        postInsertionKnownIds.UnionWith(db.GetStationIds());
+      }
+
+      Assert.True(stations.All(s => postInsertionKnownIds.Contains(s.Id)));
+
+      Skip.If(inserted == 0);
     }
 
   }

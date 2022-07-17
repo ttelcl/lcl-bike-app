@@ -14,6 +14,9 @@ using XsvLib.Tables.Cursor;
 
 namespace LclBikeApp.DataWrangling.RawModel
 {
+  //      DEPRECATED
+
+
   /// <summary>
   /// Adapter for reading RawStation objects from CSV using my
   /// XsvLib library

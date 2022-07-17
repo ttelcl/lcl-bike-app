@@ -4,10 +4,13 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
-
     <UserSecretsId>073c9efc-eea5-438c-9c98-f7c76d5e4c34</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- This prevents other language resources being emitted -->
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +27,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,10 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="sampledata\sample-rides-subset-validated.csv">
+    <None Update="sampledata\rides-subset-validated.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="sampledata\sample-stations-subset.csv">
+    <None Update="sampledata\stations-subset.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

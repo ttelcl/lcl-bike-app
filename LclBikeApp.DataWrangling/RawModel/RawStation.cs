@@ -46,6 +46,24 @@ namespace LclBikeApp.DataWrangling.RawModel
     }
 
     /// <summary>
+    /// Create a new RawStation instance from a StationCursor
+    /// </summary>
+    public static RawStation FromCursor(StationCursor cursor)
+    {
+      return new RawStation(
+        cursor.Id,
+        cursor.NameFi,
+        cursor.NameSe,
+        cursor.NameEn,
+        cursor.AddrFi,
+        cursor.AddrSe,
+        (CityCode)cursor.City,
+        cursor.Capacity,
+        cursor.Latitude,
+        cursor.Longitude);
+    }
+
+    /// <summary>
     /// The station identifier ("ID")
     /// </summary>
     public int Id { get; }
