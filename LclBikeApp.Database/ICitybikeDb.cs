@@ -30,7 +30,10 @@ namespace LclBikeApp.Database
     /// When true ALL DATABASE CONTENT IS REMOVED first
     /// (the "factory reset" option).
     /// </param>
-    void InitDb(bool erase = false);
+    /// <returns>
+    /// The number of DB objects created.
+    /// </returns>
+    int InitDb(bool erase = false);
 
     /// <summary>
     /// Load the full cities table from the database

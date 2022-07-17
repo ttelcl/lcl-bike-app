@@ -65,7 +65,10 @@ namespace LclBikeApp.Database.ImplementationSqlServer
     /// When true ALL DATABASE CONTENT IS REMOVED first
     /// (the "factory reset" option).
     /// </param>
-    public void InitDb(bool erase = false)
+    /// <returns>
+    /// The number of tables and indexes created
+    /// </returns>
+    public int InitDb(bool erase = false)
     {
       EnsureNotDisposed();
 
@@ -74,6 +77,8 @@ namespace LclBikeApp.Database.ImplementationSqlServer
         throw new NotImplementedException(
           "'erase' functionality is NYI");
       }
+
+      var createCount = 0;
 
       var existingTables = Connection.Query<string>(
         @"
@@ -84,7 +89,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'");
       if(!existingTables.Contains("Cities"))
       {
         Trace.TraceInformation("Creating 'Cities' table");
-        CreateCitiesTable();
+        createCount += 1;
         Trace.TraceInformation("Filling 'Cities' table");
         FillCitiesTable();
       }
@@ -93,13 +98,16 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'");
       {
         Trace.TraceInformation("Creating 'Stations' table");
         CreateStationsTable();
+        createCount += 1;
       }
 
       if(!existingTables.Contains("Rides"))
       {
         Trace.TraceInformation("Creating 'Rides' table");
-        CreateRidesTable();
+        createCount += CreateRidesTable();
       }
+
+      return createCount;
     }
 
     /// <summary>
@@ -153,8 +161,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'");
     private void CreateCitiesTable()
     {
       EnsureNotDisposed();
-      var sql =
-        @"
+      var sql = @"
 CREATE TABLE [dbo].[Cities]
 (
   [Id]     INT          NOT NULL PRIMARY KEY, 
@@ -175,8 +182,7 @@ CREATE TABLE [dbo].[Cities]
     private void CreateStationsTable()
     {
       EnsureNotDisposed();
-      var sql =
-        @"
+      var sql = @"
 CREATE TABLE [dbo].[Stations]
 (
     [Id]        INT          NOT NULL PRIMARY KEY, 
@@ -193,11 +199,11 @@ CREATE TABLE [dbo].[Stations]
       Connection.Execute(sql);
     }
     
-    private void CreateRidesTable()
+    private int CreateRidesTable()
     {
       EnsureNotDisposed();
-      var sql =
-        @"
+      var count = 0;
+      var sql = @"
 CREATE TABLE [dbo].[Rides]
 (
     [Id]         uniqueidentifier DEFAULT NEWSEQUENTIALID() PRIMARY KEY, 
@@ -212,6 +218,18 @@ CREATE TABLE [dbo].[Rides]
         WITH (IGNORE_DUP_KEY = ON)
 )";
       Connection.Execute(sql);
+      count++;
+      sql = @"
+CREATE INDEX ByDepRetStation
+ON [dbo].[Rides] (DepStation, RetStation, DepTime)";
+      Connection.Execute(sql);
+      count++;
+      sql = @"
+CREATE INDEX ByRetDepStation
+ON [dbo].[Rides] (RetStation, DepStation, RetTime)";
+      Connection.Execute(sql);
+      count++;
+      return count;
     }
 
   }

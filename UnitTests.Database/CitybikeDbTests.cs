@@ -42,7 +42,8 @@ namespace UnitTests.Database
 
       using(var db = new CitybikeDbSqlServer(connstring))
       {
-        db.InitDb(false);
+        var count = db.InitDb(false);
+        _output.WriteLine($"Number of DB objects created: {count}");
       }
     }
 
