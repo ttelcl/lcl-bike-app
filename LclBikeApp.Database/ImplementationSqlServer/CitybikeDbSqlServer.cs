@@ -74,8 +74,9 @@ namespace LclBikeApp.Database.ImplementationSqlServer
 
       if(erase)
       {
-        throw new NotImplementedException(
-          "'erase' functionality is NYI");
+        Connection.Execute(@"DROP TABLE IF EXISTS [dbo].[Rides]");
+        Connection.Execute(@"DROP TABLE IF EXISTS [dbo].[Stations]");
+        Connection.Execute(@"DROP TABLE IF EXISTS [dbo].[Cities]");
       }
 
       var createCount = 0;
@@ -89,6 +90,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'");
       if(!existingTables.Contains("Cities"))
       {
         Trace.TraceInformation("Creating 'Cities' table");
+        CreateCitiesTable();
         createCount += 1;
         Trace.TraceInformation("Filling 'Cities' table");
         FillCitiesTable();

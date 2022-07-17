@@ -52,6 +52,21 @@ namespace UnitTests.Database
     }
 
     [Fact]
+    public void CanResetDb()
+    {
+      _output.WriteLine("Deleting and rebuilding database!!!!!!!!!!!!!!!!");
+
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        var count = db.InitDb(true);
+        _output.WriteLine($"Number of DB objects created: {count}");
+      }
+    }
+
+    [Fact]
     public void CanLoadCities()
     {
       var connstring = _configuration["TestDb:ConnectionString"];
