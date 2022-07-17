@@ -76,10 +76,12 @@ CREATE TABLE [dbo].[Rides]
 GO
 
 -- Index for locating destination stations for a given departure station
-CREATE INDEX ByDepRetStation on [dbo].[Rides] (DepStation, RetStation, DepTime);
+CREATE INDEX ByDepRetStation
+ON [dbo].[Rides] (DepStation, RetStation, DepTime);
 GO
 
 -- Index for locating source stations for a given destination station
-CREATE INDEX ByRetDepStation on [dbo].[Rides] (RetStation, DepStation, RetTime);
+CREATE INDEX ByRetDepStation
+ON [dbo].[Rides] (RetStation, DepStation, RetTime);
 GO
 
