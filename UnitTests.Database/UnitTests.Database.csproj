@@ -31,4 +31,13 @@
     <ProjectReference Include="..\LclBikeApp.DataWrangling\LclBikeApp.DataWrangling.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sampledata\sample-rides-subset-validated.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="sampledata\sample-stations-subset.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

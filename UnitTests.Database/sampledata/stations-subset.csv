@@ -1,0 +1,38 @@
+FID,ID,Nimi,Namn,Name,Osoite,Adress,Kaupunki,Stad,Operaattor,Kapasiteet,x,y
+23,541,"Aalto-yliopisto (M), Korkea","Aalto-universitetet (M),","Aalto University (M), Korkeakoulua",Otaniementie 10,Otnäsvägen 10,Espoo,Esbo,CityBike Finland,42,24.826671,60.184312
+26,547,Jämeräntaival,Bistervägen,Jämeräntaival,Otakaari 18,Otsvängen 18,Espoo,Esbo,CityBike Finland,30,24.835033,60.188118
+43,585,Haukilahdenaukio,Gäddviksplatsen,Haukilahdenaukio,Haukilahdenranta 2,Gäddviksstranden 2,Espoo,Esbo,CityBike Finland,16,24.775882,60.162396
+47,593,Toppelundintie,Toppelundsvägen,Toppelundintie,Toppelundintie 11,Toppelundsvägen 11,Espoo,Esbo,CityBike Finland,12,24.782477,60.1591405
+101,753,Linnuntie,Fågelvägen,Linnuntie,Linnuntie 2,Fågelsvägen 2,Espoo,Esbo,CityBike Finland,24,24.813954,60.234401
+114,004,Viiskulma,Femkanten,Viiskulma,Fredrikinkatu 19,Fredriksgatan  19, , , ,14,24.9417758006418,60.1609858921764
+122,012,Kanavaranta,Kanalkajen,Kanavaranta,Kanavaranta 1,Kanalkajen 1, , , ,34,24.9584922784237,60.1684959040351
+144,034,Kansallismuseo,Nationalmuseum,National Museum,Mannerheimintie 30,Mannerheimvägen 30, , , ,16,24.9328983153441,60.173956898526
+165,055,Puistokaari,Parksvängen,Puistokaari,Isokaari 30,Storsvängen 30, , , ,16,24.8620200832623,60.1578749328793
+172,062,Välimerenkatu,Medelhavsgatan,Välimerenkatu,Välimerenkatu 9,Medelhavsgatan 9, , , ,16,24.9162412896547,60.1592963414953
+175,065,Hernesaarenranta,Ärtholmsstranden,Hernesaarenranta,Hylkeenpyytäjänkatu 1a,Säljägargatan 1a, , , ,40,24.9311978237832,60.1535144787873
+179,069,Kalevankatu,Kalevagatan,Kalevankatu,Lapinlahdenkatu 1,Lappviksgatan 1, , , ,16,24.9314215703651,60.1656801793916
+191,081,Stenbäckinkatu,Stenbäcksgatan,Stenbäckinkatu,Stenbäckinkatu 9,Stenbäcksgatan 9, , , ,18,24.9123717007068,60.1883090916703
+192,082,Töölöntulli,Tölötull,Töölöntulli,Mannerheimintie 112,Mannerheimvägen 112, , , ,16,24.912893019047,60.1909233737999
+204,094,Laajalahden aukio,Bredviksplatsen,Laajalahden aukio,Munkkiniemen puistotie 21,Munksnäs allén 21, , , ,20,24.8763012644261,60.1978706012264
+209,100,Teljäntie,Täljevägen,Teljäntie,Ulvilantie 21,Ulfsbyvägen 21, , , ,12,24.8686567195812,60.209690428765
+210,101,Munkkivuoren ostoskeskus,Munkhöjdens köpcentrum,Munkkivuori Shopping Center,Huopalahdentie 20b,Hoplaksvägen 20b, , , ,24,24.8798066035013,60.2059834138688
+221,113,Pasilan asema,Böle station,Pasila railway station,Pasilan asema-aukio,Böle station, , , ,40,24.932799079033,60.1982108580315
+224,116,Linnanmäki,Borgbacken,Linnanmäki Amusement Park,Viipurinkatu 20,Viborgsgatan 20, , , ,32,24.9401592995968,60.1911410923558
+225,117,Brahen puistikko,Braheskvären,Brahen puistikko,Sturenkatu 12,Sturegatan 12, , , ,12,24.9481257001872,60.1896657985504
+226,118,Fleminginkatu,Flemingsgatan,Fleminginkatu,Aleksis Kiven katu 30,Aleksis Kivis gata 30, , , ,22,24.952206700403,60.1895253157117
+229,121,Vilhonvuorenkatu,Vilhelmsbergsgatan,Vilhonvuorenkatu,Vilhonvuorenkatu 12,Vilhelmsbergsgatan 12, , , ,16,24.967854123638,60.1864553029206
+231,123,Näkinsilta,Näckens bro,Näkinsilta,Sörnäisten rantatie 9,Sörnas strandväg 9, , , ,24,24.9554449266327,60.179750209022
+233,125,Arielinkatu,Arielgatan,Arielinkatu,Englantilaisaukio,Englandsskvären, , , ,16,24.9797385551711,60.1859217406831
+241,133,Paavalinpuisto,Paulusparken,Paavalinpuisto,Hämeentie 96,Tavastvägen 96, , , ,22,24.9614401060515,60.1974798068335
+242,134,Haukilahdenkatu,Gäddviksgatan,Haukilahdenkatu,Haukilahdenkatu 6,Gäddviksgatan 6, , , ,26,24.9676238234156,60.1985338962222
+253,145,Pohjolankatu,Pohjolagatan,Pohjolankatu,Pohjolankatu 1,Pohjolagatan 1, , , ,12,24.9437964005667,60.2134209918355
+255,147,Käpylän asema,Kottby station,Käpylä station,Panuntie 4,Panuvägen 4, , , ,14,24.9479499152249,60.2208033078251
+259,161,Eteläesplanadi,Södra Esplanaden,Eteläesplanadi,Eteläesplanadi 14,Södrä Esplanaden 14, , , ,34,24.9471504600595,60.1671998456303
+277,215,Pitäjänmäen asema,Sockenbacka station,Pitäjänmäki Station,Pitäjänmäentie 21,Sockenbackavägen 21, , , ,16,24.8586292857926,60.2243090934475
+294,232,Oulunkylän asema,Åggelby station,Oulunkylä Station,Oulunkyläntori 2,Åggelbytorget 2, , , ,14,24.9667185624345,60.2291001546027
+297,235,Katariina Saksilaisen katu,Katarina av Sachsens gata,Katariina Saksilaisen katu,Katariina Saksilaisen katu 6,Katarina av Sachsens gata 6, , , ,16,24.9844208812225,60.2172068185826
+302,240,Viikin normaalikoulu,Normalskolan i Vik,Viikki Teacher Training School,Kevättori,Vårtorget, , , ,20,25.0275940265593,60.2274649666156
+342,281,Puotila (M),Botby gård (M),Puotila (M),Vanhanlinnantori,Vanhalinnatorget, , , ,20,25.0910915854205,60.2148242972699
+348,290,Vallilan varikko,Vallgårds depå,Vallilan varikko,Hämeentie 86,Tavastvägen 86, , , ,20,24.9628231422149,60.1952459460233
+350,292,Koskelan varikko,Forsby depå,Koskelan varikko,Valtimontie 10,Valtimovägen 10, , , ,16,24.9698571193553,60.2125872907979
+369,318,Vuosaaren puistopolku,Nordsjö parkstig,Vuosaaren puistopolku,Mustalahdenpolku 2,Svartviksstigen 2, , , ,14,25.1410953624725,60.221320897051
