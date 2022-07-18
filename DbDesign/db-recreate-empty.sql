@@ -85,3 +85,12 @@ CREATE INDEX ByRetDepStation
 ON [dbo].[Rides] (RetStation, DepStation, RetTime);
 GO
 
+-- Index for a list of rides sorted by departure time given departure station
+CREATE INDEX ByDepStationTime
+ON [dbo].[Rides] (DepStation, DepTime);
+GO
+
+-- Index for a list of rides sorted by return time given return station
+CREATE INDEX ByRetStationTime
+ON [dbo].[Rides] (RetStation, RetTime);
+GO

@@ -236,8 +236,8 @@ CREATE TABLE [dbo].[Cities]
     private void FillCitiesTable()
     {
       EnsureNotDisposed();
-      Connection.Execute(
-        "INSERT INTO Cities (Id, CityFi, CitySe) VALUES (@Id, @CityFi, @CitySe)",
+      Connection.Execute(@"
+INSERT INTO Cities (Id, CityFi, CitySe) VALUES (@Id, @CityFi, @CitySe)",
         AllCities.Default.All);
     }
 
@@ -281,18 +281,34 @@ CREATE TABLE [dbo].[Rides]
 )";
       Connection.Execute(sql);
       count++;
+
       sql = @"
 CREATE INDEX ByDepRetStation
 ON [dbo].[Rides] (DepStation, RetStation, DepTime)";
       Connection.Execute(sql);
       count++;
+
       sql = @"
 CREATE INDEX ByRetDepStation
 ON [dbo].[Rides] (RetStation, DepStation, RetTime)";
       Connection.Execute(sql);
       count++;
+
+      sql = @"
+CREATE INDEX ByDepStationTime
+ON [dbo].[Rides] (DepStation, DepTime)";
+      Connection.Execute(sql);
+      count++;
+
+      sql = @"
+CREATE INDEX ByRetStationTime
+ON [dbo].[Rides] (RetStation, RetTime)";
+      Connection.Execute(sql);
+      count++;
+
       return count;
     }
 
   }
+
 }
