@@ -118,6 +118,15 @@ namespace LclBikeApp.DataWrangling.DataLocation
     }
 
     /// <summary>
+    /// Fully read the content of an UTF8 encoded text file
+    /// </summary>
+    public override string ReadAllText(string relativeName)
+    {
+      var fnm = Path.Combine(Root, relativeName);
+      return File.ReadAllText(fnm);
+    }
+
+    /// <summary>
     /// Create a new file (or overwrite an existing file) for writing as UTF8 text
     /// </summary>
     /// <param name="relativeName">

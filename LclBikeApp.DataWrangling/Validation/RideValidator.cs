@@ -145,6 +145,18 @@ namespace LclBikeApp.DataWrangling.Validation
     public IReadOnlyDictionary<string, int> Statistics => _statistics;
 
     /// <summary>
+    /// The number of candidate records offered to CheckAndTrack() since
+    /// the last Reset()
+    /// </summary>
+    public int CandidateCount => Statistics.Values.Sum();
+
+    /// <summary>
+    /// The number of candidate records offered to CheckAndTrack() since
+    /// the last Reset() that were accepted
+    /// </summary>
+    public int AcceptedCount => Statistics[AcceptedKey];
+
+    /// <summary>
     /// Returns a fixed string containing the explanation on why the
     /// ride is rejected, or returns null to indicate that the ride
     /// is accepted.

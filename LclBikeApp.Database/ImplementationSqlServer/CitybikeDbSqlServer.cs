@@ -180,6 +180,37 @@ VALUES (@Id, @NameFi, @NameSe, @NameEn, @AddrFi, @AddrSe, @CityId, @Capacity, @L
       return count;
     }
 
+    /// <summary>
+    /// Insert the provided batch of RideBase instances.
+    /// No validation is done - that is supposed to have happened
+    /// already. The rides are inserted as new instances, with 
+    /// the DB generating new IDs for them
+    /// </summary>
+    /// <param name="rides">
+    /// The rides to insert
+    /// </param>
+    /// <returns>
+    /// The number of rides inserted, which may be less than
+    /// the number presented rides when duplicates are rejected.
+    /// </returns>
+    public int AddBaseRides(IEnumerable<RideBase> rides)
+    {
+      EnsureNotDisposed();
+      int count;
+      Connection.Open();
+      using(var trx = Connection.BeginTransaction())
+      {
+        // Note that "Id" is *not* set - let the DB generate it
+        var sql = @"
+INSERT INTO Rides (DepTime, RetTime, DepStation, RetStation, Distance, Duration)
+VALUES (@DepTime, @RetTime, @DepStationId, @RetStationId, @Distance, @Duration)";
+        count = Connection.Execute(sql, rides, transaction: trx);
+        trx.Commit();
+      }
+      return count;
+    }
+
+
     private void EnsureNotDisposed()
     {
       if(Disposed)

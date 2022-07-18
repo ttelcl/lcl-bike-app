@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LclBikeApp.DataWrangling.RawModel;
+
 namespace LclBikeApp.Database.Models
 {
   /// <summary>
@@ -35,6 +37,22 @@ namespace LclBikeApp.Database.Models
       RetStationId = retStationId;
       Distance = distance;
       Duration = duration;
+    }
+
+    /// <summary>
+    /// Create a RideBase instance from a RideCursor loaded with a
+    /// CSV data row
+    /// </summary>
+    public static RideBase FromCursor(RideCursor cursor)
+    {
+      var distance = (int)Math.Round(cursor.Distance);
+      return new RideBase(
+        cursor.DepTime,
+        cursor.RetTime,
+        cursor.DepStation,
+        cursor.RetStation,
+        distance,
+        cursor.Duration);
     }
 
     /// <summary>
