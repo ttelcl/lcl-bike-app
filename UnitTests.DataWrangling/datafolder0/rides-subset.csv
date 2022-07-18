@@ -1,0 +1,24 @@
+Departure,Return,Departure station id,Departure station name,Return station id,Return station name,Covered distance (m),Duration (sec.)
+2021-06-30T23:50:45,2021-07-01T00:15:01,541,"Aalto-yliopisto (M), Korkeakouluaukio",101,Munkkivuoren ostoskeskus,5597,1452
+2021-06-30T21:43:03,2021-06-30T21:47:06,753,Linnuntie,754,Lintumetsä,747,238
+2021-06-30T20:38:09,2021-06-30T21:41:14,593,Toppelundintie,012,Kanavaranta,12272,3781
+2021-06-30T16:46:50,2021-06-30T16:47:31,055,Puistokaari,055,Puistokaari,0,40
+2021-06-30T13:57:40,2021-07-02T11:08:21,585,Haukilahdenaukio,585,Haukilahdenaukio,0,162635
+2021-06-29T13:05:32,2021-06-29T13:31:57,235,Katariina Saksilaisen katu,235,Katariina Saksilaisen katu,399,1583
+2021-06-26T17:40:29,2021-06-26T17:40:49,215,Pitäjänmäen asema,215,Pitäjänmäen asema,,16
+2021-06-17T08:58:07,2021-06-17T09:06:17,125,Arielinkatu,118,Fleminginkatu,-4293254,488
+2021-05-31T23:57:25,2021-06-01T00:05:46,094,Laajalahden aukio,100,Teljäntie,2043,500
+2021-05-31T23:56:59,2021-06-01T00:07:14,082,Töölöntulli,113,Pasilan asema,1870,611
+2021-05-31T23:56:44,2021-06-01T00:03:26,123,Näkinsilta,121,Vilhonvuorenkatu,1025,399
+2021-05-31T23:56:23,2021-06-01T00:29:58,004,Viiskulma,065,Hernesaarenranta,4318,2009
+2021-05-31T23:56:11,2021-06-01T00:02:02,004,Viiskulma,065,Hernesaarenranta,1400,350
+2021-05-31T23:54:48,2021-06-01T00:00:57,292,Koskelan varikko,133,Paavalinpuisto,1713,366
+2021-05-31T23:54:11,2021-06-01T00:17:11,034,Kansallismuseo,081,Stenbäckinkatu,2550,1377
+2021-05-31T22:30:48,2021-05-31T22:38:01,134,Haukilahdenkatu,290,Vallilan varikko,1253,431
+2021-05-31T16:05:25,2021-06-01T10:40:13,161,Eteläesplanadi,997,Workshop Helsinki,3988,66882
+2021-05-08T19:30:15,2021-05-08T19:38:25,999,Bike Production,318,Vuosaaren puistopolku,1500,483
+2021-06-30T23:50:45,2021-07-01T00:15:01,541,"Aalto-yliopisto (M), Korkeakouluaukio",101,Munkkivuoren ostoskeskus,5597,1452
+2021-06-30T21:43:03,2021-06-30T21:47:06,753,Linnuntie,754,Lintumetsä,747,238
+2021-06-30T20:38:09,2021-06-30T21:41:14,593,Toppelundintie,012,Kanavaranta,12272,3781
+2021-06-30T16:46:50,2021-06-30T16:47:31,055,Puistokaari,055,Puistokaari,0,40
+

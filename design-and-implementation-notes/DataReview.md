@@ -23,6 +23,8 @@ discussed with the customer.
 all data rows occur as two copies )once in the first half of the file,
 once in the second half)
 * Drop any rides with a blank value (no value) for "Covered Distance"
+* Round the covered distance for all rides to full meters. There are
+only a VERY few rides where that distance isn't in full meters already.
 * (*) Drop any rides with a "Covered Distance" shorter than 400m. The exact
 cut-off limit is open for discussion. This limit also implies the following
 limits (which are probably not really open for discussion)

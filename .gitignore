@@ -7,6 +7,10 @@
 .git/
 .hg/
 
+*.tmp
+*.bak
+*.out.csv
+
 Generated/*.cs
 packages/
 *.nupkg
