@@ -17,12 +17,42 @@ open LclBikeApp.DataWrangling.Validation
 
 open CommonTools
 open ColorPrint
+open System.Globalization
 
 type private PrepOptions = {
   Inputs: string list
   DataFolderKey: string
   StationsData: string
+  StartTime: DateTime  // note: this is a Time, not just a date
+  EndTime: DateTime  // note: this is a Time, not just a date
 }
+
+let private parseTime isend (txt: string) =
+  let culture = CultureInfo.InvariantCulture
+  let ok, t = DateTime.TryParseExact(
+    txt,
+    "yyyy-MM-dd",
+    culture,
+    DateTimeStyles.None)
+  if ok then
+    if isend then
+      t.AddDays(1.0).AddSeconds(-1.0)
+    else
+      t
+  else
+    let ok, t = DateTime.TryParseExact(
+      txt,
+      [|
+        "yyyy-MM-dd HH:mm:ss"
+        "yyyy-MM-dd'T'HH:mm:ss"
+        |],
+      culture,
+      DateTimeStyles.None)
+    if ok then
+      t
+    else
+      cp $"\frUnsupported or unrecognized time format in \fo{txt}"
+      failwith "Unrecognized time format"
 
 let run args =
   let rec parsemore o args =
@@ -38,12 +68,26 @@ let run args =
       rest |> parsemore {o with Inputs = filename :: o.Inputs}
     | "-df" :: dfkey :: rest ->
       rest |> parsemore {o with DataFolderKey = dfkey}
+    | "-from" :: date :: time :: rest when not(time.StartsWith("-")) ->
+      let t = $"{date} {time}" |> parseTime false
+      rest |> parsemore {o with StartTime = t}
+    | "-from" :: datetime :: rest ->
+      let t = datetime |> parseTime false
+      rest |> parsemore {o with StartTime = t}
+    | "-to" :: date :: time :: rest when not(time.StartsWith("-")) ->
+      let t = $"{date} {time}" |> parseTime true
+      rest |> parsemore {o with EndTime = t}
+    | "-to" :: datetime :: rest ->
+      let t = datetime |> parseTime true
+      rest |> parsemore {o with EndTime = t}
     | x :: _ ->
       failwithf $"Unrecognized argument {x}"
   let o = args |> parsemore {
     Inputs = []
     DataFolderKey = "_data"
     StationsData = null
+    StartTime = DateTime.MinValue
+    EndTime = DateTime.MaxValue
   }
   let df = DataFolder.LocateAsAncestorSibling(o.DataFolderKey)
   cp $"Data folder is \fg{df.Root}"
@@ -78,37 +122,19 @@ let run args =
 
   let validator = new RideValidator(rules, stationIds)
 
-  cp $"\frWork In Progress! No output is written yet"
   for inputName in o.Inputs do
     let inputFile = df.ResolveFile(inputName)
     if inputFile |> File.Exists |> not then
       cp $"\frFile \fo{inputFile} \fr not found! \fySkipping!"
     else
+      cp $"Processing \fg{inputFile}\f0 from \fy{o.StartTime:s}\f0 to \fy{o.EndTime:s}"
       validator.Reset()
       let rideCursor = new RideCursor()
       use xr = Xsv.ReadXsv(inputFile).AsXsvReader()
       let validatedCursors = 
         xr.ReadCursor(rideCursor)
+        |> Seq.where (fun c -> c.DepTime >= o.StartTime && c.DepTime <= o.EndTime)
         |> validator.Validate
-
-      //// TEMPORARY CODE - TO BE REPLACED
-      //let mutable currentDate = new DateTime(3000, 1, 1) // long in the future, as a marker
-      //let mutable entriesThisDay = 0
-      //for validCursor in validatedCursors do
-      //  let date = validCursor.DepTime.Date
-      //  if currentDate <> date then
-      //    if entriesThisDay > 0 then // else: stay silent
-      //      cp $"  \fg{currentDate:``yyyy-MM-dd``}\f0: \fb%6d{entriesThisDay}\f0 valid rides"
-      //      entriesThisDay <- 0
-      //    currentDate <- date
-      //    // Todo: start a new output file
-      //  entriesThisDay <- entriesThisDay + 1
-      //  // Todo: copy current record to current file
-      //  ()
-      //// Don't forget the final day of the file!
-      //if entriesThisDay > 0 then // else: stay silent
-      //  cp $"  \fg{currentDate:``yyyy-MM-dd``}\f0: \fb%6d{entriesThisDay}\f0 valid rides"
-      //  entriesThisDay <- 0
 
       let ridesSequence =
         validatedCursors
@@ -133,5 +159,6 @@ let run args =
           cp $"\fo%6d{kvp.Value}\f0 : \fy{kvp.Key}"
       ()
   
+  cp $"\frWork In Progress! No output is written yet"
   failwith "Not Yet Implemented"
   0

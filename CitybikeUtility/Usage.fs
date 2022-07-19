@@ -19,6 +19,8 @@ let usage detailed =
   cp "     If not specified, the following defaults are tried: \fg-s \fystations.csv"
   cp "     and \fg-s \fyHelsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv"
   cp "  \fg-i\f0 <\fcdatafile.csv\f0>      Input rides data file to process. Repeatable."
+  cp "  \fg-from\f0 <\fcyyyy-MM-dd\f0>     First day (skip earlier data)"
+  cp "  \fg-to\f0 <\fcyyyy-MM-dd\f0>       Last day (skip later data)"
   cp ""
   cp "\foCitybikeUtility \fyconfig"
   cp "  Print out the configuration values as found in configuration.json "
