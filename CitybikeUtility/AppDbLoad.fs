@@ -1,12 +1,10 @@
-﻿module AppPrepare
+﻿module AppDbLoad
 
 open System
 open System.IO
 
 open XsvLib
-open XsvLib.Tables.Cursor
 
-open LclBikeApp.Database
 open LclBikeApp.Database.ImplementationSqlServer
 open LclBikeApp.Database.Models
 

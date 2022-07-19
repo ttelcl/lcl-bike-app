@@ -19,9 +19,9 @@ let rec run arglist =
     usage verbose
     0  // program return status code to the operating system; 0 == "OK"
   | "init-rides" :: rest ->
-    rest |> AppPrepare.runInitRides
+    rest |> AppDbLoad.runInitRides
   | "init-stations" :: rest ->
-    rest |> AppPrepare.runInitStations
+    rest |> AppDbLoad.runInitStations
   | "config" :: rest ->
     rest |> AppConfig.run
   | x :: _ ->
