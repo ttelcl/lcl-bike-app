@@ -73,8 +73,7 @@ let run args =
     |> Seq.toList
   let stationIds = stations |> List.map (fun s -> s.Id)
 
-  let rules = new ValidationConfiguration()
-  // TODO: allow customizing these rules
+  let rules = Config.getValidationParameters()
   cp $"Validation rules in effect: \fy{rules.ToJson()}"
 
   let validator = new RideValidator(rules, stationIds)

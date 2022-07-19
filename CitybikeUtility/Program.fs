@@ -20,6 +20,8 @@ let rec run arglist =
     0  // program return status code to the operating system; 0 == "OK"
   | "prepare" :: rest ->
     rest |> AppPrepare.run
+  | "config" :: rest ->
+    rest |> AppConfig.run
   | x :: _ ->
     cp $"\foUnrecognized command: \fr{x}"
     1

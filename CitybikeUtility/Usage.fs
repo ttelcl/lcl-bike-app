@@ -20,6 +20,10 @@ let usage detailed =
   cp "     and \fg-s \fyHelsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv"
   cp "  \fg-i\f0 <\fcdatafile.csv\f0>      Input rides data file to process. Repeatable."
   cp ""
+  cp "\foCitybikeUtility \fyconfig"
+  cp "  Print out the configuration values as found in configuration.json "
+  cp "  and the user secrets configuration."
+  cp ""
   cp "Common options:"
   cp "\fg-v               \f0Verbose mode"
 

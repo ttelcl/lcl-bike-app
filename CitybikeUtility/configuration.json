@@ -1,0 +1,19 @@
+﻿{
+  "_README_": [
+    "Configuration values are read from the values found here merged with ",
+    "values found in the user secrets. ",
+    "Blank values hint that you must edit this file or set up user secrets before use"
+  ],
+  "ConnectionStrings": {
+    "default": ""
+  },
+  "ValidationParameters": {
+    "MinDistance": 400,
+    "MaxDistance": 8000,
+    "MinDuration": 120,
+    "MaxDuration": 14400,
+    "TimeTolerance": 20,
+    "RequireNonAscendingDepartures": true
+  }
+}
+

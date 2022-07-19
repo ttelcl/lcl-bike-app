@@ -8,6 +8,7 @@
   <PropertyGroup>
     <!-- This prevents other language resources being emitted -->
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <UserSecretsId>19994b31-8ba0-4e97-8ffe-303d6146a443</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,9 +17,19 @@
     <Compile Include="PrintUtils.fs" />
     <Compile Include="ExceptionTool.fs" />
     <Compile Include="Usage.fs" />
+    <Compile Include="Config.fs" />
     <Compile Include="AppPrepare.fs" />
+    <Compile Include="AppConfig.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
