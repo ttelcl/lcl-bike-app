@@ -41,27 +41,9 @@ namespace LclBikeApp.DataWrangling.Utilities
     public static IEnumerable<List<T>> BatchByKeyFunc<T,K>(
       this IEnumerable<T> sequence, Func<T, K> extractKey)
       where K: IEquatable<K>
-      where T : class
     {
-      var list = new List<T>();
-      T? lastItem = null;
-      foreach(var t in sequence)
-      {
-        if(lastItem is not null)
-        {
-          if(!extractKey(lastItem).Equals(extractKey(t)))
-          {
-            yield return list;
-            list = new List<T>();
-          }
-        }
-        list.Add(t);
-        lastItem = t;
-      }
-      if(list.Count > 0)
-      {
-        yield return list;
-      }
+      var batcher = new SequenceBatcher<T, K>(extractKey);
+      return batcher.BatchAll(sequence);
     }
 
   }
