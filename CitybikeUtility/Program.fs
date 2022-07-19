@@ -18,8 +18,10 @@ let rec run arglist =
   | [] ->
     usage verbose
     0  // program return status code to the operating system; 0 == "OK"
-  | "prepare" :: rest ->
-    rest |> AppPrepare.run
+  | "init-rides" :: rest ->
+    rest |> AppPrepare.runInitRides
+  | "init-stations" :: rest ->
+    rest |> AppPrepare.runInitStations
   | "config" :: rest ->
     rest |> AppConfig.run
   | x :: _ ->

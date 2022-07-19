@@ -83,7 +83,7 @@ namespace LclBikeApp.DataWrangling.Validation
         var dep = cursor.DepTime;
         if(dep > _maxDepartureTime || (_hadOrderRejection && dep >= _maxDepartureTime))
         {
-          rejection = "Departure timestamp is ascending (duplicate data suspected)";
+          rejection = "Departure timestamp is not non-descending (duplicate data assumed)";
           if(!_hadOrderRejection)
           {
             // Once a record is rejected as out-of-order, make sure not to accept
