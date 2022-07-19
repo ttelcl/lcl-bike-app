@@ -14,7 +14,7 @@ namespace LclBikeApp.DataWrangling.Utilities
   /// <summary>
   /// Static methods for splitting a sequence in batches
   /// </summary>
-  public static class SequenceBatcher
+  public static class SequenceBatching
   {
 
     /// <summary>
