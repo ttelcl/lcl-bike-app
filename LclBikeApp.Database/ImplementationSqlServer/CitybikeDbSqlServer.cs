@@ -180,6 +180,37 @@ VALUES (@Id, @NameFi, @NameSe, @NameEn, @AddrFi, @AddrSe, @CityId, @Capacity, @L
       return count;
     }
 
+    /// <summary>
+    /// Insert the provided batch of RideBase instances.
+    /// No validation is done - that is supposed to have happened
+    /// already. The rides are inserted as new instances, with 
+    /// the DB generating new IDs for them
+    /// </summary>
+    /// <param name="rides">
+    /// The rides to insert
+    /// </param>
+    /// <returns>
+    /// The number of rides inserted, which may be less than
+    /// the number presented rides when duplicates are rejected.
+    /// </returns>
+    public int AddBaseRides(IEnumerable<RideBase> rides)
+    {
+      EnsureNotDisposed();
+      int count;
+      Connection.Open();
+      using(var trx = Connection.BeginTransaction())
+      {
+        // Note that "Id" is *not* set - let the DB generate it
+        var sql = @"
+INSERT INTO Rides (DepTime, RetTime, DepStation, RetStation, Distance, Duration)
+VALUES (@DepTime, @RetTime, @DepStationId, @RetStationId, @Distance, @Duration)";
+        count = Connection.Execute(sql, rides, transaction: trx);
+        trx.Commit();
+      }
+      return count;
+    }
+
+
     private void EnsureNotDisposed()
     {
       if(Disposed)
@@ -205,8 +236,8 @@ CREATE TABLE [dbo].[Cities]
     private void FillCitiesTable()
     {
       EnsureNotDisposed();
-      Connection.Execute(
-        "INSERT INTO Cities (Id, CityFi, CitySe) VALUES (@Id, @CityFi, @CitySe)",
+      Connection.Execute(@"
+INSERT INTO Cities (Id, CityFi, CitySe) VALUES (@Id, @CityFi, @CitySe)",
         AllCities.Default.All);
     }
 
@@ -250,18 +281,34 @@ CREATE TABLE [dbo].[Rides]
 )";
       Connection.Execute(sql);
       count++;
+
       sql = @"
 CREATE INDEX ByDepRetStation
 ON [dbo].[Rides] (DepStation, RetStation, DepTime)";
       Connection.Execute(sql);
       count++;
+
       sql = @"
 CREATE INDEX ByRetDepStation
 ON [dbo].[Rides] (RetStation, DepStation, RetTime)";
       Connection.Execute(sql);
       count++;
+
+      sql = @"
+CREATE INDEX ByDepStationTime
+ON [dbo].[Rides] (DepStation, DepTime)";
+      Connection.Execute(sql);
+      count++;
+
+      sql = @"
+CREATE INDEX ByRetStationTime
+ON [dbo].[Rides] (RetStation, RetTime)";
+      Connection.Execute(sql);
+      count++;
+
       return count;
     }
 
   }
+
 }

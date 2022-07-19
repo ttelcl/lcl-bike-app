@@ -89,6 +89,82 @@ namespace LclBikeApp.DataWrangling.DataLocation
     public string Root { get; }
 
     /// <summary>
+    /// Resolve a file name relative to the data folder to a full path.
+    /// Optionally check if the file exists.
+    /// </summary>
+    /// <param name="relativeName">
+    /// The file name, relative to the data folder
+    /// </param>
+    /// <param name="mustExist">
+    /// When true, a FileNotFoundException is thrown if the result
+    /// is not the name of an existing file.
+    /// </param>
+    /// <returns>
+    /// The full path of the file
+    /// </returns>
+    /// <exception cref="FileNotFoundException">
+    /// Thrown if the file does not exist and "mustExist" was true
+    /// </exception>
+    public string ResolveFile(string relativeName, bool mustExist=false)
+    {
+      var fnm = Path.Combine(Root, relativeName);
+      if(mustExist && !File.Exists(fnm))
+      {
+        throw new FileNotFoundException(
+          $"File not found {fnm}");
+      }
+      return fnm;
+    }
+
+    /// <summary>
+    /// Resolve a directory name relative to the data folder to a full path.
+    /// Optionally check if the directory exists.
+    /// </summary>
+    /// <param name="relativeName">
+    /// The directory name, relative to the data folder
+    /// </param>
+    /// <param name="mustExist">
+    /// When true, a DirectoryNotFoundException is thrown if the result
+    /// is not the name of an existing directory.
+    /// </param>
+    /// <returns>
+    /// The full path of the directory
+    /// </returns>
+    /// <exception cref="DirectoryNotFoundException">
+    /// Thrown if the directory does not exist and "mustExist" was true
+    /// </exception>
+    public string ResolveDirectory(string relativeName, bool mustExist=false)
+    {
+      var dnm = Path.Combine(Root, relativeName);
+      if(mustExist && !Directory.Exists(dnm))
+      {
+        throw new DirectoryNotFoundException(
+          $"Directory not found {dnm}");
+      }
+      return dnm;
+    }
+
+    /// <summary>
+    /// Resolve a directory name relative to the data folder to a full path.
+    /// Create it if it does not yet exist.
+    /// </summary>
+    /// <param name="relativeName">
+    /// The directory name, relative to the data folder
+    /// </param>
+    /// <returns>
+    /// The full path of the directory
+    /// </returns>
+    public string ResolveOrCreateDirectory(string relativeName)
+    {
+      var dnm = Path.Combine(Root, relativeName);
+      if(!Directory.Exists(dnm))
+      {
+        Directory.CreateDirectory(dnm);
+      }
+      return dnm;
+    }
+
+    /// <summary>
     /// Returns true if the indicated file exists
     /// </summary>
     /// <param name="relativeName">
@@ -115,6 +191,15 @@ namespace LclBikeApp.DataWrangling.DataLocation
     {
       var fnm = Path.Combine(Root, relativeName);
       return File.OpenText(fnm);
+    }
+
+    /// <summary>
+    /// Fully read the content of an UTF8 encoded text file
+    /// </summary>
+    public override string ReadAllText(string relativeName)
+    {
+      var fnm = Path.Combine(Root, relativeName);
+      return File.ReadAllText(fnm);
     }
 
     /// <summary>

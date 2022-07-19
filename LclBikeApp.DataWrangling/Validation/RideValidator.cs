@@ -83,7 +83,7 @@ namespace LclBikeApp.DataWrangling.Validation
         var dep = cursor.DepTime;
         if(dep > _maxDepartureTime || (_hadOrderRejection && dep >= _maxDepartureTime))
         {
-          rejection = "Departure timestamp is ascending (duplicate data suspected)";
+          rejection = "Departure timestamp is not non-descending (duplicate data assumed)";
           if(!_hadOrderRejection)
           {
             // Once a record is rejected as out-of-order, make sure not to accept
@@ -143,6 +143,18 @@ namespace LclBikeApp.DataWrangling.Validation
     /// Statistics for each rejection reason plus "ACCEPTED" (AcceptedKey).
     /// </summary>
     public IReadOnlyDictionary<string, int> Statistics => _statistics;
+
+    /// <summary>
+    /// The number of candidate records offered to CheckAndTrack() since
+    /// the last Reset()
+    /// </summary>
+    public int CandidateCount => Statistics.Values.Sum();
+
+    /// <summary>
+    /// The number of candidate records offered to CheckAndTrack() since
+    /// the last Reset() that were accepted
+    /// </summary>
+    public int AcceptedCount => Statistics[AcceptedKey];
 
     /// <summary>
     /// Returns a fixed string containing the explanation on why the

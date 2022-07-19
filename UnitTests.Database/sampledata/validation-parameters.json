@@ -1,0 +1,8 @@
+﻿{
+  "MinDistance": 400,
+  "MaxDistance": 8000,
+  "MinDuration": 120,
+  "MaxDuration": 14400,
+  "TimeTolerance": 20,
+  "RequireNonAscendingDepartures": true
+}

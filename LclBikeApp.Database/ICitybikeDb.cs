@@ -65,6 +65,21 @@ namespace LclBikeApp.Database
     /// The number of stations inserted
     /// </returns>
     int AddStations(IEnumerable<Station> stations);
+
+    /// <summary>
+    /// Insert the provided batch of RideBase instances.
+    /// No validation is done - that is supposed to have happened
+    /// already. The rides are inserted as new instances, with 
+    /// the DB generating new IDs for them
+    /// </summary>
+    /// <param name="rides">
+    /// The rides to insert
+    /// </param>
+    /// <returns>
+    /// The number of rides inserted, which may be less than
+    /// the number presented rides when duplicates are rejected.
+    /// </returns>
+    int AddBaseRides(IEnumerable<RideBase> rides);
   }
 }
 

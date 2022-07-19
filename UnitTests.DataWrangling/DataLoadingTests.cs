@@ -78,17 +78,11 @@ namespace UnitTests.DataWrangling
       Assert.Contains("/bin/", df.Root.Replace('\\', '/'));
 
       var adapter = new StationCursor();
-      var stations = new List<RawStation>();
-      using(var xsv = Xsv.ReadXsv(df.OpenReadText("stations-subset.csv"), ".csv").AsXsvReader())
-      {
-        foreach(var cursor in xsv.ReadCursor(adapter))
-        {
-          Assert.Same(adapter, cursor);
-          Assert.True(cursor.HasData);
-          var station = RawStation.FromCursor(cursor);
-          stations.Add(station);
-        }
-      }
+      var stations =
+        adapter
+        .ReadXsvCursor(() => Xsv.ReadXsv(df.OpenReadText("stations-subset.csv"), ".csv"))
+        .Select(c => RawStation.FromCursor(c))
+        .ToList();
       Assert.NotEmpty(stations);
       _output.WriteLine($"Read {stations.Count} stations");
 
@@ -101,13 +95,11 @@ namespace UnitTests.DataWrangling
       var stationIds = stations.Select(x => x.Id).ToList();
       var validator = new RideValidator(rules, stationIds);
       var rideCursor = new RideCursor();
-      using(var xsv = Xsv.ReadXsv(df.OpenReadText("rides-subset.csv"), ".csv").AsXsvReader())
+
+      foreach(var accepted in validator.Validate(
+        rideCursor.ReadXsvCursor(() => Xsv.ReadXsv(df.OpenReadText("rides-subset.csv"), ".csv"))))
       {
-        foreach(var accepted in validator.Validate(xsv.ReadCursor(rideCursor)))
-        {
-          // we don't have anything to use the RideCursor yet ...
-          _output.WriteLine($"Accepted {accepted.DepStation:D3} -> {accepted.RetStation:D3} @ {accepted.DepTime:s} ");
-        }
+        _output.WriteLine($"Accepted: {accepted.DepStation:D3} -> {accepted.RetStation:D3} @ {accepted.DepTime:s} ");
       }
 
       _output.WriteLine("Statistics:");

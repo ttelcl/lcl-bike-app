@@ -56,6 +56,11 @@ namespace LclBikeApp.DataWrangling.DataLocation
     public abstract TextReader OpenReadText(string relativeName);
 
     /// <summary>
+    /// Fully read the content of an UTF8 encoded text file
+    /// </summary>
+    public abstract string ReadAllText(string relativeName);
+
+    /// <summary>
     /// Create a new file (or overwrite an existing file) for writing as UTF8 text
     /// </summary>
     /// <param name="relativeName">
