@@ -87,26 +87,43 @@ let run args =
       validator.Reset()
       let rideCursor = new RideCursor()
       use xr = Xsv.ReadXsv(inputFile).AsXsvReader()
-      let validatedCursors = xr.ReadCursor(rideCursor) |> validator.Validate
+      let validatedCursors = 
+        xr.ReadCursor(rideCursor)
+        |> validator.Validate
 
-      // TEMPORARY CODE - TO BE REPLACED
-      let mutable currentDate = new DateTime(3000, 1, 1) // long in the future, as a marker
-      let mutable entriesThisDay = 0
-      for validCursor in validatedCursors do
-        let date = validCursor.DepTime.Date
-        if currentDate <> date then
-          if entriesThisDay > 0 then // else: stay silent
-            cp $"  \fg{currentDate:``yyyy-MM-dd``}\f0: \fb%6d{entriesThisDay}\f0 valid rides"
-            entriesThisDay <- 0
-          currentDate <- date
-          // Todo: start a new output file
-        entriesThisDay <- entriesThisDay + 1
-        // Todo: copy current record to current file
-        ()
-      // Don't forget the final day of the file!
-      if entriesThisDay > 0 then // else: stay silent
-        cp $"  \fg{currentDate:``yyyy-MM-dd``}\f0: \fb%6d{entriesThisDay}\f0 valid rides"
-        entriesThisDay <- 0
+      //// TEMPORARY CODE - TO BE REPLACED
+      //let mutable currentDate = new DateTime(3000, 1, 1) // long in the future, as a marker
+      //let mutable entriesThisDay = 0
+      //for validCursor in validatedCursors do
+      //  let date = validCursor.DepTime.Date
+      //  if currentDate <> date then
+      //    if entriesThisDay > 0 then // else: stay silent
+      //      cp $"  \fg{currentDate:``yyyy-MM-dd``}\f0: \fb%6d{entriesThisDay}\f0 valid rides"
+      //      entriesThisDay <- 0
+      //    currentDate <- date
+      //    // Todo: start a new output file
+      //  entriesThisDay <- entriesThisDay + 1
+      //  // Todo: copy current record to current file
+      //  ()
+      //// Don't forget the final day of the file!
+      //if entriesThisDay > 0 then // else: stay silent
+      //  cp $"  \fg{currentDate:``yyyy-MM-dd``}\f0: \fb%6d{entriesThisDay}\f0 valid rides"
+      //  entriesThisDay <- 0
+
+      let ridesSequence =
+        validatedCursors
+        |> Seq.map (fun c -> RideBase.FromCursor(c))
+
+      let batcher = new SequenceBatcher<RideBase, DateTime>(fun rb -> rb.DepTime.Date)
+
+      let rideBatchesPerDay =
+        ridesSequence
+        |> batcher.BatchAll
+
+      for dayRides in rideBatchesPerDay do
+        let day = dayRides[0].DepTime.Date
+        cp $"  Found \fb%6d{dayRides.Count}\f0 valid rides on \fg{day:``yyyy-MM-dd``}\f0"
+        // TODO: actually do something with those rides ...
       
       cp $"\fcRejection and acceptance statistics\f0:"
       for kvp in validator.Statistics do
