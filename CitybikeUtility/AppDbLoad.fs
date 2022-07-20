@@ -16,6 +16,7 @@ open LclBikeApp.DataWrangling.Validation
 open CommonTools
 open ColorPrint
 open System.Globalization
+open System.Diagnostics
 
 type private InitRideOptions = {
   Inputs: string list
@@ -212,9 +213,12 @@ let runInitRides args =
         let day = dayRides[0].DepTime.Date
         cpx $"  Found \fb%6d{dayRides.Count}\f0 valid rides on \fc{day:``yyyy-MM-dd``}\f0. "
         if o.DoInsert then
+          let sw = new Stopwatch()
+          sw.Start()
           let count =
             use db = openDb()
             db.AddBaseRides(dayRides)
+          sw.Stop()
           let colortag =
             if count = dayRides.Count then
               "\fg"
@@ -222,7 +226,7 @@ let runInitRides args =
               "\fr"
             else
               "\fy"
-          cp $" Actually inserted: {colortag}{count}"
+          cp $" Actually inserted: {colortag}{count}\f0. Time taken = \fg{sw.Elapsed}"
           totalInserted <- totalInserted + count
         else
           cp ""
