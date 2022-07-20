@@ -15,6 +15,6 @@ links to more detailed information)
 * Phase 1: [Reviewing the data files](design-and-implementation-notes/DataReview.md)
 * Phase 2: [Database modeling](design-and-implementation-notes/DataModel.md)
 * Phase 3: Database and database access layer implementation
-* Phase 4: Database loading
+* Phase 4: Database loading. See [Database Loading](design-and-implementation-notes/DatabaseLoading.md)
 * Phase 5: Web API design
 * ...
