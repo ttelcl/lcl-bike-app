@@ -52,6 +52,10 @@ The first of these folder that actually exists is used:
 "_data", "../_data", "../../_data", etc. If you want to use a different name than
 "_data" as search key, you can change that with the "-df" option.
 
+Create a folder like that (in a place that doesn't run the risk of accidentally
+being added to GIT), and store the downloaded data files there. The data file
+locations can be found in the assignment.
+
 ### Loading station data
 
 The first part to load into the database is the list of citybike station details.
@@ -64,7 +68,7 @@ CitybikeUtility init-stations [-db <dbtag>] [-df <datafolder>] [-s <stations.csv
 where:
 * `<dbtag>` is the tag of your database connection string in your configuration 
 (by default that is _"default"_)
-* `<datafolder>` is on optional override for the data folder search tag (by
+* `<datafolder>` is an optional override for the data folder search tag (by
 default that is "_data")
 * `<stations.csv>` is the name of the file in your data folder where you downloaded
 the station data. If omitted, the app tries _"stations.csv"_ and
@@ -83,7 +87,8 @@ further processes those in batches spanning one day at a time.
 
 The default data validation rules are as were derived in the data review phase,
 see [DataReview.md](DataReview.md). An additional trick is used to skip the
-duplicate data rows (the second half of the data files is an exact copy of the
+duplicate data rows (as observed during the data review,
+the second half of the data files is an exact copy of the
 first half): by default, only data rows with a departure time equal or earlier
 than all previous data rows are considered.
 
@@ -119,10 +124,13 @@ CitybikeUtility init-rides -i 2021-07.csv
 CitybikeUtility init-rides -S -i 2021-07.csv
 ```
 
+Running these will run the validation rules on the data and print 
+statistics on the outcome.
+
 * The first invocation uses a local station data file and then validates rides
 from July 24 to July 31 (printing info as it goes).
 * The second processes the entire file (day by day)
-* The third uses the stations loaded in the default database instead of the stations
+* The third uses the stations loaded in the default database instead of a stations
 file to find valid station IDs
 
 _Reminder: call CitybikeUtility.exe without arguments for full command line option
@@ -133,12 +141,14 @@ details_
 ```
 CitybikeUtility init-rides -insert -db azure -i 2021-07.csv -from 2021-07-24 -to 2021-07-31
 CitybikeUtility init-rides -insert -db default -i 2021-07.csv
+CitybikeUtility init-rides -insert -i 2021-07.csv
 ```
 
-* The first does the same validation of the data and uploads accepted rides to the
+* The first does the same validation of the data, and uploads accepted rides to the
 database that was configured as "azure". Note that in this case the valid station IDs
 are always taken from that DB ("-insert" implies "-S")
 * The second uploads the entire July data file to the "default" database.
+* The third is equivalent to the second.
 
 **IMPORTANT**
 * Rides that already exist are uploaded, but ignored by the database. So the number
