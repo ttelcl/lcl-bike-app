@@ -24,7 +24,7 @@ let usage detailed =
   cp "  \fx\fx\fx\fx                       this name relative to the current directory and"
   cp "  \fx\fx\fx\fx                       each ancestor. Default: '\fc_data\f0'"
   cp "  \fg-db\f0 <\fcdb-tag\f0>           Use the specified DB connection instead of '\fydefault\f0'"
-  cp "  \fg-insert\f0                      Insert ride data into the DB instead of just checking. Implies '-S'"
+  cp "  \fg-insert\f0 \fx\fx               Insert ride data into the DB instead of just checking. Implies '-S'"
   cp "  \fg-S\f0 \fx\fx                    Retrieve valid station ids from the DB instead of a file"
   cp "  \fg-s\f0 <\fcstations.csv\f0>      Input stations data file (for valid station IDs)."
   cp "     If not specified, the following defaults are tried: \fg-s \fystations.csv"
