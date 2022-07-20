@@ -137,6 +137,12 @@ identifier for the row. It is probably best to let the database generate
 a row ID upon insertion, but use a UNIQUE index on all columns except names
 to ensure no duplicates are inserted.
 
+Had there been room for discussion with the customer, I would have asked if
+it would be possible to include the ID of the bike used for the ride in each
+row. The combination of Bike ID + Departure time would make a nice and 
+robust unique ride identifier, so you wouldn't need to rely on semi-random
+database generated IDs to identify rides.
+
 ## Step 4: timestamp encoding
 
 While looking at the ride data I noticed one other peculiarity that is important

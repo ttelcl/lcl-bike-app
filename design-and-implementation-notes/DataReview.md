@@ -20,7 +20,7 @@ the customer of course. In particular, limits marked with (*) should be
 discussed with the customer.
 
 * Drop any duplicate data rows. As mentioned in the data analysis,
-all data rows occur as two copies )once in the first half of the file,
+all data rows occur as two copies (once in the first half of the file,
 once in the second half)
 * Drop any rides with a blank value (no value) for "Covered Distance"
 * Round the covered distance for all rides to full meters. There are
@@ -38,6 +38,15 @@ from the one you can calculate from departure and return times. Remember to
 discuss why the "duration" values do not match the difference between
 departure and return times to gain better insight in what these three values
 actually are.
+
+Not mentioned before, but a topic that I ran into when designing the database:
+there is no natural primary key for each ride record. The best you can do is
+adding a "unique" condition on all ride data fields in the CSV file. I would
+recommend discussing with the customer if it would be possible to have the unique
+identifier of the _bike_ that was used for the ride in the data (I assume they
+have that information). That would allow constructing a unique ride ID by
+combining that bike identifier with the departure time. Doing so would allow
+a simple and efective protection against inserting duplicates of rides.
 
 ## Station IDs and names
 
