@@ -4,6 +4,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
+    <UserSecretsId>ca9c05f3-aaca-47f2-a255-910b4124fe1c</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LclBikeApp.Database\LclBikeApp.Database.csproj" />
+  </ItemGroup>
 
 </Project>
