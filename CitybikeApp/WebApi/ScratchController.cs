@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
-namespace CitybikeApp
+namespace CitybikeApp.WebApi
 {
   [Route("api/[controller]")]
   [ApiController]
