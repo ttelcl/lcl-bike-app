@@ -77,13 +77,13 @@ namespace UnitTests.Database
       Assert.True(keys.Count > 0,
         "No secrets found. Did you remember to configure the secrets? See comments at the top of this file.");
 
-      //_output.WriteLine($"The following {keys.Count} config keys are present:");
-      //foreach(var kvp in configuration.AsEnumerable())
-      //{
-      //  var isEmpty = string.IsNullOrEmpty(kvp.Value);
-      //  var valueText = isEmpty ? "Empty" : $"{kvp.Value.Length} characters";
-      //  _output.WriteLine($"  '{kvp.Key}' ({valueText})");
-      //}
+      _output.WriteLine($"The following {keys.Count} config keys are present:");
+      foreach(var kvp in configuration.AsEnumerable())
+      {
+        var isEmpty = string.IsNullOrEmpty(kvp.Value);
+        var valueText = isEmpty ? "Empty" : $"{kvp.Value.Length} characters";
+        _output.WriteLine($"  '{kvp.Key}' ({valueText})");
+      }
 
       // Normal use case:
       var connectionString = configuration["TestDb:ConnectionString"];

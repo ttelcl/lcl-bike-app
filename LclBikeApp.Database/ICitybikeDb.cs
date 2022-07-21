@@ -12,7 +12,7 @@ using LclBikeApp.Database.Models;
 namespace LclBikeApp.Database
 {
   /// <summary>
-  /// Defines the API available for interacting with the Citybike DB
+  /// Defines the low level API available for interacting with the Citybike DB
   /// in a database neutral way.
   /// </summary>
   public interface ICitybikeDb: IDisposable

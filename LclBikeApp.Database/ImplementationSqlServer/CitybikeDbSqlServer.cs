@@ -20,7 +20,7 @@ namespace LclBikeApp.Database.ImplementationSqlServer
   /// <summary>
   /// Database API entrypoint implementation for SQL Server
   /// </summary>
-  public class CitybikeDbSqlServer: IDisposable, ICitybikeDb
+  public class CitybikeDbSqlServer: IDisposable, ICitybikeDb, ICitybikeQueries
   {
     private readonly string _connString;
 
@@ -309,6 +309,127 @@ ON [dbo].[Rides] (RetStation, RetTime)";
       return count;
     }
 
+    IReadOnlyList<City> ICitybikeQueries.GetCities()
+    {
+      EnsureNotDisposed();
+      var cities = Connection.Query<City>(@"
+SELECT Id, CityFi, CitySe
+FROM [dbo].[Cities]
+");
+      return cities.ToList();
+    }
+
+    IReadOnlyList<Station> ICitybikeQueries.GetStations()
+    {
+      EnsureNotDisposed();
+      var stations = Connection.Query<Station>(@"
+SELECT Id, NameFi, NameSe, NameEn, AddrFi, AddrSe, City AS CityId, Capacity, Latitude, Longitude
+FROM [dbo].[Stations]
+");
+      return stations.ToList();
+    }
+
+    IReadOnlyList<RideBase> ICitybikeQueries.GetRidesPage(
+      int pageSize, int pageOffset, DateTime? fromTime, DateTime? toTime)
+    {
+      EnsureNotDisposed();
+      throw new NotImplementedException();
+    }
+
+    int ICitybikeQueries.GetRidesCount(
+      DateTime? fromTime, DateTime? toTime)
+    {
+      EnsureNotDisposed();
+      // Optimize the case where both times are null
+      if(!fromTime.HasValue && !toTime.HasValue)
+      {
+        return Connection.QuerySingle<int>(@"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+");
+      }
+      else
+      {
+        // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
+        // database compatible
+        var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
+        var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
+        return Connection.QuerySingle<int>(@"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+WHERE DepTime >= @TFrom AND DepTime <= @TTo
+",
+new {TFrom = tFrom, TTo = tTo });
+      }
+    }
+
+    IReadOnlyList<RideBase> ICitybikeQueries.GetDepartingRidesPage(
+      int pageSize, int pageOffset, int depStationId, DateTime? fromTime, DateTime? toTime)
+    {
+      EnsureNotDisposed();
+      throw new NotImplementedException();
+    }
+
+    int ICitybikeQueries.GetDepartingRidesCount(
+      int depStationId, DateTime? fromTime, DateTime? toTime)
+    {
+      EnsureNotDisposed();
+      // Optimize the case where both times are null
+      if(!fromTime.HasValue && !toTime.HasValue)
+      {
+        return Connection.QuerySingle<int>(@"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+WHERE DepStation = @StationId
+", new { StationId = depStationId });
+      }
+      else
+      {
+        // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
+        // database compatible
+        var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
+        var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
+        return Connection.QuerySingle<int>(@"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+WHERE DepStation = @StationId AND DepTime >= @TFrom AND DepTime <= @TTo
+", new { StationId = depStationId, TFrom = tFrom, TTo = tTo });
+      }
+    }
+
+    IReadOnlyList<RideBase> ICitybikeQueries.GetReturningRidesPage(
+      int pageSize, int pageOffset, int retStationId, DateTime? fromTime, DateTime? toTime)
+    {
+      EnsureNotDisposed();
+      throw new NotImplementedException();
+    }
+
+    int ICitybikeQueries.GetReturningRidesCount(
+      int retStationId, DateTime? fromTime, DateTime? toTime)
+    {
+      EnsureNotDisposed();
+      // Optimize the case where both times are null
+      if(!fromTime.HasValue && !toTime.HasValue)
+      {
+        return Connection.QuerySingle<int>(@"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+WHERE RetStation = @StationId
+", new { StationId = retStationId });
+      }
+      else
+      {
+        // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
+        // database compatible
+        var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
+        var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
+        return Connection.QuerySingle<int>(@"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+WHERE RetStation = @StationId AND RetTime >= @TFrom AND RetTime <= @TTo
+", new { StationId = retStationId, TFrom = tFrom, TTo = tTo });
+      }
+    }
   }
 
 }
