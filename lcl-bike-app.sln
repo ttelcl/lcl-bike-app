@@ -31,7 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LclBikeApp.Database", "LclB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CliApps", "CliApps", "{010323C7-C9D5-46E1-B5CC-BE833741A268}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CitybikeUtility", "CitybikeUtility\CitybikeUtility.fsproj", "{682CB32D-4211-453F-B8BA-17A21B968AE9}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CitybikeUtility", "CitybikeUtility\CitybikeUtility.fsproj", "{682CB32D-4211-453F-B8BA-17A21B968AE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HttpApps", "HttpApps", "{C52DF904-33D1-448C-A1B3-78F0901CE524}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CitybikeApp", "CitybikeApp\CitybikeApp.csproj", "{E2804476-4B1C-4A97-988C-2414B11D4A56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,10 @@ Global
 		{682CB32D-4211-453F-B8BA-17A21B968AE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{682CB32D-4211-453F-B8BA-17A21B968AE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{682CB32D-4211-453F-B8BA-17A21B968AE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2804476-4B1C-4A97-988C-2414B11D4A56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2804476-4B1C-4A97-988C-2414B11D4A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2804476-4B1C-4A97-988C-2414B11D4A56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2804476-4B1C-4A97-988C-2414B11D4A56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +88,7 @@ Global
 		{2A7F16EB-8897-45FF-877F-3B2E4BA3AD07} = {03B9FF32-A421-4322-A462-312A52337AE2}
 		{B9C7DB4D-76DA-4974-B917-4E89DA7B8923} = {DA754345-58CE-42E8-AABB-541DDF910C29}
 		{682CB32D-4211-453F-B8BA-17A21B968AE9} = {010323C7-C9D5-46E1-B5CC-BE833741A268}
+		{E2804476-4B1C-4A97-988C-2414B11D4A56} = {C52DF904-33D1-448C-A1B3-78F0901CE524}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3B36C857-4EAF-4DFC-9163-4CC77372E5D8}

@@ -87,12 +87,9 @@ namespace UnitTests.Database
       }
     }
 
-    [SkippableFact]
+    [Fact]
     public void CanAddStations()
     {
-      // Note that Xunit's "Skip" functionality is a bit misused in this test.
-      // The test being flagged as skipped actually means: it was run, but everything was inserted already.
-
       var connstring = _configuration["TestDb:ConnectionString"];
       Assert.NotNull(connstring);
 
@@ -134,8 +131,6 @@ namespace UnitTests.Database
       }
 
       Assert.True(stations.All(s => postInsertionKnownIds.Contains(s.Id)));
-
-      Skip.If(inserted == 0);
     }
 
     [Fact]
@@ -225,6 +220,71 @@ namespace UnitTests.Database
 
       }
 
+    }
+
+    [Fact]
+    public void CanGetCities()
+    {
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        db.InitDb();
+        var icq = db as ICitybikeQueries;
+        Assert.NotNull(icq);
+        var cities = icq.GetCities();
+        Assert.NotNull(cities);
+        Assert.NotEmpty(cities);
+        Assert.Equal(2, cities.Count);
+        Assert.Equal(0, cities[0].Id);
+        Assert.Equal(1, cities[1].Id);
+      }
+    }
+
+    [Fact]
+    public void CanGetStations()
+    {
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        db.InitDb();
+        var icq = db as ICitybikeQueries;
+        Assert.NotNull(icq);
+        var stations = icq.GetStations();
+        Assert.NotNull(stations);
+        Assert.NotEmpty(stations);
+
+        _output.WriteLine($"Read {stations.Count} stations");
+      }
+    }
+
+    [Fact]
+    public void CanGetRidesCount()
+    {
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        db.InitDb();
+        var icq = db as ICitybikeQueries;
+        Assert.NotNull(icq);
+        var ridesCount = icq.GetRidesCount(null, null);
+        Assert.True(ridesCount > 0);
+
+        _output.WriteLine($"There are {ridesCount} rides in this test db");
+
+        var t0 = new DateTime(2021, 5, 31, 23, 50, 00);
+        var t1 = new DateTime(2021, 5, 31, 23, 55, 00);
+
+        var rides2 = icq.GetRidesCount(t0, t1);
+        Assert.True(rides2 > 0);
+        _output.WriteLine($"Of those, there are {rides2} rides from {t0:s} to {t1:s}");
+
+      }
     }
 
   }
