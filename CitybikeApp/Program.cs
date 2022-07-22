@@ -1,6 +1,14 @@
+using System.IO;
+using System.Reflection;
+using System;
+
+using CitybikeApp.Services;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+#pragma warning disable CS1591
 
 namespace CitybikeApp
 {
@@ -15,14 +23,40 @@ namespace CitybikeApp
 
       builder.Services.AddControllers();
 
+      // ref https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle
+      builder.Services.AddSwaggerGen(options => {
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "LclBikeApp.Database.xml"));
+      });
+
+      // Add our own services
+      builder.Services.AddSqlserverCitybikeDatabase("default");
+      builder.Services.AddSingleton<StationCacheService>();
+      builder.Services.AddScoped<StationListService>();
+
+      // Tweaks. Note: there may be a security concern here ...
+      builder.Services.AddResponseCompression(options => { 
+        options.EnableForHttps = true;
+      });
+
       var app = builder.Build();
 
       // Configure the HTTP request pipeline.
       if(!app.Environment.IsDevelopment())
       {
         app.UseExceptionHandler("/Error");
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        // The default HSTS value is 30 days. You may want to change this for production
+        // scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
+      }
+
+      // ref https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle
+      if(app.Environment.IsDevelopment() || true)
+        // Due to the nature of this project, enable swagger even on non-dev builds
+      {
+        app.UseSwagger();
+        app.UseSwaggerUI();
       }
 
       app.UseHttpsRedirection();
@@ -32,10 +66,13 @@ namespace CitybikeApp
 
       app.UseAuthorization();
 
+      app.UseResponseCompression();
+
       app.MapRazorPages();
       app.MapControllers();
 
       app.Run();
     }
+
   }
 }
