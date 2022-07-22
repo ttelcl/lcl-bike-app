@@ -64,7 +64,7 @@ namespace LclBikeApp.Database
     /// <returns>
     /// The requested page of rides
     /// </returns>
-    IReadOnlyList<RideBase> GetRidesPage(
+    List<RideBase> GetRidesPage(
       int pageSize,
       int pageOffset,
       DateTime? fromTime=null,

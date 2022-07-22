@@ -206,6 +206,68 @@ namespace CitybikeApp.WebApi
       return icq.GetRidesCount(dt0, dt1);
     }
 
+    /// <summary>
+    /// Get a page of the rides table
+    /// </summary>
+    /// <param name="db">
+    /// The database accessor
+    /// </param>
+    /// <param name="offset">
+    /// The ride offset where the page starts (default 0)
+    /// </param>
+    /// <param name="pagesize">
+    /// the page size (default 50)
+    /// </param>
+    /// <param name="t0">
+    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// </param>
+    /// <param name="t1">
+    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// </param>
+    /// <returns>
+    /// A list of up to <paramref name="pagesize"/> rides
+    /// </returns>
+    /// <remarks>
+    /// The following time formats are supported:
+    /// 
+    /// * _(blank or omitted)_
+    /// * yyyy-MM-dd
+    /// * yyyyMMdd
+    /// * yyyyMMdd-HHmm
+    /// * yyyyMMdd-HHmmss
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="400">On unrecognized date/time format</response>
+    [HttpGet("ridespage")]
+    public ActionResult<List<RideBase>> GetRidesPage(
+      [FromServices] ICitybikeDb db,
+      [FromQuery] int offset = 0,
+      [FromQuery] int pagesize = 50,
+      [FromQuery] string? t0 = null,
+      [FromQuery] string? t1 = null)
+    {
+      DateTime? dt0, dt1;
+      try
+      {
+        dt0 = ParseTime(t0, false);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      try
+      {
+        dt1 = ParseTime(t1, true);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      var icq = db.GetQueryApi();
+      var rides = icq.GetRidesPage(pagesize, offset, dt0, dt1);
+      return rides;
+    }
+
     private static readonly string[] __dateOnlyPatterns =
       new[] { "yyyy-MM-dd", "yyyyMMdd" };
     private static readonly string[] __dateTimePatterns =

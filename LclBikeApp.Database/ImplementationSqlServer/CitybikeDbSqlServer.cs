@@ -269,7 +269,7 @@ CREATE TABLE [dbo].[Stations]
 )";
       Connection.Execute(sql);
     }
-    
+
     private int CreateRidesTable()
     {
       EnsureNotDisposed();
@@ -338,11 +338,45 @@ FROM [dbo].[Stations]
       return stations.ToList();
     }
 
-    IReadOnlyList<RideBase> ICitybikeQueries.GetRidesPage(
+    List<RideBase> ICitybikeQueries.GetRidesPage(
       int pageSize, int pageOffset, DateTime? fromTime, DateTime? toTime)
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      if(pageSize < 1)
+      {
+        pageSize = 50;
+      }
+      if(pageOffset < 0)
+      {
+        pageOffset = 0;
+      }
+      if(!fromTime.HasValue && !toTime.HasValue)
+      {
+        var rides = Connection.Query<RideBase>(@"
+SELECT DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
+FROM [dbo].[Rides]
+ORDER BY DepTime, RetTime, DepStation, RetStation, Distance, Duration
+OFFSET @Offset ROWS
+FETCH NEXT @PageSize ROWS ONLY
+", new { Offset = pageOffset, PageSize = pageSize });
+        return rides.ToList();
+      }
+      else
+      {
+        // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
+        // database compatible
+        var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
+        var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
+        var rides = Connection.Query<RideBase>(@"
+SELECT DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
+FROM [dbo].[Rides]
+WHERE DepTime >= @TFrom AND DepTime <= @TTo
+ORDER BY DepTime, RetTime, DepStation, RetStation, Distance, Duration
+OFFSET @Offset ROWS
+FETCH NEXT @PageSize ROWS ONLY
+", new { Offset = pageOffset, PageSize = pageSize, TFrom = tFrom, TTo = tTo });
+        return rides.ToList();
+      }
     }
 
     int ICitybikeQueries.GetRidesCount(
@@ -367,8 +401,7 @@ FROM [dbo].[Rides]
 SELECT COUNT(*)
 FROM [dbo].[Rides]
 WHERE DepTime >= @TFrom AND DepTime <= @TTo
-",
-new {TFrom = tFrom, TTo = tTo });
+", new { TFrom = tFrom, TTo = tTo });
       }
     }
 
@@ -455,7 +488,7 @@ WHERE RetStation = @StationId AND RetTime >= @TFrom AND RetTime <= @TTo
 SELECT Id, NameFi, NameSe, NameEn, AddrFi, AddrSe, City AS CityId, Capacity, Latitude, Longitude
 FROM [dbo].[Stations]
 WHERE Id = @StationId
-", new {StationId = id});
+", new { StationId = id });
       return station;
     }
 
