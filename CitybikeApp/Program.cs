@@ -45,7 +45,8 @@ namespace CitybikeApp
       }
 
       // ref https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle
-      if(app.Environment.IsDevelopment())
+      if(app.Environment.IsDevelopment() || true)
+        // Due to the nature of this project, enable swagger even on non-dev builds
       {
         app.UseSwagger();
         app.UseSwaggerUI();
