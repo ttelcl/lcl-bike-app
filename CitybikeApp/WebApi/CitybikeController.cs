@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using CitybikeApp.Services;
 
 namespace CitybikeApp.WebApi
 {
@@ -28,13 +29,36 @@ namespace CitybikeApp.WebApi
      */
 
     /// <summary>
-    /// Get a full list of all involved cities.
+    /// Get a full list of all involved cities, loaded from the database (not the cache).
     /// (Spoiler: that's just Helsinki and Espoo)
     /// </summary>
     /// <remarks>
     /// Example:
     /// 
-    ///     GET api/citybike/cities
+    ///     GET api/citybike/cities-raw
+    /// </remarks>
+    /// <returns>
+    /// A list of <see cref="City"/> instances
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("cities-raw")]
+    public IReadOnlyList<City> GetCitiesRaw(
+      [FromServices] ICitybikeDb db // injected by DI
+    )
+    {
+      var icq = db.GetQueryApi();
+      var cities = icq.GetCities();
+      return cities;
+    }
+
+    /// <summary>
+    /// Get a full list of all involved cities, loaded from the cache.
+    /// (Spoiler: that's just Helsinki and Espoo)
+    /// </summary>
+    /// <remarks>
+    /// Example:
+    /// 
+    ///     GET api/citybike/cities-raw
     /// </remarks>
     /// <returns>
     /// A list of <see cref="City"/> instances
@@ -42,11 +66,10 @@ namespace CitybikeApp.WebApi
     /// <response code="200">On success</response>
     [HttpGet("cities")]
     public IReadOnlyList<City> GetCities(
-      [FromServices] ICitybikeDb db // injected by DI
+      [FromServices] StationListService sls
     )
     {
-      var icq = db.GetQueryApi();
-      var cities = icq.GetCities();
+      var cities = sls.Cities.Values.ToList();
       return cities;
     }
 
@@ -82,6 +105,43 @@ namespace CitybikeApp.WebApi
       {
         return station;
       }
+    }
+
+    /// <summary>
+    /// Return the list of all known stations, loaded directly from the database
+    /// (not from the cache)
+    /// </summary>
+    /// <param name="db">
+    /// The database accessor service (injected by DI)
+    /// </param>
+    /// <returns>
+    /// The list of stations on success
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("stations-raw")]
+    public IReadOnlyList<Station> GetStationsRaw(
+      [FromServices] ICitybikeDb db)
+    {
+      var icq = db.GetQueryApi();
+      return icq.GetStations();
+    }
+
+    /// <summary>
+    /// Return the list of all known stations from the cache
+    /// </summary>
+    /// <param name="sls">
+    /// The station cache accessor
+    /// </param>
+    /// <returns>
+    /// The list of stations on success
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("stations")]
+    public IReadOnlyList<Station> GetStations(
+      [FromServices] StationListService sls)
+    {
+      var stations = sls.Stations.Values.ToList();
+      return stations;
     }
 
     /// <summary>

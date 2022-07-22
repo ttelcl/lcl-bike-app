@@ -30,8 +30,15 @@ namespace CitybikeApp
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "LclBikeApp.Database.xml"));
       });
 
-      // Add our own service
+      // Add our own services
       builder.Services.AddSqlserverCitybikeDatabase("default");
+      builder.Services.AddSingleton<StationCacheService>();
+      builder.Services.AddScoped<StationListService>();
+
+      // Tweaks. Note: there may be a security concern here ...
+      builder.Services.AddResponseCompression(options => { 
+        options.EnableForHttps = true;
+      });
 
       var app = builder.Build();
 
@@ -58,6 +65,8 @@ namespace CitybikeApp
       app.UseRouting();
 
       app.UseAuthorization();
+
+      app.UseResponseCompression();
 
       app.MapRazorPages();
       app.MapControllers();
