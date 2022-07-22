@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable CS1591
+
 namespace CitybikeApp.Pages
 {
   public class PrivacyModel: PageModel

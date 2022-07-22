@@ -15,6 +15,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CitybikeApp.Services
 {
+  /// <summary>
+  /// Static configuration helper methods for accessing the Citybike DB
+  /// </summary>
   public static class DatabaseService
   {
     /// <summary>
@@ -40,7 +43,7 @@ namespace CitybikeApp.Services
       return services;
     }
 
-    public static CitybikeDbSqlServer CreateCitybikeDbService(
+    private static CitybikeDbSqlServer CreateCitybikeDbService(
       IServiceProvider services, string dbKey)
     {
       var configuration = services.GetService<IConfiguration>();
