@@ -80,6 +80,12 @@ namespace LclBikeApp.Database
     /// the number presented rides when duplicates are rejected.
     /// </returns>
     int AddBaseRides(IEnumerable<RideBase> rides);
+
+    /// <summary>
+    /// Get the object that implements ICitybikeQueries for this
+    /// database accessor.
+    /// </summary>
+    ICitybikeQueries GetQueryApi();
   }
 }
 

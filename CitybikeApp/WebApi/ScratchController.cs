@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using LclBikeApp.Database;
+using LclBikeApp.Database.Models;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +31,12 @@ namespace CitybikeApp.WebApi
     //{
     //  return cfg.AsEnumerable().Select(kvp => kvp.Key).ToList();
     //}
+
+    [Route("crash")]
+    public string GetCrash()
+    {
+      throw new InvalidOperationException("Just testing how exceptions are handled...");
+    }
 
   }
 

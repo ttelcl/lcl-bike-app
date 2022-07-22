@@ -35,6 +35,15 @@ namespace LclBikeApp.Database.ImplementationSqlServer
     }
 
     /// <summary>
+    /// Get the object that implements ICitybikeQueries for this
+    /// database accessor. In this case that is just this object itself.
+    /// </summary>
+    public ICitybikeQueries GetQueryApi()
+    {
+      return this;
+    }
+
+    /// <summary>
     /// True after this object and the connection it wraps have been disposed
     /// </summary>
     public bool Disposed { get; private set; }
@@ -430,6 +439,32 @@ WHERE RetStation = @StationId AND RetTime >= @TFrom AND RetTime <= @TTo
 ", new { StationId = retStationId, TFrom = tFrom, TTo = tTo });
       }
     }
+
+    /// <summary>
+    /// Get a single station record
+    /// </summary>
+    /// <param name="id">
+    /// The station ID to find
+    /// </param>
+    /// <returns>
+    /// The station if found, or null if not found
+    /// </returns>
+    Station? ICitybikeQueries.GetStation(int id)
+    {
+      var station = Connection.QuerySingleOrDefault<Station>(@"
+SELECT Id, NameFi, NameSe, NameEn, AddrFi, AddrSe, City AS CityId, Capacity, Latitude, Longitude
+FROM [dbo].[Stations]
+WHERE Id = @StationId
+", new {StationId = id});
+      return station;
+    }
+
+
+
+
+
+
+
   }
 
 }

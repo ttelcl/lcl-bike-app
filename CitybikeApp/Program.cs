@@ -1,3 +1,5 @@
+using CitybikeApp.Services;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +16,8 @@ namespace CitybikeApp
       builder.Services.AddRazorPages();
 
       builder.Services.AddControllers();
+
+      builder.Services.AddSqlserverCitybikeDatabase("default");
 
       var app = builder.Build();
 
@@ -37,5 +41,6 @@ namespace CitybikeApp
 
       app.Run();
     }
+
   }
 }

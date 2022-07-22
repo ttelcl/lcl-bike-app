@@ -34,6 +34,17 @@ namespace LclBikeApp.Database
     IReadOnlyList<Station> GetStations();
 
     /// <summary>
+    /// Get a single station record
+    /// </summary>
+    /// <param name="id">
+    /// The station ID to find
+    /// </param>
+    /// <returns>
+    /// The station if found, or null if not found
+    /// </returns>
+    Station? GetStation(int id);
+
+    /// <summary>
     /// Return a page from the Rides table, sorted in the order
     /// DepTime, RetTime, DepStation, RetStation, Distance, Duration,
     /// in the specified departure time range
