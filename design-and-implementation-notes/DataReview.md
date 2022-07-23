@@ -1,12 +1,15 @@
 # Reviewing the data files
 
+> _Reminder: the data description and data file links can be found on the original
+assignment page at https://github.com/solita/dev-academy-2022-fall-exercise ._
+
 Before starting the actual coding it is useful to take a closer look at the data
-files. This document only provides summaries and links to more in-depth analyses.
+files. This document provides summaries and links to more in-depth analyses.
 
 The aims of this analysis are:
 
-* Derive data validation limits and rules for the ride data.
-* Gain insights on data redundancy or non-redundancy useful for designing the
+* Derive data validation limits and rules for the citybike ride data.
+* Gain insights on data redundancy (or non-redundancy) useful for designing the
 data model
 * Check the relation between the station data and the ride data files, to
 help discover potential pitfalls.
@@ -59,7 +62,7 @@ have a presence in the station table. They are technical support stations,
 not end-user stations.
     * Alternative: support stations with incomplete data. That would affect
     both database (nullability of columns), backend (nullability of field
-    values), and frontend (rendering incomplete data)
+    values), and frontend (deciding how to handle and render incomplete data)
 * Clarify what is up with station 754 ("Lintumetsä"). Like the technical
 stations above, this only appears in ride data, but not in the station
 listing. This feels like an omission or error in station table.
@@ -72,6 +75,8 @@ non-breaking space characters to normal spaces.
 * Clarify what to do with cases where the station name in the ride
 data is different from the one in the station table. Should these cases
 be treated as alternate names for the station?
+    * Note: in the implementation I choose to ignore the names in the ride
+    data files.
 * Observation: the longest station name is
 'Aalto-yliopisto (M), Korkeakouluaukio' (37 characters).
 
