@@ -39,10 +39,10 @@ links to more detailed information)
 * Phase 1: [Reviewing the data files](design-and-implementation-notes/DataReview.md)
 * Phase 2: [Database modeling](design-and-implementation-notes/DataModel.md)
 * Phase 3: Database and database access layer library implementation
-    * See the library code in folder `LclBikeApp.Database` and Unit Tests in `UnitTests.DataWrangling`.
+    * See the library code in folder `LclBikeApp.Database` and Unit Tests in `UnitTests.Database`.
     * Also see the library code in folder `LclBikeApp.DataWrangling` and Unit Tests in
     `UnitTests.DataWrangling`.
-* Phase 4: Database loading. See [Database Loading](design-and-implementation-notes/DatabaseLoading.md)
+* Phase 4: [Database Loading](design-and-implementation-notes/DatabaseLoading.md)
     * The data loading command line app is in the folder `CitybikeUtility`. Note that
     to compile it your Visual Studio 2022 needs to have the F# support components installed
 * Phase 5: [Web API design](design-and-implementation-notes/WebApiDesign.md) and implementation
