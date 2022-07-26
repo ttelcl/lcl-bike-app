@@ -1,7 +1,6 @@
 <template>
   <q-page class="q-pa-md">
-    <h2>Home</h2>
-    <p>sweet home</p>
+    <h2>Rides explorer</h2>
   </q-page>
 </template>
 

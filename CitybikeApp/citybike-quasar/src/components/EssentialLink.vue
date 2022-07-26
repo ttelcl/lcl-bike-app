@@ -1,4 +1,5 @@
 <template>
+  <!-- NO LONGER IN USE (kept for reference for a while) -->
   <q-item clickable tag="a" target="_blank" :href="link">
     <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
