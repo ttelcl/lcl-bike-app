@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Citybike App </q-toolbar-title>
+        <q-toolbar-title> Citybike App - {{ currentSection }}</q-toolbar-title>
 
         <!-- <div>Quasar v{{ $q.version }}</div> -->
       </q-toolbar>
@@ -43,7 +43,9 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
+import { mapState } from "pinia";
+import { useAppstateStore } from "../stores/appstateStore";
 import AppSectionHeader from "components/AppSectionHeader.vue";
 
 const sectionsList = [
@@ -61,6 +63,11 @@ const sectionsList = [
     label: "Rides",
     icon: "directions_bike",
     target: "rides",
+  },
+  {
+    label: "Cities",
+    icon: "location_city",
+    target: "cities",
   },
 ];
 
@@ -83,6 +90,10 @@ export default defineComponent({
     toggleLeftDrawer() {
       this.leftDrawerOpen.value = !this.leftDrawerOpen.value;
     },
+  },
+
+  computed: {
+    ...mapState(useAppstateStore, ["currentSection"]),
   },
 });
 </script>

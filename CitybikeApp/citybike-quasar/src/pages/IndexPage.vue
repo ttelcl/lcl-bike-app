@@ -6,5 +6,21 @@
 </template>
 
 <script>
-export default {};
+import { mapWritableState } from "pinia";
+import { useAppstateStore } from "../stores/appstateStore";
+
+export default {
+  name: "IndexPage",
+  data() {
+    return {
+      myName: "Home",
+    };
+  },
+  computed: {
+    ...mapWritableState(useAppstateStore, ["currentSection"]),
+  },
+  mounted() {
+    this.currentSection = this.myName;
+  },
+};
 </script>
