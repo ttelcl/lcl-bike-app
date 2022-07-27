@@ -4,28 +4,24 @@
       <q-breadcrumbs-el icon="home" to="/" />
       <q-breadcrumbs-el label="Cities" icon="location_city" />
     </q-breadcrumbs>
-    <div class="design-note-outer">
-      <div class="design-note-inner">
-        <q-expansion-item label="Design note">
-          <p>This page is a (temporary?) design placeholder.</p>
-          <p>
-            While "cities" are a concept that exists in my database design, the
-            assignment doesn't mention them nor requires any specific
-            functionality related to them. I just (mis-)use them here for
-            prototyping UI concepts and technologies, before using those
-            technologies on more complex and more extensive data. Cities are
-            simple and few, compared to Stations and Rides.
-          </p>
-          <p>
-            To further aid functionality checking during implementation, there
-            are two versions of the city list: a hardcoded one (initial content
-            of the "citiesStore" pinia store) and that same store loaded from
-            the database. The hardcoded version uses "<i>((not loaded))</i>"
-            instead of Swedish names as a canary.
-          </p>
-        </q-expansion-item>
-      </div>
-    </div>
+    <DesignNote :expand="true">
+      <p>This page is a (temporary?) design placeholder.</p>
+      <p>
+        While "cities" are a concept that exists in my database design, the
+        assignment doesn't mention them nor requires any specific functionality
+        related to them. I just (mis-)use them here for prototyping UI concepts
+        and technologies, before using those technologies on more complex and
+        more extensive data. Cities are simple and few, compared to Stations and
+        Rides.
+      </p>
+      <p>
+        To further aid functionality checking during implementation, there are
+        two versions of the city list: a hardcoded one (initial content of the
+        "citiesStore" pinia store) and that same store loaded from the database.
+        The hardcoded version uses "<i>((not loaded))</i>" instead of Swedish
+        names as a canary.
+      </p>
+    </DesignNote>
     <h2>{{ myName }}</h2>
     <div class="q-pa-md">
       <q-table
@@ -37,7 +33,7 @@
         dense
         hide-bottom
       >
-        <template v-slot:body-cell-actions="props">
+        <template #body-cell-actions="props">
           <q-td :props="props">
             <div>
               <q-btn
@@ -60,6 +56,7 @@
 <script>
 import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
+import DesignNote from "components/DesignNote.vue";
 
 // ref https://quasar.dev/vue-components/table
 const cityColumns = [
@@ -101,6 +98,10 @@ export default {
     const appstateStore = useAppstateStore();
     const citiesStore = useCitiesStore();
     return { appstateStore, citiesStore };
+  },
+  components: {
+    DesignNote,
+    DesignNote,
   },
   data() {
     return {
