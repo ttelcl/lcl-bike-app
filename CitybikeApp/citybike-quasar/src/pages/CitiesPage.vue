@@ -6,32 +6,27 @@
     </q-breadcrumbs>
     <div class="design-note-outer">
       <div class="design-note-inner">
-        <p>This page is a (temporary?) design placeholder.</p>
-        <p>
-          While "cities" are a concept that exists in my database design, the
-          assignment doesn't mention them nor requires any specific
-          functionality related to them. I just (mis-)use them here for
-          prototyping UI concepts and technologies, before using those
-          technologies on more complex and more extensive data. Cities are
-          simple and few, compared to Stations and Rides.
-        </p>
-        <p>
-          To further aid functionality checking during implementation, there are
-          two versions of the city list: a hardcoded one (initial content of the
-          "citiesStore" pinia store) and that same store loaded from the
-          database. The hardcoded version uses "()" instead of Swedish names as
-          a canary.
-        </p>
+        <q-expansion-item label="Design note">
+          <p>This page is a (temporary?) design placeholder.</p>
+          <p>
+            While "cities" are a concept that exists in my database design, the
+            assignment doesn't mention them nor requires any specific
+            functionality related to them. I just (mis-)use them here for
+            prototyping UI concepts and technologies, before using those
+            technologies on more complex and more extensive data. Cities are
+            simple and few, compared to Stations and Rides.
+          </p>
+          <p>
+            To further aid functionality checking during implementation, there
+            are two versions of the city list: a hardcoded one (initial content
+            of the "citiesStore" pinia store) and that same store loaded from
+            the database. The hardcoded version uses "<i>((not loaded))</i>"
+            instead of Swedish names as a canary.
+          </p>
+        </q-expansion-item>
       </div>
     </div>
     <h2>{{ myName }}</h2>
-    <div>
-      <ul>
-        <li v-for="city in citiesMap" :key="city.id">
-          {{ city.id }} : {{ city.CityFi }} ({{ city.CitySe }})
-        </li>
-      </ul>
-    </div>
     <div class="q-pa-md">
       <q-table
         title="Cities"
@@ -41,28 +36,23 @@
         separator="cell"
         dense
         hide-bottom
-        selection="single"
-        v-model:selected="selectedCities"
-        @row-click="rowClicked"
-        @row-dblclick="rowDoubleClicked"
-      />
-      <!-- @row-click="rowClicked" -->
-      <div class="q-mt-md">
-        <h5>Selected row:</h5>
-        <span v-if="selectedCity"
-          >[{{ selectedCity.id }}] {{ selectedCity.CityFi }} ({{
-            selectedCity.CitySe
-          }})</span
-        >
-        <span v-else><i>Nothing!</i></span>
-      </div>
-      <div class="q-mt-md">
-        <h5>Clicked row:</h5>
-        <span v-if="clickedRow">
-          {{ JSON.stringify(clickedRow) }}
-        </span>
-        <span v-else> No clicks </span>
-      </div>
+      >
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props">
+            <div>
+              <q-btn
+                icon="forward"
+                @click.stop="inspectRowTarget(props.row)"
+                padding="0 1ex"
+                flat
+                class="text-primary"
+              >
+                <q-tooltip :delay="500"> Open details page </q-tooltip>
+              </q-btn>
+            </div>
+          </q-td>
+        </template>
+      </q-table>
     </div>
   </q-page>
 </template>
@@ -94,6 +84,13 @@ const cityColumns = [
     name: "citySe",
     label: "Name (Se)",
     field: "CitySe",
+    classes: "q-table--col-auto-width",
+    align: "left",
+  },
+  {
+    // virtual column to put action buttons in
+    name: "actions",
+    label: "Actions",
     align: "left",
   },
 ];
@@ -136,6 +133,11 @@ export default {
         console.log(`navigating to: ${target}`);
         this.$router.push(target);
       }
+    },
+    inspectRowTarget(row) {
+      const target = `/cities/${row.id}`;
+      console.log(`navigating to: ${target}`);
+      this.$router.push(target);
     },
   },
   mounted() {

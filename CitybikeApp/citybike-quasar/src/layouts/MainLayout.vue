@@ -56,7 +56,7 @@ const sectionsList = [
   },
   {
     label: "Citybike Stations",
-    icon: "map",
+    icon: "warehouse",
     target: "/stations",
   },
   {

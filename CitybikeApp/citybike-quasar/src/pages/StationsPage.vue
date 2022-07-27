@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <q-breadcrumbs>
       <q-breadcrumbs-el icon="home" to="/" />
-      <q-breadcrumbs-el label="Stations" icon="map" />
+      <q-breadcrumbs-el label="Stations" icon="warehouse" />
     </q-breadcrumbs>
     <h2>{{ myName }}</h2>
   </q-page>
