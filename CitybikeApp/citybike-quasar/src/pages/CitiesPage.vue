@@ -103,7 +103,6 @@ export default {
   },
   components: {
     DesignNote,
-    DesignNote,
   },
   data() {
     return {
