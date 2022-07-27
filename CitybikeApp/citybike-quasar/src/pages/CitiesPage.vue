@@ -4,7 +4,7 @@
       <q-breadcrumbs-el icon="home" to="/" />
       <q-breadcrumbs-el label="Cities" icon="location_city" />
     </q-breadcrumbs>
-    <DesignNote :expand="true">
+    <DesignNote :expand="false">
       <p>This page is a (temporary?) design placeholder.</p>
       <p>
         While "cities" are a concept that exists in my database design, the
@@ -37,10 +37,12 @@
           <q-td :props="props">
             <div>
               <q-btn
-                icon="forward"
+                label="details"
+                icon-right="forward"
                 @click.stop="inspectRowTarget(props.row)"
                 padding="0 1ex"
                 flat
+                no-caps
                 class="text-primary"
               >
                 <q-tooltip :delay="500"> Open details page </q-tooltip>

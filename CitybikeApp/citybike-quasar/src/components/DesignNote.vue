@@ -1,8 +1,12 @@
 <template>
   <div class="design-note-out">
     <div class="design-note-in">
-      <q-expansion-item label="Design note" v-model="isExpanded">
-        <div>
+      <q-expansion-item
+        label="Design note"
+        icon="info_outline"
+        v-model="isExpanded"
+      >
+        <div class="q-px-xl q-pt-md">
           <slot> No content for this design note provided. </slot>
         </div>
       </q-expansion-item>
@@ -22,7 +26,7 @@ export default {
   },
   data() {
     return {
-      isExpanded: !!this.expand,
+      isExpanded: this.expand,
     };
   },
 };
@@ -38,7 +42,7 @@ export default {
   color: #ccddcc;
   font-style: italic;
   font-size: inherit;
-  padding: 0.1em 2em 0.1em 2em;
+  padding: 0.1em 0em 0.1em 0em;
   border-radius: 25px;
   border: 2px solid #ccddcc;
 }
