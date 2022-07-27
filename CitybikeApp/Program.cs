@@ -12,6 +12,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace CitybikeApp
 {
+
+  /*
+   * Some of the modifications I added to the template were inspired by these
+   * two articles about integrating an SPA in an ASP.NET Core app:
+   * - https://abhinandanaryal.info.np/article/setting-up-quasar-app-with-asp-net-core
+   * - https://mike.koder.fi/en/2021/03/hosting-spa-aspnetcore
+   * Neither tells the whole story, but I picked and combined info from both.
+   */
+
   public class Program
   {
     public static void Main(string[] args)
@@ -28,6 +37,11 @@ namespace CitybikeApp
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "LclBikeApp.Database.xml"));
+      });
+
+      builder.Services.AddSpaStaticFiles(configuration =>
+      {
+        configuration.RootPath = "citybike-quasar/dist/spa";
       });
 
       // Add our own services
@@ -62,14 +76,33 @@ namespace CitybikeApp
       app.UseHttpsRedirection();
       app.UseStaticFiles();
 
+      app.UseSpaStaticFiles(); // added for SPA support
+
       app.UseRouting();
 
       app.UseAuthorization();
 
       app.UseResponseCompression();
 
-      app.MapRazorPages();
-      app.MapControllers();
+      // Boilerplate code modified to allow for hooking in the SPA
+      //app.MapRazorPages();
+      //app.MapControllers();
+
+      app.UseEndpoints(endpoints => {
+        endpoints.MapRazorPages();
+        endpoints.MapControllers();
+        // Hook up our SPA entrypoint, as registered above with AddSpaStaticFiles()
+        // and UseSpaStaticFiles()
+        endpoints.MapFallbackToFile("/index.html");
+      });
+
+      app.UseSpa(spa => {
+        spa.Options.SourcePath = "citybike-quasar";
+        if(app.Environment.IsDevelopment())
+        {
+          spa.UseProxyToSpaDevelopmentServer("http://localhost:9000");
+        }
+      });
 
       app.Run();
     }

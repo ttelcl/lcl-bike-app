@@ -17,11 +17,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LclBikeApp.Database\LclBikeApp.Database.csproj" />
   </ItemGroup>
+
+  <Target Name="Build Client" BeforeTargets="ComputeFilesToPublish">
+    <Exec Command="npm install" WorkingDirectory="citybike-quasar"></Exec>
+    <Exec Command="quasar build" WorkingDirectory="citybike-quasar"></Exec>
+  </Target>
+
 
 </Project>
