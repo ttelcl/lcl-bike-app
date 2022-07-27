@@ -3,10 +3,14 @@ const routes = [
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/IndexPage.vue") },
-      { path: "stations", component: () => import("pages/StationsPage.vue") },
-      { path: "rides", component: () => import("pages/RidesPage.vue") },
-      { path: "cities", component: () => import("pages/CitiesPage.vue") },
+      { path: "/", component: () => import("pages/IndexPage.vue") },
+      { path: "/stations", component: () => import("pages/StationsPage.vue") },
+      { path: "/rides", component: () => import("pages/RidesPage.vue") },
+      {
+        path: "/cities/:id(\\d+)",
+        component: () => import("pages/CityPage.vue"),
+      },
+      { path: "/cities", component: () => import("pages/CitiesPage.vue") },
     ],
   },
 

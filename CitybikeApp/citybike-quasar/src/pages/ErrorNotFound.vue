@@ -13,7 +13,7 @@
         text-color="blue"
         unelevated
         to="/"
-        label="Go Home"
+        label="Go to the application Home"
         no-caps
       />
     </div>

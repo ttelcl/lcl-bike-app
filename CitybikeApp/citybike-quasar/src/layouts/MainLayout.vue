@@ -57,17 +57,17 @@ const sectionsList = [
   {
     label: "Citybike Stations",
     icon: "map",
-    target: "stations",
+    target: "/stations",
   },
   {
     label: "Rides",
     icon: "directions_bike",
-    target: "rides",
+    target: "/rides",
   },
   {
     label: "Cities",
     icon: "location_city",
-    target: "cities",
+    target: "/cities",
   },
 ];
 

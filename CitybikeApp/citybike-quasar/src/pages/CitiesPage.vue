@@ -1,5 +1,29 @@
 <template>
   <q-page class="q-pa-md">
+    <q-breadcrumbs>
+      <q-breadcrumbs-el icon="home" to="/" />
+      <q-breadcrumbs-el label="Cities" icon="location_city" />
+    </q-breadcrumbs>
+    <div class="design-note-outer">
+      <div class="design-note-inner">
+        <p>This page is a (temporary?) design placeholder.</p>
+        <p>
+          While "cities" are a concept that exists in my database design, the
+          assignment doesn't mention them nor requires any specific
+          functionality related to them. I just (mis-)use them here for
+          prototyping UI concepts and technologies, before using those
+          technologies on more complex and more extensive data. Cities are
+          simple and few, compared to Stations and Rides.
+        </p>
+        <p>
+          To further aid functionality checking during implementation, there are
+          two versions of the city list: a hardcoded one (initial content of the
+          "citiesStore" pinia store) and that same store loaded from the
+          database. The hardcoded version uses "()" instead of Swedish names as
+          a canary.
+        </p>
+      </div>
+    </div>
     <h2>{{ myName }}</h2>
     <div>
       <ul>
@@ -20,6 +44,7 @@
         selection="single"
         v-model:selected="selectedCities"
         @row-click="rowClicked"
+        @row-dblclick="rowDoubleClicked"
       />
       <!-- @row-click="rowClicked" -->
       <div class="q-mt-md">
@@ -85,7 +110,7 @@ export default {
       myName: "Cities",
       columnDefs: cityColumns,
       selectedCities: [],
-      clickedRow: 0,
+      clickedRow: null,
     };
   },
   computed: {
@@ -102,6 +127,15 @@ export default {
   methods: {
     rowClicked(event, row, index) {
       this.clickedRow = row;
+    },
+    rowDoubleClicked(event, row, index) {
+      this.clickedRow = row;
+      if (row) {
+        // const target = "/cities/" + row.id;
+        const target = `/cities/${row.id}`;
+        console.log(`navigating to: ${target}`);
+        this.$router.push(target);
+      }
     },
   },
   mounted() {
