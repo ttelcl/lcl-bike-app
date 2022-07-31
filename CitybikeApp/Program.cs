@@ -23,6 +23,9 @@ namespace CitybikeApp
 
       builder.Services.AddControllers();
 
+      // The reverse proxy to wrap the SPA dev server in dev scenarios
+      builder.Services.AddSpaYarp();
+
       // ref https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle
       builder.Services.AddSwaggerGen(options => {
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -68,8 +71,19 @@ namespace CitybikeApp
 
       app.UseResponseCompression();
 
-      app.MapRazorPages();
-      app.MapControllers();
+      // app.MapRazorPages();
+      // app.MapControllers();
+
+      app.UseEndpoints(endpoints => {
+        endpoints.MapRazorPages();
+        //endpoints.MapControllers();
+        endpoints.MapControllerRoute(
+          "default",
+          pattern: "{controller}/{action=Index}/{id?}");
+        endpoints.MapSpaYarp();
+        // The fallback that hooks up the SPA in production
+        endpoints.MapFallbackToFile("index.html");
+      });
 
       app.Run();
     }

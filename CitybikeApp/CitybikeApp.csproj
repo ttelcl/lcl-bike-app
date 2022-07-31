@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -16,7 +16,20 @@
     <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- SpaYarp configuration -->
+    <!-- See https://github.com/berhir/AspNetCore.SpaYarp -->
+    <SpaRoot>citybike-quasar\</SpaRoot>
+    <SpaClientUrl>http://localhost:9000</SpaClientUrl>
+    <SpaLaunchCommand>quasar dev</SpaLaunchCommand>
+    <!-- Change the timeout of the proxy (defaults to 120 seconds) 
+    <SpaProxyTimeoutInSeconds>120</SpaProxyTimeoutInSeconds> -->
+    <!-- Optionally forward only request starting with the specified path 
+    <SpaPublicPath>/dist</SpaPublicPath> -->
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="AspNetCore.SpaYarp" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
