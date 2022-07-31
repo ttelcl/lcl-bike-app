@@ -16,7 +16,8 @@ export const useCitiesStore = defineStore("cities", {
     async loadFromDb() {
       try {
         // console.log("LOAD city DB");
-        //LoadingBar.start();
+        // LoadingBar.start();
+        // await new Promise((r) => setTimeout(r, 5000)); // FAKE DELAY
         const response = await backend.getCitiesCached(4000);
         const raw = response.data;
         console.log(raw);
@@ -28,6 +29,7 @@ export const useCitiesStore = defineStore("cities", {
           };
           this.cities[c.id] = c2;
         }
+        this.errorMessage = null;
         this.loaded = true;
       } catch (err) {
         console.log("LOAD city DB FAILED");
@@ -35,7 +37,7 @@ export const useCitiesStore = defineStore("cities", {
         this.errorMessage = err;
         this.loaded = false;
       } finally {
-        //LoadingBar.stop();
+        // LoadingBar.stop();
       }
     },
   },

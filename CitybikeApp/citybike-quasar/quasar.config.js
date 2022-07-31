@@ -116,7 +116,7 @@ module.exports = configure(function (/* ctx */) {
         dark: true,
         loadingBar: {
           color: "deep-purple-8",
-          size: "10px",
+          size: "5px",
           position: "bottom",
         },
       },

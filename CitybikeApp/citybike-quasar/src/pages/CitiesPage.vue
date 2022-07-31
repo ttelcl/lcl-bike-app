@@ -52,10 +52,14 @@
         </template>
       </q-table>
     </div>
-    <div class="q-pa-md">
+    <!-- Unless there is a problem, this section will be invisible -->
+    <div class="q-pa-md" v-if="!citiesStore.loaded">
       <p v-if="citiesStore.loaded" class="text-green">Loaded from DB</p>
       <p v-else class="text-orange">Not yet loaded from DB</p>
       <q-btn color="purple" @click="reload">(Re)load</q-btn>
+      <p v-if="citiesStore.errorMessage" class="text-red">
+        Load error: {{ citiesStore.errorMessage }}
+      </p>
     </div>
   </q-page>
 </template>
@@ -129,18 +133,17 @@ export default {
     },
   },
   methods: {
-    rowClicked(event, row, index) {
-      this.clickedRow = row;
-    },
-    rowDoubleClicked(event, row, index) {
-      this.clickedRow = row;
-      if (row) {
-        // const target = "/cities/" + row.id;
-        const target = `/cities/${row.id}`;
-        console.log(`navigating to: ${target}`);
-        this.$router.push(target);
-      }
-    },
+    // rowClicked(event, row, index) {
+    //   this.clickedRow = row;
+    // },
+    // rowDoubleClicked(event, row, index) {
+    //   this.clickedRow = row;
+    //   if (row) {
+    //     const target = `/cities/${row.id}`;
+    //     console.log(`navigating to: ${target}`);
+    //     this.$router.push(target);
+    //   }
+    // },
     inspectRowTarget(row) {
       const target = `/cities/${row.id}`;
       console.log(`navigating to: ${target}`);
@@ -150,8 +153,11 @@ export default {
       await this.citiesStore.loadFromDb();
     },
   },
-  mounted() {
+  async mounted() {
     this.appstateStore.currentSection = this.myName;
+    if (!this.citiesStore.loaded) {
+      await this.citiesStore.loadFromDb();
+    }
   },
 };
 </script>
