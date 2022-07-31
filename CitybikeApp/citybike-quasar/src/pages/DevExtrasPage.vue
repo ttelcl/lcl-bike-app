@@ -17,6 +17,9 @@
           <a href="/swagger/index.html">Swagger (backend Web API docs)</a>
         </li>
         <li>
+          <a href="/home/">Backend Home</a>
+        </li>
+        <li>
           <a href="/api/scratch/dummy"
             >Direct API call example (without hitting DB)</a
           >
@@ -52,8 +55,8 @@
 
 <script>
 import { mapWritableState } from "pinia";
-import { api } from "boot/axios";
 import { useAppstateStore } from "../stores/appstateStore";
+import { backend } from "../webapi/backend";
 
 export default {
   name: "DevExtrasPage",
@@ -80,9 +83,10 @@ export default {
         this.backendData = null;
         this.errorMessage = "...";
         console.log("getData(2): GET");
-        const response = await api.get("/api/scratch/dummy", {
-          timeout: 2000,
-        });
+        // const response = await api.get("/api/scratch/dummy", {
+        //   timeout: 2000,
+        // });
+        const response = await backend.getApiTestData(2000);
         console.log("getData(3): RESPONSE");
         this.backendData = response.data;
         this.errorMessage = "";

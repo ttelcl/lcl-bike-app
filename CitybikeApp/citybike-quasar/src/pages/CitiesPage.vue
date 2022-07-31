@@ -52,6 +52,11 @@
         </template>
       </q-table>
     </div>
+    <div class="q-pa-md">
+      <p v-if="citiesStore.loaded" class="text-green">Loaded from DB</p>
+      <p v-else class="text-orange">Not yet loaded from DB</p>
+      <q-btn color="purple" @click="reload">(Re)load</q-btn>
+    </div>
   </q-page>
 </template>
 
@@ -140,6 +145,9 @@ export default {
       const target = `/cities/${row.id}`;
       console.log(`navigating to: ${target}`);
       this.$router.push(target);
+    },
+    async reload() {
+      await this.citiesStore.loadFromDb();
     },
   },
   mounted() {

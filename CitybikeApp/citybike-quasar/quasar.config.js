@@ -87,7 +87,23 @@ module.exports = configure(function (/* ctx */) {
           target: "https://localhost:7185",
           secure: false,
         },
-        "^/swagger/.*": {
+        "^/[sS]wagger/.*": {
+          target: "https://localhost:7185",
+          secure: false,
+        },
+        "^/[Hh]ome/.*": {
+          target: "https://localhost:7185",
+          secure: false,
+        },
+        "^/js/.*": {
+          target: "https://localhost:7185",
+          secure: false,
+        },
+        "^/css/.*": {
+          target: "https://localhost:7185",
+          secure: false,
+        },
+        "^/lib/.*": {
           target: "https://localhost:7185",
           secure: false,
         },
@@ -98,6 +114,11 @@ module.exports = configure(function (/* ctx */) {
     framework: {
       config: {
         dark: true,
+        loadingBar: {
+          color: "deep-purple-8",
+          size: "10px",
+          position: "bottom",
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -111,7 +132,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ["LoadingBar"],
     },
 
     // animations: 'all', // --- includes all animations
