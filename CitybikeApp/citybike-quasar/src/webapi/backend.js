@@ -12,4 +12,8 @@ export const backend = {
   async getCitiesCached(timeOut = 4000) {
     return await api.get("/api/citybike/cities", { timeout: timeOut });
   },
+
+  async getStationsCached(timeOut = 15000) {
+    return await api.get("/api/citybike/stations", { timeout: timeOut });
+  },
 };
