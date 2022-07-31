@@ -81,6 +81,17 @@ module.exports = configure(function (/* ctx */) {
     devServer: {
       // https: true
       open: false, // opens browser window automatically
+
+      proxy: {
+        "/api": {
+          target: "https://localhost:7185",
+          secure: false,
+        },
+        "^/swagger/.*": {
+          target: "https://localhost:7185",
+          secure: false,
+        },
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework

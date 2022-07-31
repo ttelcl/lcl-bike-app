@@ -1,1 +1,13 @@
 // app global css in SCSS form
+
+// ".simple-text" class exists to modify standard html things
+// without leaking those modifications to the full app and
+// conflicting with Quasar styles
+
+.simple-text a {
+  color: #6699ee;
+}
+
+.simple-text a:visited {
+  color: #7777dd;
+}
