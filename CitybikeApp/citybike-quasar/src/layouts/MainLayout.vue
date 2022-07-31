@@ -69,6 +69,11 @@ const sectionsList = [
     icon: "location_city",
     target: "/cities",
   },
+  {
+    label: "Dev Extras",
+    icon: "bug_report",
+    target: "/dev-extras",
+  },
 ];
 
 export default defineComponent({

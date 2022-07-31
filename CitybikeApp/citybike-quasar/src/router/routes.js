@@ -11,6 +11,10 @@ const routes = [
         component: () => import("pages/CityPage.vue"),
       },
       { path: "/cities", component: () => import("pages/CitiesPage.vue") },
+      {
+        path: "/dev-extras",
+        component: () => import("pages/DevExtrasPage.vue"),
+      },
     ],
   },
 
