@@ -4,21 +4,88 @@
       <q-breadcrumbs-el icon="home" to="/" />
       <q-breadcrumbs-el label="Stations" icon="warehouse" />
     </q-breadcrumbs>
+    <DesignNote>
+      <div>
+        <p class="q-my-none">Observations:</p>
+        <ul class="q-my-none">
+          <li>
+            I am not 100% happy with the out-of-the box table pagination UI
+            provided by Quasar. I mean - functionally it is great, but the UI
+            could be improved a bit: Move the pagination UI to the top, decrease
+            the UI for selecting row count, move the pagination controls to the
+            center, improve the distincation between enabled and disabled
+            buttons, etc. For now, fixing that is low on my priority list
+            though.
+          </li>
+        </ul>
+        <p class="q-my-none">To Do:</p>
+        <ul class="q-my-none">
+          <li>
+            Add links to a per-station page to act as entry point for a lot more
+            details
+          </li>
+          <li>Show some details on one station when clicking its row</li>
+          <li>??? Add a map link ???</li>
+        </ul>
+      </div>
+    </DesignNote>
     <h2 class="q-my-md">{{ myName }}</h2>
     <div class="q-pa-md">
+      <q-input
+        v-model="searchText"
+        outlined
+        placeholder="Filter"
+        dense
+        clearable
+        debounce="750"
+      >
+        <template v-slot:prepend>
+          <q-icon name="search" />
+        </template>
+        <q-tooltip>
+          Type text to search in any part of the station data: name (Finnish,
+          Swedish, English) or address (Finnish, Swedish).
+        </q-tooltip>
+      </q-input>
       <div>
         <q-table
           title="Citybike Stations"
-          :rows="stationsList"
+          :rows="stationsListFiltered"
           :columns="columnDefs"
+          :visible-columns="currentColumnSet"
           row-key="id"
           separator="cell"
           dense
-          bordered="true"
+          :bordered="true"
           v-model:pagination="pagination"
           :loading="loading"
           :rows-per-page-options="[10, 15, 20, 25, 30, 40, 50]"
+          table-header-class="tblHeader"
         >
+          <template v-slot:top>
+            <div class="row fit justify-between">
+              <div class="row">
+                <div class="q-table__title">Citybike Stations</div>
+                <!-- <div class="col self-center">
+                  <i
+                    >(page {{ props.pagination.page }} of
+                    {{ props.pagesNumber }})</i
+                  >
+                </div> -->
+              </div>
+              <div class="row">
+                <q-btn-toggle
+                  v-model="columnSetKey"
+                  toggle-color="primary"
+                  :options="[
+                    { label: 'FI', value: 'FI' },
+                    { label: 'SE', value: 'SE' },
+                    { label: 'EN', value: 'EN' },
+                  ]"
+                />
+              </div>
+            </div>
+          </template>
         </q-table>
       </div>
       <div v-if="!isLoaded" class="problem">
@@ -88,10 +155,33 @@ const stationColumns = [
     headerClasses: "q-table--col-auto-width",
   },
   {
+    name: "nameSe",
+    label: "Name (SE)",
+    field: "nameSe",
+    align: "left",
+    classes: "colStyleName",
+    headerClasses: "q-table--col-auto-width",
+  },
+  {
+    name: "nameEn",
+    label: "Name (EN/FI)",
+    field: "nameEn",
+    align: "left",
+    classes: "colStyleName",
+    headerClasses: "q-table--col-auto-width",
+  },
+  {
     name: "addrFi",
     label: "Address (FI)",
     field: "addrFi",
     // classes: "q-table--col-auto-width",
+    classes: "colStyleAddr",
+    align: "left",
+  },
+  {
+    name: "addrSe",
+    label: "Address (SE)",
+    field: "addrSe",
     classes: "colStyleAddr",
     align: "left",
   },
@@ -104,11 +194,25 @@ const stationColumns = [
     align: "left",
   },
   {
+    name: "citySe",
+    label: "City (SE)",
+    field: (row) => row.city.CitySe,
+    classes: "colStyleCity",
+    align: "left",
+  },
+  {
     // virtual column to put action buttons in
     name: "actions",
     align: "left",
+    required: true,
   },
 ];
+
+const columnSetDefs = {
+  FI: ["id", "nameFi", "addrFi", "city", "actions"],
+  SE: ["id", "nameSe", "addrSe", "citySe", "actions"],
+  EN: ["id", "nameEn", "addrFi", "city", "actions"],
+};
 
 export default {
   name: "StationsPage",
@@ -122,13 +226,24 @@ export default {
     return {
       myName: "Citybike Station Index",
       columnDefs: stationColumns,
+      columnSets: columnSetDefs,
+      columnSetKey: "FI",
       pagination: {
         rowsPerPage: 15,
         page: 1,
       },
+      searchText: null,
+      filteredStations: null,
+      dbg: "",
     };
   },
+  components: {
+    DesignNote,
+  },
   computed: {
+    currentColumnSet() {
+      return this.columnSets[this.columnSetKey];
+    },
     citiesMap() {
       return this.citiesStore.cities;
     },
@@ -140,6 +255,11 @@ export default {
     },
     stationsList() {
       return Object.values(this.stationsStore.stations);
+    },
+    stationsListFiltered() {
+      return this.filteredStations === null
+        ? this.stationsList
+        : this.filteredStations;
     },
     loadStatus() {
       return this.stationsStore.loadStatus;
@@ -156,6 +276,33 @@ export default {
       // The parameter specifies an artificial delay in milliseconds between
       // load steps, slowing down updates between this.loadStatus updates
       await this.stationsStore.loadFromDb(250);
+    },
+    applySearch(txt) {
+      if (txt === null || txt === "") {
+        this.filteredStations = null;
+      } else {
+        var l = [];
+        for (const station of this.stationsList) {
+          txt = txt.toLowerCase();
+          if (
+            station.nameFi.toLowerCase().includes(txt) ||
+            station.nameSe.toLowerCase().includes(txt) ||
+            station.nameEn.toLowerCase().includes(txt) ||
+            station.addrFi.toLowerCase().includes(txt) ||
+            station.addrSe.toLowerCase().includes(txt)
+          ) {
+            l.push(station);
+          }
+        }
+        this.filteredStations = l;
+        this.pagination.page = 1;
+        // console.log("Found stations: " + l.length);
+      }
+    },
+  },
+  watch: {
+    searchText(newSearch, oldSearch) {
+      this.applySearch(newSearch);
     },
   },
   async mounted() {
@@ -189,6 +336,10 @@ export default {
 }
 .colStyleCity {
   width: 6em;
+}
+.tblHeader {
+  font-style: italic;
+  color: #1ba344;
 }
 .problem {
   font-style: italic;
