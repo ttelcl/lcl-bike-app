@@ -1,9 +1,9 @@
 <template>
   <div class="design-note-out">
-    <div class="design-note-in">
+    <div :class="alt ? 'design-note-in-alt' : 'design-note-in'">
       <q-expansion-item
-        label="Design note"
-        icon="info_outline"
+        :label="title"
+        :icon="alt ? 'tune' : 'info_outline'"
         v-model="isExpanded"
       >
         <div class="q-px-xl q-pt-md">
@@ -20,6 +20,15 @@ export default {
   props: {
     // Remember to pass as ':expand="true"' because 'expand="true"' would pass a string!
     expand: {
+      type: Boolean,
+      default: false,
+    },
+    title: {
+      type: String,
+      default: "Design Note",
+    },
+    alt: {
+      // alternate styling
       type: Boolean,
       default: false,
     },
@@ -45,5 +54,15 @@ export default {
   padding: 0.1em 0em 0.1em 0em;
   border-radius: 25px;
   border: 2px solid #ccddcc;
+}
+.design-note-in-alt {
+  max-width: 40em;
+  background-color: #583811;
+  color: #ddddcc;
+  font-style: italic;
+  font-size: inherit;
+  padding: 0.1em 0em 0.1em 0em;
+  border-radius: 25px;
+  border: 2px solid #ddddcc;
 }
 </style>

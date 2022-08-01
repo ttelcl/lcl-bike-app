@@ -14,6 +14,16 @@
     <div class="simple-text">
       <p>Home, sweet home</p>
     </div>
+    <DesignNote :expand="false" title="Development Settings" :alt="true">
+      <ul>
+        <li>
+          <q-checkbox
+            label="Manually Load Stations Data"
+            v-model="appstateStore.manualLoadStations"
+          />
+        </li>
+      </ul>
+    </DesignNote>
   </q-page>
 </template>
 
@@ -24,19 +34,21 @@ import DesignNote from "components/DesignNote.vue";
 
 export default {
   name: "IndexPage",
+  setup() {
+    const appstateStore = useAppstateStore();
+    return { appstateStore };
+  },
   data() {
     return {
       myName: "Home",
     };
   },
-  computed: {
-    ...mapWritableState(useAppstateStore, ["currentSection"]),
-  },
+  computed: {},
   components: {
     DesignNote,
   },
   mounted() {
-    this.currentSection = this.myName;
+    this.appstateStore.currentSection = this.myName;
   },
 };
 </script>

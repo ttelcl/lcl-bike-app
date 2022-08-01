@@ -106,7 +106,6 @@ const stationColumns = [
   {
     // virtual column to put action buttons in
     name: "actions",
-    label: "Actions",
     align: "left",
   },
 ];
@@ -159,8 +158,11 @@ export default {
       await this.stationsStore.loadFromDb(250);
     },
   },
-  mounted() {
+  async mounted() {
     this.appstateStore.currentSection = this.myName;
+    if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
+      await this.stationsStore.loadFromDb(0);
+    }
   },
 };
 </script>
