@@ -28,7 +28,9 @@ export const useStationsStore = defineStore("stations", {
   state: () => ({
     stations: {},
     loaded: false,
+    loading: false,
     errorMessage: null,
+    loadStatus: "Citybike station list not yet initialized",
   }),
   getters: {
     stationCount() {
@@ -36,16 +38,30 @@ export const useStationsStore = defineStore("stations", {
     },
   },
   actions: {
-    async loadFromDb() {
+    sleep(milliseconds = 400) {
+      return new Promise((r) => setTimeout(r, milliseconds));
+    },
+    async loadFromDb(stepDelay = 0) {
       try {
         // make sure cities are loaded first!
+        this.loading = true;
+        this.loadStatus = "Loading citybike stations from DB";
+        await this.sleep(stepDelay);
         const cities = useCitiesStore();
         if (!cities.loaded) {
+          this.loadStatus = "Loading city data from DB";
+          await this.sleep(stepDelay);
           await cities.loadFromDb();
+          this.loadStatus = "Loaded city data from DB";
+          await this.sleep(stepDelay);
         }
         // console.log("LOAD station DB");
         // LoadingBar.start();
+        this.loadStatus = "Loading station data from DB";
+        await this.sleep(stepDelay);
         const response = await backend.getStationsCached();
+        this.loadStatus = "Loaded station data from DB";
+        await this.sleep(stepDelay);
         const raw = response.data;
         // console.log(raw);
         console.log(`Received ${raw.length} stations.`);
@@ -55,17 +71,18 @@ export const useStationsStore = defineStore("stations", {
         }
         this.errorMessage = null;
         this.loaded = true;
-        // DBG
-        const sample = this.stations[100];
-        console.log(sample);
-        console.log(JSON.stringify(sample, null, 2));
+        this.loadStatus = `Successfully loaded ${raw.length} stations from DB`;
+        await this.sleep();
       } catch (err) {
         console.log("LOAD station DB FAILED");
         console.log(err);
         this.errorMessage = err;
+        this.loadStatus = "Loading station info FAILED";
+        await this.sleep();
         this.loaded = false;
       } finally {
         // LoadingBar.stop();
+        this.loading = false;
       }
     },
   },

@@ -4,7 +4,7 @@
       <q-breadcrumbs-el icon="home" to="/" />
       <q-breadcrumbs-el label="Developer Extras" icon="warehouse" />
     </q-breadcrumbs>
-    <h2>{{ myName }}</h2>
+    <h2 class="q-my-md">{{ myName }}</h2>
     <div class="simple-text">
       <h4>Some links to assist with development</h4>
       <p>

@@ -6,7 +6,7 @@
       <q-breadcrumbs-el :label="city.CityFi" />
     </q-breadcrumbs>
     <div v-if="city">
-      <h2>{{ myName }} - {{ city.CityFi }}</h2>
+      <h2 class="q-my-md">{{ myName }} - {{ city.CityFi }}</h2>
       <div>
         <ul>
           <li>ID = {{ city.id }}</li>

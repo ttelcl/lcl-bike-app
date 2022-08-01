@@ -10,8 +10,8 @@
         application).
       </p>
     </DesignNote>
+    <h2 class="q-my-md">{{ myName }}</h2>
     <div class="simple-text">
-      <h2>Home</h2>
       <p>Home, sweet home</p>
     </div>
   </q-page>

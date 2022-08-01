@@ -22,7 +22,7 @@
         names as a canary.
       </p>
     </DesignNote>
-    <h2>{{ myName }}</h2>
+    <h2 class="q-my-md">{{ myName }}</h2>
     <div class="q-pa-md">
       <q-table
         title="Cities"

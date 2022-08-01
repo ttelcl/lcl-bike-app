@@ -13,6 +13,9 @@ export const useCitiesStore = defineStore("cities", {
   }),
   getters: {},
   actions: {
+    sleep(milliseconds) {
+      return new Promise((r) => setTimeout(r, milliseconds));
+    },
     async loadFromDb() {
       try {
         // console.log("LOAD city DB");
