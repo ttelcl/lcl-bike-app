@@ -41,6 +41,26 @@ namespace UnitTests.Database
     [Fact]
     public void CanAccessDatabase()
     {
+      /*
+       * To make this test succeed:
+       * - Make sure you have set up the "TestDb:ConnectionString" with the connection string
+       *   to the SQL Server database you intend to use.
+       * - Assuming you want to use the development server, make sure it is installed (by
+       *   including the "Data storage and processing" workload in your VS2022 setup.) In that
+       *   case your DB connection string may look like:
+       *   "Server=(LocalDB)\MSSQLLocalDB;Integrated Security=true;AttachDbFileName=C:\_database\biketests.mdf"
+       *     - Remember doubling the backslashes in JSON!!
+       * - If you get an error like the following:
+       *     System.Data.SqlClient.SqlException : An attempt to attach an auto-named database
+       *     for file <<<YOUR-DB-FILE.mdf>>> failed. A database with the same name exists, or specified file
+       *     cannot be opened, or it is located on UNC share.
+       *   I managed to fix it to actually create an empty database at the given location first
+       *   using SMSS (download from microsoft at https://aka.ms/ssmsfullsetup). Connect to 
+       *   localdb using SMSS using server name "(LocalDB)\MSSQLLocalDB", then create your
+       *   empty database ("biketests"). Note that the folder where these are created can be changed
+       *   by editing the paths for the two database files if you are not happy wityh the default
+       *   folder.
+       */
       var connstring = _configuration["TestDb:ConnectionString"];
       Assert.NotNull(connstring);
 
