@@ -219,6 +219,26 @@ VALUES (@DepTime, @RetTime, @DepStationId, @RetStationId, @Distance, @Duration)"
       return count;
     }
 
+    /// <summary>
+    /// Get the range of Departure times in the rides table,
+    /// returning null if there were no rides
+    /// </summary>
+    public TimeRange? GetTimeRange()
+    {
+      EnsureNotDisposed();
+      Connection.Open();
+      var results = Connection.Query<TimeRange>(@"
+SELECT MIN(DepTime) AS startTime, MAX(DepTime) AS endTime
+FROM Rides").ToList();
+      if(results.Any() && results[0].StartTime > DateTime.MinValue)
+      {
+        return results[0];
+      }
+      else
+      {
+        return null;
+      }
+    }
 
     private void EnsureNotDisposed()
     {

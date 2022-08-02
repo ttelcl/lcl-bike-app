@@ -24,7 +24,7 @@ namespace CitybikeApp.WebApi
 
     /*
      * NOTE on the XML-comment formatting: the format is slightly unusual, because
-     * the comments are pickked up by Swagger, which uses Markdown-like formatting
+     * the comments are picked up by Swagger, which uses Markdown-like formatting
      * instead of the usual .net XML-doc style
      */
 
@@ -142,6 +142,35 @@ namespace CitybikeApp.WebApi
     {
       var stations = sls.Stations.Values.ToList();
       return stations;
+    }
+
+    /// <summary>
+    /// Return an object containing the first and last departure times for all rides
+    /// in the database, or returns an empty 204 response in case there are no rides at all
+    /// </summary>
+    /// <param name="db">
+    /// The DB service
+    /// </param>
+    /// <returns>
+    /// An object with "startTime" and "endTime" fields specifying the first and last
+    /// available ride departure times. Or a 204 response.
+    /// </returns>
+    /// <response code="200">On success</response>
+    /// <response code="204">When there are no rides in the DB at all.</response>
+    [HttpGet("timerange")]
+    public ActionResult<TimeRange> GetTimeRange(
+      [FromServices] ICitybikeDb db)
+    {
+      var icq = db.GetQueryApi();
+      var result = icq.GetTimeRange();
+      if(result == null)
+      {
+        return NoContent();
+      }
+      else
+      {
+        return result;
+      }
     }
 
     /// <summary>

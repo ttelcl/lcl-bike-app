@@ -45,6 +45,12 @@ namespace LclBikeApp.Database
     Station? GetStation(int id);
 
     /// <summary>
+    /// Get the range of Departure times in the rides table, or null if there
+    /// are no rides.
+    /// </summary>
+    TimeRange? GetTimeRange();
+
+    /// <summary>
     /// Return a page from the Rides table, sorted in the order
     /// DepTime, RetTime, DepStation, RetStation, Distance, Duration,
     /// in the specified departure time range
