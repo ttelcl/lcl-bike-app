@@ -11,9 +11,9 @@ export const useRidesStore = defineStore("rides", {
     lastError: null,
     loaded: false, // whether the global bounds have been loaded
     loading: false,
-    allRideCount: 0,
-    firstRideStart: Date.parse("2021-05-01T00:00:00"), // best guess placeholder until loaded!
-    lastRideStart: Date.parse("2021-07-31T23:59:59"), // best guess placeholder until loaded!
+    allRidesCount: 0,
+    firstRideStart: new Date("2021-05-01T00:00:00"), // best guess placeholder until loaded!
+    lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
   }),
   getters: {
     firstRideDateString() {
@@ -21,6 +21,12 @@ export const useRidesStore = defineStore("rides", {
     },
     lastRideDateString() {
       return utilities.toIsoLikeDateString(this.lastRideStart);
+    },
+    firstRideString() {
+      return utilities.toIsoString(this.firstRideStart);
+    },
+    lastRideString() {
+      return utilities.toIsoString(this.lastRideStart);
     },
   },
   actions: {
@@ -97,9 +103,22 @@ export const useRidesStore = defineStore("rides", {
         if (force || !this.loaded) {
           this.loaded = false;
           const response = await backend.getRidesCount();
-          this.allRideCount = response.data;
-          throw "Retrieving Time Range NYI in backend";
-          this.loaded = true;
+          this.allRidesCount = response.data;
+          const response2 = await backend.getTimeRange();
+          if (response2.status == 204) {
+            this.lastError = "No ride data available!";
+            this.loaded = false; // keep at false!
+          } else {
+            this.firstRideStart = new Date(response2.data.startTime);
+            this.lastRideStart = new Date(response2.data.endTime);
+            console.log(
+              `Time range is ${this.firstRideStart} to ${this.lastRideStart}`
+            );
+            console.log(
+              `Date range is ${this.firstRideDateString} to ${this.lastRideDateString}`
+            );
+            this.loaded = true;
+          }
         }
       } catch (err) {
         this.lastError = err;

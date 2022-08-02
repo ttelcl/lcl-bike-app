@@ -2,6 +2,7 @@ import { api } from "boot/axios";
 
 /*
  * This module defines the backend API methods in a "JavaScripty" way.
+ * Most functions return a full response object, not just the data!
  */
 
 export const backend = {
@@ -13,8 +14,12 @@ export const backend = {
     return await api.get("/api/citybike/cities", { timeout: timeOut });
   },
 
-  async getStationsCached(timeOut = 15000) {
+  async getStationsCached(timeOut = 5000) {
     return await api.get("/api/citybike/stations", { timeout: timeOut });
+  },
+
+  async getTimeRange(timeOut = 2000) {
+    return await api.get("/api/citybike/timerange", { timeout: timeOut });
   },
 
   async getRidesCount(t0 = null, t1 = null, timeOut = 5000) {
