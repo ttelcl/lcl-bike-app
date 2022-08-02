@@ -6,10 +6,10 @@
     </q-breadcrumbs>
     <DesignNote>
       <div>
-        <p class="q-my-none">Observations:</p>
+        <p class="q-my-none">Known Issues:</p>
         <ul class="q-my-none">
           <li>
-            I am not 100% happy with the out-of-the box table pagination UI
+            I am not really happy with the out-of-the box table pagination UI
             provided by Quasar. I mean - functionally it is great, but the UI
             could be improved a bit: Move the pagination UI to the top, decrease
             the UI for selecting row count, move the pagination controls to the
@@ -17,12 +17,20 @@
             buttons, etc. For now, fixing that is low on my priority list
             though.
           </li>
+          <li>
+            After navigating to a detail page and then navigating back here, the
+            state is lost (search, pagination). Not a great experience. There
+            are several ways to fix this, but this is also low priority right
+            now.
+          </li>
         </ul>
         <p class="q-my-none">To Do:</p>
         <ul class="q-my-none">
           <li>
-            Add links to a per-station page to act as entry point for a lot more
-            details
+            <s>
+              Add a link to a per-station page to act as entry point for a lot
+              more details
+            </s>
           </li>
           <li>Show some details on one station when clicking its row</li>
           <li>??? Add a map link ???</li>
@@ -85,6 +93,25 @@
                 />
               </div>
             </div>
+          </template>
+          <template #body-cell-actions="props">
+            <q-td :props="props">
+              <div>
+                <q-btn
+                  label="details"
+                  icon-right="forward"
+                  @click.stop="navigateRowTarget(props.row)"
+                  padding="0 1ex"
+                  flat
+                  no-caps
+                  class="text-primary"
+                >
+                  <q-tooltip :delay="500">
+                    Open station details page
+                  </q-tooltip>
+                </q-btn>
+              </div>
+            </q-td>
           </template>
         </q-table>
       </div>
@@ -298,6 +325,11 @@ export default {
         this.pagination.page = 1;
         // console.log("Found stations: " + l.length);
       }
+    },
+    navigateRowTarget(row) {
+      const target = `/stations/${row.id}`;
+      console.log(`navigating to: ${target}`);
+      this.$router.push(target);
     },
   },
   watch: {
