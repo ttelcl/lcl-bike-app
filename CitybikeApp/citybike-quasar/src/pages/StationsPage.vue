@@ -11,17 +11,17 @@
           <li>
             I am not really happy with the out-of-the box table pagination UI
             provided by Quasar. I mean - functionally it is great, but the UI
-            could be improved a bit: Move the pagination UI to the top, decrease
-            the UI for selecting row count, move the pagination controls to the
-            center, improve the distincation between enabled and disabled
+            could be improved a bit: Move the pagination UI to the top, simplify
+            the UI for selecting the row count, move the pagination controls to
+            the center, improve the distinction between enabled and disabled
             buttons, etc. For now, fixing that is low on my priority list
             though.
           </li>
           <li>
             After navigating to a detail page and then navigating back here, the
-            state is lost (search, pagination). Not a great experience. There
-            are several ways to fix this, but this is also low priority right
-            now.
+            state is lost (search, pagination, language). Not a great
+            experience. There are several ways to fix this, but this is also low
+            priority right now.
           </li>
         </ul>
         <p class="q-my-none">To Do:</p>
@@ -88,7 +88,7 @@
               </div>
             </div>
           </template>
-          <template #body-cell-actions="props">
+          <!-- <template #body-cell-actions="props">
             <q-td :props="props">
               <div class="q-gutter-xs">
                 <q-btn
@@ -103,6 +103,33 @@
                   </q-tooltip>
                 </q-btn>
               </div>
+            </q-td>
+          </template> -->
+          <template #body-cell-nameFi="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.id}`"
+                class="text-green-2"
+                >{{ props.row.nameFi }}</router-link
+              >
+            </q-td>
+          </template>
+          <template #body-cell-nameSe="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.id}`"
+                class="text-green-2"
+                >{{ props.row.nameSe }}</router-link
+              >
+            </q-td>
+          </template>
+          <template #body-cell-nameEn="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.id}`"
+                class="text-green-2"
+                >{{ props.row.nameEn }}</router-link
+              >
             </q-td>
           </template>
         </q-table>

@@ -27,36 +27,6 @@
           table-header-class="qtblHeader"
           :loading="loading"
         >
-          <template #body-cell-actions="props">
-            <q-td :props="props">
-              <div class="q-gutter-xs">
-                <q-btn
-                  icon-right="logout"
-                  padding="0 1ex"
-                  color="grey-9"
-                  text-color="primary"
-                  @click.stop="navigateToDepartureStation(props.row)"
-                >
-                  <q-tooltip :delay="500">
-                    Open "From" station details page (
-                    {{ props.row.depStation.nameFi }} )
-                  </q-tooltip>
-                </q-btn>
-                <q-btn
-                  icon-right="login"
-                  padding="0 1ex"
-                  color="grey-9"
-                  text-color="primary"
-                  @click.stop="navigateToReturnStation(props.row)"
-                >
-                  <q-tooltip :delay="500">
-                    Open "To" station details page (
-                    {{ props.row.retStation.nameFi }} )
-                  </q-tooltip>
-                </q-btn>
-              </div>
-            </q-td>
-          </template>
           <template #body-cell-s_from="props">
             <q-td :props="props">
               <router-link
@@ -263,16 +233,6 @@ export default {
       } finally {
         this.loading = false;
       }
-    },
-    navigateToDepartureStation(row) {
-      const target = `/stations/${row.depStationId}`;
-      console.log(`navigating to: ${target}`);
-      this.$router.push(target);
-    },
-    navigateToReturnStation(row) {
-      const target = `/stations/${row.retStationId}`;
-      console.log(`navigating to: ${target}`);
-      this.$router.push(target);
     },
   },
   async mounted() {
