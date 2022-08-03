@@ -6,16 +6,25 @@
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
     <div>
-      <div class="row">
-        <q-btn
+      <div class="row q-gutter-md">
+        <!-- <q-btn
           label="Load Snapshot"
           color="purple"
           @click="loadSampleSnapshot"
-        />
+          no-caps
+        /> -->
+        <div class="row">
+          <q-btn
+            label="Reset table (server-backed pagination)"
+            color="purple"
+            @click="initTable"
+            no-caps
+          />
+        </div>
       </div>
-      <div>
+      <!-- <div>
         <q-table
-          title="Rides"
+          title="Rides (snapshot)"
           :rows="snapshot"
           :columns="ridesColumns"
           row-key="id"
@@ -46,8 +55,48 @@
             </q-td>
           </template>
         </q-table>
-      </div>
+      </div> -->
     </div>
+    <hr />
+    <div v-if="ridesStore.currentPaginationInitialized">
+      <q-table
+        title="Rides (server-side pagination)"
+        :rows="ridesStore.currentPageRows"
+        :columns="ridesColumns"
+        row-key="id"
+        separator="cell"
+        dense
+        :bordered="true"
+        v-model:pagination="ridesStore.currentPagination"
+        :rows-per-page-options="[10, 15, 20, 25, 30, 40, 50]"
+        table-header-class="qtblHeader"
+        :loading="ridesStore.loading"
+        @request="updateTablePage"
+      >
+        <template #body-cell-s_from="props">
+          <q-td :props="props">
+            <router-link
+              :to="`/stations/${props.row.depStationId}`"
+              class="text-green-2"
+              >{{ props.row.depStation.nameFi }}</router-link
+            >
+          </q-td>
+        </template>
+        <template #body-cell-s_to="props">
+          <q-td :props="props">
+            <router-link
+              :to="`/stations/${props.row.retStationId}`"
+              class="text-green-2"
+              >{{ props.row.retStation.nameFi }}</router-link
+            >
+          </q-td>
+        </template>
+      </q-table>
+    </div>
+    <div v-else>
+      <div>Not yet initialized.</div>
+    </div>
+    <hr />
     <div class="text-grey-5 text-italic bg-brown-10">
       <h6 class="q-my-sm">Temporary Dev / Debug section</h6>
       <ul>
@@ -264,6 +313,18 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    async initTable() {
+      await this.ridesStore.initTable(
+        true,
+        this.pagination.rowsPerPage,
+        1,
+        null,
+        null
+      );
+    },
+    async updateTablePage(props) {
+      await this.ridesStore.updateTablePage(props);
     },
   },
   async mounted() {

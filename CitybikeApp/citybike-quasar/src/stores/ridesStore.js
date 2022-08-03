@@ -14,6 +14,17 @@ export const useRidesStore = defineStore("rides", {
     allRidesCount: 0,
     firstRideStart: new Date("2021-05-01T00:00:00"), // best guess placeholder until loaded!
     lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
+
+    currentPagination: {
+      page: 1,
+      rowsPerPage: 15,
+      sortBy: undefined,
+      descending: false,
+      rowsNumber: 150, // not-undefined triggers server side pagination behaviour in <q-table>
+      query: {}, // our own query info
+    },
+    currentPaginationInitialized: false,
+    currentPageRows: [],
   }),
   getters: {
     firstRideDateString() {
@@ -79,6 +90,64 @@ export const useRidesStore = defineStore("rides", {
       };
     },
 
+    // Set up the currentPagination for a new query, starting at page 1 with
+    // new search parameters
+    async initTable(
+      loadFirstPage = false,
+      pageSize = 15,
+      page = 1,
+      t0 = null,
+      t1 = null
+    ) {
+      this.currentPaginationInitialized = false;
+      this.currentPageRows = [];
+      await this.reload(false); // make sure the basics are present
+      var q = this.newRideQuery(pageSize, t0, t1);
+      q.offset = (page - 1) * pageSize;
+      var ridesCount =
+        t0 || t1 ? await this.getRidesCount(q) : this.allRidesCount;
+      this.currentPagination = {
+        page,
+        rowsPerPage: pageSize,
+        sortBy: undefined,
+        descending: false,
+        rowsNumber: ridesCount, // not-undefined triggers server side pagination behaviour in <q-table>
+        query: q, // our own query info
+      };
+      this.currentPaginationInitialized = true;
+      if (loadFirstPage) {
+        await this.updateTablePage({
+          pagination: this.currentPagination,
+          filter: undefined,
+        });
+      }
+    },
+
+    async updateTablePage(props) {
+      // "request" callback from table for serverside pagination
+      const { page, rowsPerPage, sortBy, descending } = props.pagination;
+      this.loading = true;
+      console.log(`updatetablePage(${page}, ${rowsPerPage})`);
+      try {
+        // first sync q-table's pagination with our own query object
+        this.currentPagination.query.offset = (page - 1) * rowsPerPage;
+        this.currentPagination.query.pageSize = rowsPerPage;
+        // console.log(this.currentPagination.query);
+        const serverData = await this.getRidesPage(
+          this.currentPagination.query
+        );
+        this.currentPageRows = serverData;
+        // console.log("New Content = ");
+        // console.log(this.currentPageRows);
+        this.currentPagination.page = page;
+        this.currentPagination.rowsPerPage = rowsPerPage;
+        this.currentPagination.sortBy = sortBy; // ignored by this function!
+        this.currentPagination.descending = descending; // ignored
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async getRidesPage(rideQuery) {
       const stations = useStationsStore();
       if (!stations.loaded) {
@@ -97,7 +166,7 @@ export const useRidesStore = defineStore("rides", {
       for (const r of raw) {
         l.push(this.reshapeRide(r, stations));
       }
-      console.log(l);
+      // console.log(l);
       return l;
     },
 
