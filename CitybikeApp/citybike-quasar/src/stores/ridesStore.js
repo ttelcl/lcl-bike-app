@@ -7,7 +7,7 @@ import { useStationsStore } from "./stationsStore";
 
 export const useRidesStore = defineStore("rides", {
   state: () => ({
-    nextRideId: Date.now() * 1000000,
+    nextRideId: Date.now() * 100,
     lastError: null,
     loaded: false, // whether the global bounds have been loaded
     loading: false,
@@ -30,6 +30,7 @@ export const useRidesStore = defineStore("rides", {
     },
   },
   actions: {
+    // Create a new ride query state object
     newRideQuery(pageSize = 15, t0 = null, t1 = null) {
       if (isNaN(pageSize) || pageSize < 1) {
         throw "pageSize must be a number >= 1";
@@ -67,8 +68,8 @@ export const useRidesStore = defineStore("rides", {
       // reshape and inject station details and a guid in a ride record received from the backend
       return {
         id: rawRide.id || this.cheapGuid(),
-        depTime: Date.parse(rawRide.depTime),
-        retTime: Date.parse(rawRide.retTime),
+        depTime: new Date(rawRide.depTime),
+        retTime: new Date(rawRide.retTime),
         depStationId: rawRide.depStationId,
         retStationId: rawRide.retStationId,
         distance: rawRide.distance,
@@ -81,7 +82,7 @@ export const useRidesStore = defineStore("rides", {
     async getRidesPage(rideQuery) {
       const stations = useStationsStore();
       if (!stations.loaded) {
-        console.log("Loading Stations from Rides Query!");
+        console.log("Triggering Stations data Loading from Rides Query!");
         await stations.loadFromDb();
       }
       const response = await backend.getRidesPage(
@@ -91,10 +92,12 @@ export const useRidesStore = defineStore("rides", {
         rideQuery.pageSize
       );
       const raw = response.data;
-      l = [];
+      // console.log(raw);
+      var l = [];
       for (const r of raw) {
-        l.push(this.reshapeRide(r));
+        l.push(this.reshapeRide(r, stations));
       }
+      console.log(l);
       return l;
     },
 
@@ -111,12 +114,12 @@ export const useRidesStore = defineStore("rides", {
           } else {
             this.firstRideStart = new Date(response2.data.startTime);
             this.lastRideStart = new Date(response2.data.endTime);
-            console.log(
-              `Time range is ${this.firstRideStart} to ${this.lastRideStart}`
-            );
-            console.log(
-              `Date range is ${this.firstRideDateString} to ${this.lastRideDateString}`
-            );
+            // console.log(
+            //   `Time range is ${this.firstRideStart} to ${this.lastRideStart}`
+            // );
+            // console.log(
+            //   `Date range is ${this.firstRideDateString} to ${this.lastRideDateString}`
+            // );
             this.loaded = true;
           }
         }

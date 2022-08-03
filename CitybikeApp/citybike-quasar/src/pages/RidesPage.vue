@@ -5,22 +5,102 @@
       <q-breadcrumbs-el label="Rides" icon="directions_bike" />
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
-    <ul>
-      <li>All Rides Count: {{ ridesStore.allRidesCount }}</li>
-      <!-- <li><q-btn label="fetch" @click="reloadRidesMetadata" /></li> -->
-      <li>
-        First ride started:
-        {{
-          date.formatDate(ridesStore.firstRideStart, "YYYY-MM-DD HH:mm:ss (Z)")
-        }}
-      </li>
-      <li>
-        Last ride started:
-        {{
-          date.formatDate(ridesStore.lastRideStart, "YYYY-MM-DD HH:mm:ss (Z)")
-        }}
-      </li>
-    </ul>
+    <div>
+      <div class="row">
+        <q-btn
+          label="Load Snapshot"
+          color="purple"
+          @click="loadSampleSnapshot"
+        />
+      </div>
+      <div>
+        <q-table
+          title="Rides"
+          :rows="snapshot"
+          :columns="ridesColumns"
+          row-key="id"
+          separator="cell"
+          dense
+          :bordered="true"
+          v-model:pagination="pagination"
+          :rows-per-page-options="[10, 15, 20, 25, 30, 40, 50]"
+          table-header-class="qtblHeader"
+          :loading="loading"
+        >
+          <template #body-cell-actions="props">
+            <q-td :props="props">
+              <div class="q-gutter-xs">
+                <q-btn
+                  icon-right="logout"
+                  padding="0 1ex"
+                  color="grey-9"
+                  text-color="primary"
+                  @click.stop="navigateToDepartureStation(props.row)"
+                >
+                  <q-tooltip :delay="500">
+                    Open "From" station details page (
+                    {{ props.row.depStation.nameFi }} )
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  icon-right="login"
+                  padding="0 1ex"
+                  color="grey-9"
+                  text-color="primary"
+                  @click.stop="navigateToReturnStation(props.row)"
+                >
+                  <q-tooltip :delay="500">
+                    Open "To" station details page (
+                    {{ props.row.retStation.nameFi }} )
+                  </q-tooltip>
+                </q-btn>
+              </div>
+            </q-td>
+          </template>
+          <template #body-cell-s_from="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.depStationId}`"
+                class="text-green-2"
+                >{{ props.row.depStation.nameFi }}</router-link
+              >
+            </q-td>
+          </template>
+          <template #body-cell-s_to="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.retStationId}`"
+                class="text-green-2"
+                >{{ props.row.retStation.nameFi }}</router-link
+              >
+            </q-td>
+          </template>
+        </q-table>
+      </div>
+    </div>
+    <div class="text-grey-5 text-italic bg-brown-10">
+      <h6 class="q-my-sm">Temporary Dev / Debug section</h6>
+      <ul>
+        <li>All Rides Count: {{ ridesStore.allRidesCount }}</li>
+        <!-- <li><q-btn label="fetch" @click="reloadRidesMetadata" /></li> -->
+        <li>
+          First ride started:
+          {{
+            date.formatDate(
+              ridesStore.firstRideStart,
+              "YYYY-MM-DD HH:mm:ss (Z)"
+            )
+          }}
+        </li>
+        <li>
+          Last ride started:
+          {{
+            date.formatDate(ridesStore.lastRideStart, "YYYY-MM-DD HH:mm:ss (Z)")
+          }}
+        </li>
+      </ul>
+    </div>
+    <!--  -- experiments in date range UI
     <div class="row">
       <div class="col q-pa-sm">
         From:
@@ -77,7 +157,7 @@
     </div>
     <div class="row">
       <q-date v-model="dateRange" range landscape> </q-date>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
@@ -86,6 +166,63 @@ import { date } from "quasar";
 import { useAppstateStore } from "../stores/appstateStore";
 import { useRidesStore } from "../stores/ridesStore";
 import { utilities } from "../webapi/utilities";
+
+const ridesColumns = [
+  // { // There must be an ID key in a q-table, but it doesn't need to show as column!
+  //   name: "id",
+  //   label: "Id",
+  //   field: "id",
+  //   required: true,
+  //   align: "left",
+  //   classes: "q-table--col-auto-width",
+  //   headerClasses: "q-table--col-auto-width",
+  // },
+  {
+    name: "s_from",
+    label: "From",
+    field: (row) => row.depStation.nameFi,
+    align: "left",
+    classes: "colWidthStation",
+    headerClasses: "colWidthStation",
+  },
+  {
+    name: "s_to",
+    label: "To",
+    field: (row) => row.retStation.nameFi,
+    align: "left",
+    classes: "colWidthStation",
+    headerClasses: "colWidthStation",
+  },
+  {
+    name: "t_day",
+    label: "Day",
+    field: (row) => date.formatDate(row.depTime, "YYYY-MM-DD"),
+    align: "left",
+    classes: "colWidthDay",
+    headerClasses: "colWidthDay",
+  },
+  {
+    name: "t_start",
+    label: "Start",
+    field: (row) => date.formatDate(row.depTime, "HH:mm:ss"),
+    align: "left",
+    classes: "colWidthTime",
+    headerClasses: "colWidthTime",
+  },
+  {
+    name: "t_return",
+    label: "Return",
+    field: (row) => date.formatDate(row.retTime, "HH:mm:ss"),
+    align: "left",
+    classes: "colWidthTime",
+    headerClasses: "colWidthTime",
+  },
+  {
+    // virtual column to put action buttons in
+    name: "actions",
+    align: "left",
+  },
+];
 
 export default {
   name: "RidesPage",
@@ -97,22 +234,45 @@ export default {
   data() {
     return {
       myName: "Rides Browser",
+      ridesColumns: ridesColumns,
       rideQuery: this.ridesStore.newRideQuery(15, null, null),
-      allRidesCount: 0,
       dateRange: {
         from: "2021/06/01",
         to: "2021/06/30",
       },
+      pagination: {
+        rowsPerPage: 15,
+        page: 1,
+      },
+      snapshot: [],
+      loading: false,
     };
   },
   computed: {},
   methods: {
-    async getAllRidesCount() {
-      const n = await this.ridesStore.getRidesCount(this.rideQuery);
-      this.allRideCount = n;
-    },
     async reloadRidesMetadata() {
       await this.ridesStore.reload(true);
+    },
+    async loadSampleSnapshot() {
+      this.loading = true;
+      try {
+        await this.ridesStore.reload(false);
+        const snapshot = await this.ridesStore.getRidesPage(this.rideQuery);
+        console.log(`Received ${snapshot.length} rides`);
+        this.snapshot = snapshot;
+      } finally {
+        this.loading = false;
+      }
+    },
+    navigateToDepartureStation(row) {
+      const target = `/stations/${row.depStationId}`;
+      console.log(`navigating to: ${target}`);
+      this.$router.push(target);
+    },
+    navigateToReturnStation(row) {
+      const target = `/stations/${row.retStationId}`;
+      console.log(`navigating to: ${target}`);
+      this.$router.push(target);
     },
   },
   async mounted() {
@@ -133,3 +293,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.colWidthStation {
+  width: 12rem;
+}
+.colWidthDay {
+  width: 6rem;
+}
+.colWidthTime {
+  width: 5rem;
+}
+.innerlink {
+  color: aqua;
+}
+</style>
