@@ -39,7 +39,7 @@
               <q-btn
                 label="details"
                 icon-right="forward"
-                @click.stop="inspectRowTarget(props.row)"
+                @click.stop="navigateRowTarget(props.row)"
                 padding="0 1ex"
                 flat
                 no-caps
@@ -144,7 +144,7 @@ export default {
     //     this.$router.push(target);
     //   }
     // },
-    inspectRowTarget(row) {
+    navigateRowTarget(row) {
       const target = `/cities/${row.id}`;
       console.log(`navigating to: ${target}`);
       this.$router.push(target);

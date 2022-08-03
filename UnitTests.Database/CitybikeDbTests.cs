@@ -287,5 +287,28 @@ namespace UnitTests.Database
       }
     }
 
+    [Fact]
+    public void CanGetTimeRange()
+    {
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        db.InitDb();
+        var icq = db as ICitybikeQueries;
+        Assert.NotNull(icq);
+        var range = icq.GetTimeRange();
+        if(range == null)
+        {
+          _output.WriteLine($"The rides table is Empty!!");
+        }
+        else
+        {
+          _output.WriteLine($"Ride time range is {range.StartTime:s} to {range.EndTime:s}");
+        }
+
+      }
+    }
   }
 }

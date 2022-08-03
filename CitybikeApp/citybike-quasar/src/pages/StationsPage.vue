@@ -6,23 +6,31 @@
     </q-breadcrumbs>
     <DesignNote>
       <div>
-        <p class="q-my-none">Observations:</p>
+        <p class="q-my-none">Known Issues:</p>
         <ul class="q-my-none">
           <li>
-            I am not 100% happy with the out-of-the box table pagination UI
+            I am not really happy with the out-of-the box table pagination UI
             provided by Quasar. I mean - functionally it is great, but the UI
-            could be improved a bit: Move the pagination UI to the top, decrease
-            the UI for selecting row count, move the pagination controls to the
-            center, improve the distincation between enabled and disabled
+            could be improved a bit: Move the pagination UI to the top, simplify
+            the UI for selecting the row count, move the pagination controls to
+            the center, improve the distinction between enabled and disabled
             buttons, etc. For now, fixing that is low on my priority list
             though.
+          </li>
+          <li>
+            After navigating to a detail page and then navigating back here, the
+            state is lost (search, pagination, language). Not a great
+            experience. There are several ways to fix this, but this is also low
+            priority right now.
           </li>
         </ul>
         <p class="q-my-none">To Do:</p>
         <ul class="q-my-none">
           <li>
-            Add links to a per-station page to act as entry point for a lot more
-            details
+            <s>
+              Add a link to a per-station page to act as entry point for a lot
+              more details
+            </s>
           </li>
           <li>Show some details on one station when clicking its row</li>
           <li>??? Add a map link ???</li>
@@ -60,18 +68,12 @@
           v-model:pagination="pagination"
           :loading="loading"
           :rows-per-page-options="[10, 15, 20, 25, 30, 40, 50]"
-          table-header-class="tblHeader"
+          table-header-class="qtblHeader"
         >
           <template v-slot:top>
             <div class="row fit justify-between">
               <div class="row">
                 <div class="q-table__title">Citybike Stations</div>
-                <!-- <div class="col self-center">
-                  <i
-                    >(page {{ props.pagination.page }} of
-                    {{ props.pagesNumber }})</i
-                  >
-                </div> -->
               </div>
               <div class="row">
                 <q-btn-toggle
@@ -85,6 +87,50 @@
                 />
               </div>
             </div>
+          </template>
+          <!-- <template #body-cell-actions="props">
+            <q-td :props="props">
+              <div class="q-gutter-xs">
+                <q-btn
+                  icon-right="info_outline"
+                  @click.stop="navigateRowTarget(props.row)"
+                  padding="0 1ex"
+                  color="grey-9"
+                  text-color="primary"
+                >
+                  <q-tooltip :delay="500">
+                    Open station details page
+                  </q-tooltip>
+                </q-btn>
+              </div>
+            </q-td>
+          </template> -->
+          <template #body-cell-nameFi="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.id}`"
+                class="text-green-2"
+                >{{ props.row.nameFi }}</router-link
+              >
+            </q-td>
+          </template>
+          <template #body-cell-nameSe="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.id}`"
+                class="text-green-2"
+                >{{ props.row.nameSe }}</router-link
+              >
+            </q-td>
+          </template>
+          <template #body-cell-nameEn="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/stations/${props.row.id}`"
+                class="text-green-2"
+                >{{ props.row.nameEn }}</router-link
+              >
+            </q-td>
           </template>
         </q-table>
       </div>
@@ -143,16 +189,14 @@ const stationColumns = [
     align: "right",
     // classes: "q-table--col-auto-width",
     classes: "colStyleId",
-    headerClasses: "q-table--col-auto-width",
+    // headerClasses: "q-table--col-auto-width",
   },
   {
     name: "nameFi",
     label: "Name (FI)",
     field: "nameFi",
     align: "left",
-    // classes: "q-table--col-auto-width",
     classes: "colStyleName",
-    headerClasses: "q-table--col-auto-width",
   },
   {
     name: "nameSe",
@@ -160,7 +204,6 @@ const stationColumns = [
     field: "nameSe",
     align: "left",
     classes: "colStyleName",
-    headerClasses: "q-table--col-auto-width",
   },
   {
     name: "nameEn",
@@ -168,13 +211,11 @@ const stationColumns = [
     field: "nameEn",
     align: "left",
     classes: "colStyleName",
-    headerClasses: "q-table--col-auto-width",
   },
   {
     name: "addrFi",
     label: "Address (FI)",
     field: "addrFi",
-    // classes: "q-table--col-auto-width",
     classes: "colStyleAddr",
     align: "left",
   },
@@ -189,7 +230,6 @@ const stationColumns = [
     name: "city",
     label: "City",
     field: (row) => row.city.CityFi,
-    // classes: "q-table--col-auto-width",
     classes: "colStyleCity",
     align: "left",
   },
@@ -299,6 +339,11 @@ export default {
         // console.log("Found stations: " + l.length);
       }
     },
+    navigateRowTarget(row) {
+      const target = `/stations/${row.id}`;
+      console.log(`navigating to: ${target}`);
+      this.$router.push(target);
+    },
   },
   watch: {
     searchText(newSearch, oldSearch) {
@@ -326,20 +371,16 @@ export default {
   color: #88aa88;
 }
 .colStyleId {
-  width: 4em;
+  width: 3rem;
 }
 .colStyleName {
-  width: 15em;
+  width: 12rem;
 }
 .colStyleAddr {
-  width: 20em;
+  width: 16rem;
 }
 .colStyleCity {
-  width: 6em;
-}
-.tblHeader {
-  font-style: italic;
-  color: #1ba344;
+  width: 6rem;
 }
 .problem {
   font-style: italic;
