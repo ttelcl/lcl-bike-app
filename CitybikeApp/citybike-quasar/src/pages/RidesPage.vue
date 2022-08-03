@@ -137,6 +137,21 @@ import { useAppstateStore } from "../stores/appstateStore";
 import { useRidesStore } from "../stores/ridesStore";
 import { utilities } from "../webapi/utilities";
 
+function formatTimespan(totalSeconds) {
+  var rounded = Math.floor(totalSeconds);
+  var seconds = rounded % 60;
+  var totalMinutes = (rounded - seconds) / 60;
+  var minutes = totalMinutes % 60;
+  var hours = (totalMinutes - minutes) / 60;
+  return (
+    hours.toString() +
+    ":" +
+    minutes.toString().padStart(2, "0") +
+    ":" +
+    seconds.toString().padStart(2, "0")
+  );
+}
+
 const ridesColumns = [
   // { // There must be an ID key in a q-table, but it doesn't need to show as column!
   //   name: "id",
@@ -167,7 +182,7 @@ const ridesColumns = [
     name: "t_day",
     label: "Day",
     field: (row) => date.formatDate(row.depTime, "YYYY-MM-DD"),
-    align: "left",
+    align: "right",
     classes: "colWidthDay",
     headerClasses: "colWidthDay",
   },
@@ -175,7 +190,7 @@ const ridesColumns = [
     name: "t_start",
     label: "Start",
     field: (row) => date.formatDate(row.depTime, "HH:mm:ss"),
-    align: "left",
+    align: "right",
     classes: "colWidthTime",
     headerClasses: "colWidthTime",
   },
@@ -183,9 +198,25 @@ const ridesColumns = [
     name: "t_return",
     label: "Return",
     field: (row) => date.formatDate(row.retTime, "HH:mm:ss"),
-    align: "left",
+    align: "right",
     classes: "colWidthTime",
     headerClasses: "colWidthTime",
+  },
+  {
+    name: "duration",
+    label: "Duration",
+    field: (row) => formatTimespan(row.duration),
+    align: "right",
+    classes: "colWidthDuration",
+    headerClasses: "colWidthDuration",
+  },
+  {
+    name: "distance",
+    label: "Distance (km)",
+    field: (row) => (row.distance / 1000).toFixed(3),
+    align: "right",
+    classes: "colWidthDistance",
+    headerClasses: "colWidthDistance",
   },
   {
     // virtual column to put action buttons in
@@ -264,7 +295,10 @@ export default {
 .colWidthTime {
   width: 5rem;
 }
-.innerlink {
-  color: aqua;
+.colWidthDuration {
+  width: 4rem;
+}
+.colWidthDistance {
+  width: 6rem;
 }
 </style>
