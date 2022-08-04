@@ -5,22 +5,96 @@
       <q-breadcrumbs-el label="Rides" icon="directions_bike" />
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
-    <div>
-      <div class="row q-gutter-md">
-        <div class="row">
-          <q-btn
-            label="Reset table"
-            color="purple"
-            @click="initTable"
-            no-caps
-          />
-        </div>
-      </div>
+    <hr />
+    <h4 class="q-my-md">Query Parameters</h4>
+    <div class="row q-gutter-md q-py-sm">
+      <q-btn label="Reset" color="primary" @click="resetQuery" no-caps />
+      <q-input
+        v-model.number="ridesStore.nextQueryParameters.depId"
+        type="number"
+        outlined
+        class="numInput"
+        label="From Station Id"
+        debounce="750"
+        :hint="ridesStore.nextDepStationName"
+        :rules="stationIdRules"
+        ref="depIdField"
+        @focus="(input) => input.target.select()"
+      />
+      <q-input
+        v-model.number="ridesStore.nextQueryParameters.retId"
+        type="number"
+        outlined
+        class="numInput"
+        label="To Station Id"
+        debounce="750"
+        :hint="ridesStore.nextRetStationName"
+        :rules="stationIdRules"
+        ref="retIdField"
+        @focus="(input) => input.target.select()"
+      />
+      <q-input
+        v-model="startDate"
+        mask="####-##-##"
+        outlined
+        class="dateInput"
+        label="start date"
+        readonly
+      >
+        <template v-slot:append>
+          <q-icon name="event" class="cursor-pointer">
+            <q-popup-proxy
+              cover
+              transition-show="scale"
+              transition-hide="scale"
+            >
+              <q-date
+                mask="YYYY-MM-DD"
+                v-model="startDate"
+                :default-year-month="initialMonth"
+              >
+                <div class="row items-center justify-end">
+                  <q-btn v-close-popup label="Close" color="primary" flat />
+                </div>
+              </q-date>
+            </q-popup-proxy>
+          </q-icon>
+        </template>
+      </q-input>
+      <q-input
+        v-model="endDate"
+        mask="####-##-##"
+        outlined
+        class="dateInput"
+        label="end date"
+        readonly
+      >
+        <template v-slot:append>
+          <q-icon name="event" class="cursor-pointer">
+            <q-popup-proxy
+              cover
+              transition-show="scale"
+              transition-hide="scale"
+            >
+              <q-date
+                mask="YYYY-MM-DD"
+                v-model="endDate"
+                :default-year-month="finalMonth"
+              >
+                <div class="row items-center justify-end">
+                  <q-btn v-close-popup label="Close" color="primary" flat />
+                </div>
+              </q-date>
+            </q-popup-proxy>
+          </q-icon>
+        </template>
+      </q-input>
+      <q-btn label="Apply" color="primary" @click="initTable" no-caps />
     </div>
     <hr />
     <div v-if="ridesStore.currentPaginationInitialized">
       <q-table
-        title="Rides (server-side pagination)"
+        title="Rides"
         :rows="ridesStore.currentPageRows"
         :columns="ridesColumns"
         row-key="id"
@@ -79,64 +153,6 @@
         </li>
       </ul>
     </div>
-    <!--  -- experiments in date range UI
-    <div class="row">
-      <div class="col q-pa-sm">
-        From:
-        <q-input
-          filled
-          v-model="dateRange.from"
-          mask="date"
-          dense
-          :rules="['date']"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="dateRange.from">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
-      <div class="col q-pa-sm">
-        To:
-        <q-input
-          filled
-          v-model="dateRange.to"
-          mask="date"
-          dense
-          :rules="['date']"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="dateRange.to">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
-    </div>
-    <div class="row">
-      <q-date v-model="dateRange" range landscape> </q-date>
-    </div> -->
   </q-page>
 </template>
 
@@ -144,6 +160,7 @@
 import { date } from "quasar";
 import { useAppstateStore } from "../stores/appstateStore";
 import { useRidesStore } from "../stores/ridesStore";
+import { useStationsStore } from "../stores/stationsStore";
 import { utilities } from "../webapi/utilities";
 
 function formatTimespan(totalSeconds) {
@@ -240,7 +257,19 @@ export default {
   setup() {
     const appstateStore = useAppstateStore();
     const ridesStore = useRidesStore();
-    return { appstateStore, ridesStore, utilities, date };
+    const stationsStore = useStationsStore();
+    const stationIdRules = [
+      (val) => (val >= 0 && val <= 999) || "0 <= ID <= 999",
+      (val) => val == 0 || stationsStore.stations[val] || "Unknown station",
+    ];
+    return {
+      appstateStore,
+      ridesStore,
+      stationsStore,
+      utilities,
+      date,
+      stationIdRules,
+    };
   },
   data() {
     return {
@@ -251,18 +280,81 @@ export default {
         from: "2021/06/01",
         to: "2021/06/30",
       },
+      depErr: false,
+      retErr: false,
     };
   },
-  computed: {},
+  computed: {
+    startDate: {
+      // Originally intended to translate between Date and "YYYY/MM/DD" formats
+      // Now both store and state use "YYYY-MM-DD" strings, but have a different
+      // representation of "not defined"
+      get() {
+        const t = this.ridesStore.nextQueryParameters.t0;
+        if (t === null) {
+          return undefined;
+        } else {
+          return this.ridesStore.nextQueryParameters.t0;
+        }
+      },
+      set(nt) {
+        this.ridesStore.nextQueryParameters.t0 = nt ? nt : null;
+      },
+    },
+    endDate: {
+      get() {
+        const t = this.ridesStore.nextQueryParameters.t1;
+        if (t === null) {
+          return undefined;
+        } else {
+          return this.ridesStore.nextQueryParameters.t1;
+        }
+      },
+      set(nt) {
+        this.ridesStore.nextQueryParameters.t1 = nt ? nt : null;
+      },
+    },
+    initialDate() {
+      return date.formatDate(this.ridesStore.firstRideStart, "YYYY-MM-DD");
+    },
+    finalDate() {
+      return date.formatDate(this.ridesStore.lastRideStart, "YYYY-MM-DD");
+    },
+    initialMonth() {
+      return date.formatDate(this.ridesStore.firstRideStart, "YYYY/MM");
+    },
+    finalMonth() {
+      return date.formatDate(this.ridesStore.lastRideStart, "YYYY/MM");
+    },
+  },
   methods: {
     async reloadRidesMetadata() {
       await this.ridesStore.reload(true);
     },
+    async resetQuery() {
+      this.ridesStore.nextQueryParameters.t0 = null;
+      this.ridesStore.nextQueryParameters.t1 = null;
+      this.ridesStore.nextQueryParameters.depId = 0;
+      this.ridesStore.nextQueryParameters.retId = 0;
+      await this.ridesStore.initTable(true, 15, 1, null, null, null, null);
+    },
     async initTable() {
-      await this.ridesStore.initTable(true, 15, 1, null, null);
+      await this.ridesStore.initTable(
+        true,
+        15,
+        1,
+        this.ridesStore.nextQueryParameters.t0,
+        this.ridesStore.nextQueryParameters.t1,
+        this.ridesStore.nextQueryParameters.depId,
+        this.ridesStore.nextQueryParameters.retId
+      );
     },
     async updateTablePage(props) {
       await this.ridesStore.updateTablePage(props);
+    },
+    wtf() {
+      console.log(this.$refs);
+      console.log(this.$refs.depIdField.hasError);
     },
   },
   async mounted() {
@@ -281,7 +373,7 @@ export default {
       }
     }
     if (!this.ridesStore.currentPaginationInitialized) {
-      await this.initTable();
+      await this.resetQuery();
     }
   },
 };
@@ -302,5 +394,24 @@ export default {
 }
 .colWidthDistance {
   width: 6rem;
+}
+
+.dateInput {
+  width: 9rem;
+}
+
+// Remove adornments from number inputs:
+.numInput {
+  width: 10rem;
+}
+.numInput input[type="number"]::-webkit-outer-spin-button,
+.numInput input[type="number"]::-webkit-inner-spin-button {
+  // Chrome / Edge
+  -webkit-appearance: none;
+  margin: 0;
+}
+.numInput input[type="number"] {
+  // Firefox
+  -moz-appearance: textfield;
 }
 </style>

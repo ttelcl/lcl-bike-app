@@ -25,6 +25,17 @@ export const useRidesStore = defineStore("rides", {
     },
     currentPaginationInitialized: false,
     currentPageRows: [],
+
+    nextQueryParameters: {
+      t0: null,
+      t1: null,
+      depId: 0,
+      retId: 0,
+      distMin: 0,
+      distmax: 0,
+      durMin: 0,
+      durMax: 0,
+    },
   }),
   getters: {
     firstRideDateString() {
@@ -39,10 +50,40 @@ export const useRidesStore = defineStore("rides", {
     lastRideString() {
       return utilities.toIsoString(this.lastRideStart);
     },
+    nextDepStation() {
+      if (this.nextQueryParameters.depId <= 0) {
+        return null;
+      } else {
+        const stationsStore = useStationsStore();
+        return stationsStore.stations[this.nextQueryParameters.depId];
+      }
+    },
+    nextDepStationName() {
+      const station = this.nextDepStation;
+      return station ? station.nameFi : "((all stations))";
+    },
+    nextRetStation() {
+      if (this.nextQueryParameters.retId <= 0) {
+        return null;
+      } else {
+        const stationsStore = useStationsStore();
+        return stationsStore.stations[this.nextQueryParameters.retId];
+      }
+    },
+    nextRetStationName() {
+      const station = this.nextRetStation;
+      return station ? station.nameFi : "((all stations))";
+    },
   },
   actions: {
     // Create a new ride query state object
-    newRideQuery(pageSize = 15, t0 = null, t1 = null) {
+    newRideQuery(
+      pageSize = 15,
+      t0 = null,
+      t1 = null,
+      depSid = null,
+      retSid = null
+    ) {
       if (isNaN(pageSize) || pageSize < 1) {
         throw "pageSize must be a number >= 1";
       }
@@ -58,16 +99,29 @@ export const useRidesStore = defineStore("rides", {
       ) {
         throw "t1 must be a null or a string of the form 'yyyy-mm-dd'";
       }
+      if (depSid !== null && isNaN(depSid)) {
+        throw "depSid (departure station id) must be null or an integer";
+      }
+      if (retSid !== null && isNaN(retSid)) {
+        throw "retSid (return station id) must be null or an integer";
+      }
       return {
         offset: 0,
         pageSize,
         t0,
         t1,
+        depSid,
+        retSid,
       };
     },
 
     async getRidesCount(rideQuery) {
-      const response = await backend.getRidesCount(rideQuery.t0, rideQuery.t1);
+      const response = await backend.getRidesCount2(
+        rideQuery.t0,
+        rideQuery.t1,
+        rideQuery.depSid,
+        rideQuery.retSid
+      );
       return response.data;
     },
 
@@ -99,15 +153,18 @@ export const useRidesStore = defineStore("rides", {
       pageSize = 15,
       page = 1,
       t0 = null,
-      t1 = null
+      t1 = null,
+      depSid = null,
+      retSid = null
     ) {
       this.currentPaginationInitialized = false;
       this.currentPageRows = [];
       await this.reload(false); // make sure the basics are present
-      var q = this.newRideQuery(pageSize, t0, t1);
+      var q = this.newRideQuery(pageSize, t0, t1, depSid, retSid);
       q.offset = (page - 1) * pageSize;
-      var ridesCount =
-        t0 || t1 ? await this.getRidesCount(q) : this.allRidesCount;
+      // var ridesCount =
+      //   t0 || t1 ? await this.getRidesCount(q) : this.allRidesCount;
+      var ridesCount = await this.getRidesCount(q);
       this.currentPagination = {
         page,
         rowsPerPage: pageSize,
@@ -156,10 +213,12 @@ export const useRidesStore = defineStore("rides", {
         console.log("Triggering Stations data Loading from Rides Query!");
         await stations.loadFromDb();
       }
-      const response = await backend.getRidesPage(
+      const response = await backend.getRidesPage2(
         rideQuery.offset,
         rideQuery.t0,
         rideQuery.t1,
+        rideQuery.depSid,
+        rideQuery.retSid,
         rideQuery.pageSize
       );
       const raw = response.data;
@@ -176,7 +235,7 @@ export const useRidesStore = defineStore("rides", {
       try {
         if (force || !this.loaded) {
           this.loaded = false;
-          const response = await backend.getRidesCount();
+          const response = await backend.getRidesCount2();
           this.allRidesCount = response.data;
           const response2 = await backend.getTimeRange();
           if (response2.status == 204) {
