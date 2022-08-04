@@ -175,6 +175,7 @@ namespace CitybikeApp.WebApi
 
     /// <summary>
     /// Return the number of rides in the given time interval.
+    /// DEPRECATED: use "ridescount2" instead.
     /// </summary>
     /// <param name="db">
     /// The DB service
@@ -236,7 +237,8 @@ namespace CitybikeApp.WebApi
     }
 
     /// <summary>
-    /// Get a page of the rides table
+    /// Get a page of the rides table in the given time interval.
+    /// DEPRECATED: use "ridespage2" instead.
     /// </summary>
     /// <param name="db">
     /// The database accessor
@@ -268,7 +270,7 @@ namespace CitybikeApp.WebApi
     /// <response code="200">On success</response>
     /// <response code="400">On unrecognized date/time format</response>
     [HttpGet("ridespage")]
-    public ActionResult<List<RideBase>> GetRidesPage(
+    public ActionResult<List<Ride>> GetRidesPage(
       [FromServices] ICitybikeDb db,
       [FromQuery] int offset = 0,
       [FromQuery] int pagesize = 50,
@@ -295,6 +297,254 @@ namespace CitybikeApp.WebApi
       var icq = db.GetQueryApi();
       var rides = icq.GetRidesPage(pagesize, offset, dt0, dt1);
       return rides;
+    }
+
+    /// <summary>
+    /// Return the number of rides for the given query parameters
+    /// </summary>
+    /// <param name="db">
+    /// The DB service
+    /// </param>
+    /// <param name="t0">
+    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// </param>
+    /// <param name="t1">
+    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// </param>
+    /// <param name="depid">
+    /// The departure station id, or 0 for "all"
+    /// </param>
+    /// <param name="retid">
+    /// The return station id, or 0 for "all"
+    /// </param>
+    /// <param name="distmin">
+    /// The minimum distance in meters, or 0 for "any"
+    /// </param>
+    /// <param name="distmax">
+    /// The maximum distance in meters, or 0 for "any"
+    /// </param>
+    /// <param name="secmin">
+    /// The minimum duration in seconds, or 0 for "no minimum"
+    /// </param>
+    /// <param name="secmax">
+    /// The maximum duration in seconds, or 0 for "no maximum"
+    /// </param>
+    /// <returns>
+    /// The total number of rides for the given query parameters
+    /// </returns>
+    /// <remarks>
+    /// The following time formats are supported:
+    /// 
+    /// * _(blank or omitted)_
+    /// * yyyy-MM-dd
+    /// * yyyyMMdd
+    /// * yyyyMMdd-HHmm
+    /// * yyyyMMdd-HHmmss
+    /// 
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="400">On unrecognized date/time format</response>
+    [HttpGet("ridescount2")]
+    public ActionResult<int> GetRidesCount2(
+      [FromServices] ICitybikeDb db,
+      [FromQuery] string? t0 = null,
+      [FromQuery] string? t1 = null,
+      [FromQuery] int depid = 0,
+      [FromQuery] int retid = 0,
+      [FromQuery] int distmin = 0,
+      [FromQuery] int distmax = 0,
+      [FromQuery] int secmin = 0,
+      [FromQuery] int secmax = 0)
+    {
+      DateTime? dt0, dt1;
+      try
+      {
+        dt0 = ParseTime(t0, false);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      try
+      {
+        dt1 = ParseTime(t1, true);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      if(depid < 0)
+      {
+        depid = 0;
+      }
+      if(retid < 0)
+      {
+        retid = 0;
+      }
+      if(secmin < 0)
+      {
+        secmin = 0;
+      }
+      if(secmax <= 0 || secmax > 3600*24*31)
+      {
+        secmax = Int32.MaxValue;
+      }
+      if(distmin < 0)
+      {
+        distmin = 0;
+      }
+      if(distmax <= 0 || distmax > 40000)
+      {
+        distmax = Int32.MaxValue;
+      }
+      var icq = db.GetQueryApi();
+      try
+      {
+        return icq.GetRidesCount2(dt0, dt1, depid, retid, distmin, distmax, secmin, secmax);
+      }
+      catch(NotImplementedException nie)
+      {
+        return StatusCode(500, $"Not Implemented ({nie.Message})");
+      }
+    }
+
+    /// <summary>
+    /// Get a page of the rides table for the given query parameters
+    /// </summary>
+    /// <param name="db">
+    /// The database accessor
+    /// </param>
+    /// <param name="offset">
+    /// The ride offset where the page starts (default 0)
+    /// </param>
+    /// <param name="pagesize">
+    /// the page size (default 50)
+    /// </param>
+    /// <param name="t0">
+    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// </param>
+    /// <param name="t1">
+    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// </param>
+    /// <param name="depid">
+    /// The departure station id, or 0 for "all"
+    /// </param>
+    /// <param name="retid">
+    /// The return station id, or 0 for "all"
+    /// </param>
+    /// <param name="distmin">
+    /// The minimum distance in meters, or 0 for "any"
+    /// </param>
+    /// <param name="distmax">
+    /// The maximum distance in meters, or 0 for "any"
+    /// </param>
+    /// <param name="secmin">
+    /// The minimum duration in seconds, or 0 for "no minimum"
+    /// </param>
+    /// <param name="secmax">
+    /// The maximum duration in seconds, or 0 for "no maximum"
+    /// </param>
+    /// <param name="sort">
+    /// Sort order hint. Currently not supported! Must be omitted, blank, or "default"
+    /// </param>
+    /// <returns>
+    /// A list of up to <paramref name="pagesize"/> rides
+    /// </returns>
+    /// <remarks>
+    /// The following time formats are supported:
+    /// 
+    /// * _(blank or omitted)_
+    /// * yyyy-MM-dd
+    /// * yyyyMMdd
+    /// * yyyyMMdd-HHmm
+    /// * yyyyMMdd-HHmmss
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="400">On unrecognized date/time format</response>
+    [HttpGet("ridespage2")]
+    public ActionResult<List<Ride>> GetRidesPage2(
+      [FromServices] ICitybikeDb db,
+      [FromQuery] int offset = 0,
+      [FromQuery] int pagesize = 50,
+      [FromQuery] string? t0 = null,
+      [FromQuery] string? t1 = null,
+      [FromQuery] int depid = 0,
+      [FromQuery] int retid = 0,
+      [FromQuery] int distmin = 0,
+      [FromQuery] int distmax = 0,
+      [FromQuery] int secmin = 0,
+      [FromQuery] int secmax = 0,
+      [FromQuery] string? sort = "")
+    {
+      DateTime? dt0, dt1;
+      try
+      {
+        dt0 = ParseTime(t0, false);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      try
+      {
+        dt1 = ParseTime(t1, true);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      if(pagesize > 1000)
+      {
+        return BadRequest("Maximum page size is 1000");
+      }
+      if(depid < 0)
+      {
+        depid = 0;
+      }
+      if(retid < 0)
+      {
+        retid = 0;
+      }
+      if(secmin < 0)
+      {
+        secmin = 0;
+      }
+      if(secmax <= 0 || secmax > 3600*24*31)
+      {
+        secmax = Int32.MaxValue;
+      }
+      if(distmin < 0)
+      {
+        distmin = 0;
+      }
+      if(distmax <= 0 || distmax > 40000)
+      {
+        distmax = Int32.MaxValue;
+      }
+      if(String.IsNullOrEmpty(sort) || sort=="default")
+      {
+        sort = "";
+      }
+      else
+      {
+        return BadRequest("Sorting is not yet supported");
+      }
+      var icq = db.GetQueryApi();
+      try
+      {
+        var rides = icq.GetRidesPage2(
+          pagesize, offset,
+          dt0, dt1,
+          depid, retid,
+          distmin, distmax,
+          secmin, secmax,
+          sort);
+        return rides;
+      }
+      catch(NotImplementedException nie)
+      {
+        return StatusCode(500, $"Not Implemented ({nie.Message})");
+      }
     }
 
     private static readonly string[] __dateOnlyPatterns =
