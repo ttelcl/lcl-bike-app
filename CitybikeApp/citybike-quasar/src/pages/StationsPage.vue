@@ -17,12 +17,6 @@
             buttons, etc. For now, fixing that is low on my priority list
             though.
           </li>
-          <li>
-            After navigating to a detail page and then navigating back here, the
-            state is lost (search, pagination, language). Not a great
-            experience. There are several ways to fix this, but this is also low
-            priority right now.
-          </li>
         </ul>
         <p class="q-my-none">To Do:</p>
         <ul class="q-my-none">
@@ -32,8 +26,13 @@
               more details
             </s>
           </li>
-          <li>Show some details on one station when clicking its row</li>
-          <li>??? Add a map link ???</li>
+          <li>
+            <s>
+              Make the state of pagination, search and language hint persist
+              through navigation.
+            </s>
+          </li>
+          <li>Add a better pagination control.</li>
         </ul>
       </div>
     </DesignNote>
