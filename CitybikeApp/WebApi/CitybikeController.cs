@@ -175,6 +175,7 @@ namespace CitybikeApp.WebApi
 
     /// <summary>
     /// Return the number of rides in the given time interval.
+    /// DEPRECATED: use "ridescount2" instead.
     /// </summary>
     /// <param name="db">
     /// The DB service
@@ -236,7 +237,8 @@ namespace CitybikeApp.WebApi
     }
 
     /// <summary>
-    /// Get a page of the rides table
+    /// Get a page of the rides table in the given time interval.
+    /// DEPRECATED: use "ridespage2" instead.
     /// </summary>
     /// <param name="db">
     /// The database accessor
@@ -315,17 +317,17 @@ namespace CitybikeApp.WebApi
     /// <param name="retid">
     /// The return station id, or 0 for "all"
     /// </param>
-    /// <param name="secmin">
-    /// The minimum duration, or 0 for "no minimum"
-    /// </param>
-    /// <param name="secmax">
-    /// The maximum duration, or 0 for "no maximum"
-    /// </param>
     /// <param name="distmin">
     /// The minimum distance in meters, or 0 for "any"
     /// </param>
     /// <param name="distmax">
     /// The maximum distance in meters, or 0 for "any"
+    /// </param>
+    /// <param name="secmin">
+    /// The minimum duration in seconds, or 0 for "no minimum"
+    /// </param>
+    /// <param name="secmax">
+    /// The maximum duration in seconds, or 0 for "no maximum"
     /// </param>
     /// <returns>
     /// The total number of rides for the given query parameters
@@ -349,10 +351,10 @@ namespace CitybikeApp.WebApi
       [FromQuery] string? t1 = null,
       [FromQuery] int depid = 0,
       [FromQuery] int retid = 0,
-      [FromQuery] int secmin = 0,
-      [FromQuery] int secmax = 0,
       [FromQuery] int distmin = 0,
-      [FromQuery] int distmax = 0)
+      [FromQuery] int distmax = 0,
+      [FromQuery] int secmin = 0,
+      [FromQuery] int secmax = 0)
     {
       DateTime? dt0, dt1;
       try
@@ -398,7 +400,7 @@ namespace CitybikeApp.WebApi
       var icq = db.GetQueryApi();
       try
       {
-        return icq.GetRidesCount2(dt0, dt1, depid, retid, secmin, secmax, distmin, distmax);
+        return icq.GetRidesCount2(dt0, dt1, depid, retid, distmin, distmax, secmin, secmax);
       }
       catch(NotImplementedException nie)
       {
@@ -407,7 +409,7 @@ namespace CitybikeApp.WebApi
     }
 
     /// <summary>
-    /// Get a page of the rides table
+    /// Get a page of the rides table for the given query parameters
     /// </summary>
     /// <param name="db">
     /// The database accessor
@@ -430,17 +432,17 @@ namespace CitybikeApp.WebApi
     /// <param name="retid">
     /// The return station id, or 0 for "all"
     /// </param>
-    /// <param name="secmin">
-    /// The minimum duration, or 0 for "no minimum"
-    /// </param>
-    /// <param name="secmax">
-    /// The maximum duration, or 0 for "no maximum"
-    /// </param>
     /// <param name="distmin">
     /// The minimum distance in meters, or 0 for "any"
     /// </param>
     /// <param name="distmax">
     /// The maximum distance in meters, or 0 for "any"
+    /// </param>
+    /// <param name="secmin">
+    /// The minimum duration in seconds, or 0 for "no minimum"
+    /// </param>
+    /// <param name="secmax">
+    /// The maximum duration in seconds, or 0 for "no maximum"
     /// </param>
     /// <param name="sort">
     /// Sort order hint. Currently not supported! Must be omitted, blank, or "default"
@@ -468,10 +470,10 @@ namespace CitybikeApp.WebApi
       [FromQuery] string? t1 = null,
       [FromQuery] int depid = 0,
       [FromQuery] int retid = 0,
-      [FromQuery] int secmin = 0,
-      [FromQuery] int secmax = 0,
       [FromQuery] int distmin = 0,
       [FromQuery] int distmax = 0,
+      [FromQuery] int secmin = 0,
+      [FromQuery] int secmax = 0,
       [FromQuery] string? sort = "")
     {
       DateTime? dt0, dt1;
@@ -534,8 +536,8 @@ namespace CitybikeApp.WebApi
           pagesize, offset,
           dt0, dt1,
           depid, retid,
-          secmin, secmax,
           distmin, distmax,
+          secmin, secmax,
           sort);
         return rides;
       }

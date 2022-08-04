@@ -22,6 +22,8 @@ namespace LclBikeApp.Database.ImplementationSqlServer
   /// </summary>
   public class CitybikeDbSqlServer: IDisposable, ICitybikeDb, ICitybikeQueries
   {
+    private static readonly DateTime __minDate = new DateTime(2000, 1, 1);
+    private static readonly DateTime __maxDate = new DateTime(2100, 1, 1);
     private readonly string _connString;
 
     /// <summary>
@@ -267,7 +269,12 @@ FROM [dbo].[Stations]
       {
         pageOffset = 0;
       }
-      if(!fromTime.HasValue && !toTime.HasValue)
+      // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
+      // database compatible
+      var tFrom = fromTime ?? __minDate;
+      var tTo = toTime ?? __maxDate;
+      // Optimize the case where both times were null (or out of range)
+      if(tFrom<=__minDate && tTo>=__maxDate)
       {
         var rides = Connection.Query<Ride>(@"
 SELECT Id, DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
@@ -280,10 +287,6 @@ FETCH NEXT @PageSize ROWS ONLY
       }
       else
       {
-        // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
-        // database compatible
-        var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
-        var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
         var rides = Connection.Query<Ride>(@"
 SELECT Id, DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
 FROM [dbo].[Rides]
@@ -300,8 +303,12 @@ FETCH NEXT @PageSize ROWS ONLY
       DateTime? fromTime, DateTime? toTime)
     {
       EnsureNotDisposed();
-      // Optimize the case where both times are null
-      if(!fromTime.HasValue && !toTime.HasValue)
+      // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
+      // database compatible
+      var tFrom = fromTime ?? __minDate;
+      var tTo = toTime ?? __maxDate;
+      // Optimize the case where both times were null (or out of range)
+      if(tFrom<=__minDate && tTo>=__maxDate)
       {
         return Connection.QuerySingle<int>(@"
 SELECT COUNT(*)
@@ -310,10 +317,6 @@ FROM [dbo].[Rides]
       }
       else
       {
-        // Avoid DateTime.MinValue and DateTime.MaxValue, since they may not be
-        // database compatible
-        var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
-        var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
         return Connection.QuerySingle<int>(@"
 SELECT COUNT(*)
 FROM [dbo].[Rides]
@@ -349,14 +352,45 @@ WHERE Id = @StationId
       DateTime? toTime,
       int depId,
       int retId,
-      int durMin,
-      int durMax,
       int distMin,
       int distMax,
+      int durMin,
+      int durMax,
       string sort)
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      var conditions = QueryConditions(fromTime, toTime, depId, retId, distMin, distMax, durMin, durMax);
+      var q = @"
+SELECT Id, DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
+FROM [dbo].[Rides]
+";
+      if(conditions.Count > 0)
+      {
+        q = q + "WHERE " + String.Join(@"
+  AND ", conditions) + @"
+";
+      }
+      switch(sort)
+        // Explicitly handle each valid option.
+        // Otherwise you may be creating an SQL Injection vulnerability!
+      {
+        case null:
+        case "":
+        case "default":
+          // REQUIRED TO MAKE OFFSET / FETCH WORK!
+          q += @"ORDER BY DepTime, RetTime, DepStation, RetStation, Distance, Duration
+";
+          break;
+        default:
+          // Here be dragons...
+          throw new NotImplementedException(
+            $"Sort orders other than default ar NYI");
+      }
+      q += @"
+OFFSET @Offset ROWS
+FETCH NEXT @PageSize ROWS ONLY";
+      var rides = Connection.Query<Ride>(q, new { Offset = pageOffset, PageSize = pageSize });
+      return rides.ToList();
     }
 
     int ICitybikeQueries.GetRidesCount2(
@@ -364,13 +398,70 @@ WHERE Id = @StationId
       DateTime? toTime,
       int depId,
       int retId,
-      int durMin,
-      int durMax,
       int distMin,
-      int distMax)
+      int distMax,
+      int durMin,
+      int durMax)
     {
       EnsureNotDisposed();
-      throw new NotImplementedException();
+      var conditions = QueryConditions(fromTime, toTime, depId, retId, distMin, distMax, durMin, durMax);
+      var q = @"
+SELECT COUNT(*)
+FROM [dbo].[Rides]
+";
+      if(conditions.Count > 0)
+      {
+        q = q + "WHERE " + String.Join(" AND ", conditions);
+      }
+      return Connection.QuerySingle<int>(q);
+    }
+
+    private List<string> QueryConditions(
+      DateTime? fromTime,
+      DateTime? toTime,
+      int depId,
+      int retId,
+      int distMin,
+      int distMax,
+      int durMin,
+      int durMax)
+    {
+      var l = new List<string>();
+      var tFrom = fromTime ?? __minDate;
+      var tTo = toTime ?? __maxDate;
+      if(tFrom > __minDate)
+      {
+        l.Add($"DepTime >= '{fromTime:s}'");
+      }
+      if(tTo < __maxDate)
+      {
+        l.Add($"DepTime <= '{toTime:s}'");
+      }
+      if(depId > 0)
+      {
+        l.Add($"DepStation = {depId}");
+      }
+      if(retId > 0)
+      {
+        l.Add($"RetStation = {retId}");
+      }
+      if(distMin > 0)
+      {
+        l.Add($"Distance >= {distMin}");
+      }
+      if(distMax > 0 && distMax < 100000)
+      {
+        l.Add($"Distance <= {distMax}");
+      }
+      if(durMin > 0)
+      {
+        l.Add($"Duration >= {durMin}");
+      }
+      if(durMax > 0 && durMax < 3600*24*31)
+      {
+        l.Add($"Duration <= {durMax}");
+      }
+      return l;
     }
 
     private void EnsureNotDisposed()

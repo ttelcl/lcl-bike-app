@@ -119,17 +119,17 @@ namespace LclBikeApp.Database
     /// If not 0, and <paramref name="depId"/> is 0, the time bounds will apply
     /// to the return time instead of the departure time.
     /// </param>
-    /// <param name="durMin">
-    /// Minimum ride duration in seconds (or 0 to ignore)
-    /// </param>
-    /// <param name="durMax">
-    /// Minimum ride duration in seconds (or Int32.MaxValue to ignore)
-    /// </param>
     /// <param name="distMin">
     /// Minimum ride distance in meters (or 0 to ignore)
     /// </param>
     /// <param name="distMax">
     /// Maximum ride distance in meters (or Int32.MaxValue to ignore)
+    /// </param>
+    /// <param name="durMin">
+    /// Minimum ride duration in seconds (or 0 to ignore)
+    /// </param>
+    /// <param name="durMax">
+    /// Minimum ride duration in seconds (or Int32.MaxValue to ignore)
     /// </param>
     /// <param name="sort">
     /// Placeholder for future sorting support. Currently must be blank.
@@ -145,10 +145,10 @@ namespace LclBikeApp.Database
       DateTime? toTime = null,
       int depId = 0,
       int retId = 0,
-      int durMin = 0,
-      int durMax = Int32.MaxValue,
       int distMin = 0,
       int distMax = Int32.MaxValue,
+      int durMin = 0,
+      int durMax = Int32.MaxValue,
       string sort = "");
 
     /// <summary>
@@ -171,17 +171,17 @@ namespace LclBikeApp.Database
     /// If not 0, and <paramref name="depId"/> is 0, the time bounds will apply
     /// to the return time instead of the departure time.
     /// </param>
-    /// <param name="durMin">
-    /// Minimum ride duration in seconds (or 0 to ignore)
-    /// </param>
-    /// <param name="durMax">
-    /// Minimum ride duration in seconds (or Int32.MaxValue to ignore)
-    /// </param>
     /// <param name="distMin">
     /// Minimum ride distance in meters (or 0 to ignore)
     /// </param>
     /// <param name="distMax">
     /// Maximum ride distance in meters (or Int32.MaxValue to ignore)
+    /// </param>
+    /// <param name="durMin">
+    /// Minimum ride duration in seconds (or 0 to ignore)
+    /// </param>
+    /// <param name="durMax">
+    /// Minimum ride duration in seconds (or Int32.MaxValue to ignore)
     /// </param>
     /// <returns>
     /// The total number of rides matching the query
@@ -191,10 +191,10 @@ namespace LclBikeApp.Database
       DateTime? toTime = null,
       int depId = 0,
       int retId = 0,
-      int durMin = 0,
-      int durMax = Int32.MaxValue,
       int distMin = 0,
-      int distMax = Int32.MaxValue);
+      int distMax = Int32.MaxValue,
+      int durMin = 0,
+      int durMax = Int32.MaxValue);
 
     ///// <summary>
     ///// Return a page from the Rides table for a specific departure station,
