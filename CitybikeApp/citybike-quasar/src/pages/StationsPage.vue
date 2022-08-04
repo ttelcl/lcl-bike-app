@@ -47,6 +47,11 @@
         clearable
         debounce="750"
       >
+        <!--
+          I would like to use "viewStore.searchText" as model, but that would break
+          the watch. So instead I store the searchText in two spots and try to keep
+          them in sync...
+        -->
         <template v-slot:prepend>
           <q-icon name="search" />
         </template>
@@ -65,7 +70,7 @@
           separator="cell"
           dense
           :bordered="true"
-          v-model:pagination="pagination"
+          v-model:pagination="viewStore.pagination"
           :loading="loading"
           :rows-per-page-options="[10, 15, 20, 25, 30, 40, 50]"
           table-header-class="qtblHeader"
@@ -77,7 +82,7 @@
               </div>
               <div class="row">
                 <q-btn-toggle
-                  v-model="columnSetKey"
+                  v-model="viewStore.columnSetKey"
                   toggle-color="primary"
                   :options="[
                     { label: 'FI', value: 'FI' },
@@ -177,6 +182,7 @@
 import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
 import { useStationsStore } from "src/stores/stationsStore";
+import { useStationsViewStore } from "../stores/stationsViewStore";
 import DesignNote from "components/DesignNote.vue";
 
 // ref https://quasar.dev/vue-components/table
@@ -260,21 +266,17 @@ export default {
     const appstateStore = useAppstateStore();
     const citiesStore = useCitiesStore();
     const stationsStore = useStationsStore();
-    return { appstateStore, citiesStore, stationsStore };
+    const viewStore = useStationsViewStore();
+    return { appstateStore, citiesStore, stationsStore, viewStore };
   },
   data() {
     return {
       myName: "Citybike Station Index",
       columnDefs: stationColumns,
       columnSets: columnSetDefs,
-      columnSetKey: "FI",
-      pagination: {
-        rowsPerPage: 15,
-        page: 1,
-      },
       searchText: null,
+      currentSearch: null,
       filteredStations: null,
-      dbg: "",
     };
   },
   components: {
@@ -282,7 +284,7 @@ export default {
   },
   computed: {
     currentColumnSet() {
-      return this.columnSets[this.columnSetKey];
+      return this.columnSets[this.viewStore.columnSetKey];
     },
     citiesMap() {
       return this.citiesStore.cities;
@@ -314,30 +316,41 @@ export default {
   methods: {
     async reload() {
       // The parameter specifies an artificial delay in milliseconds between
-      // load steps, slowing down updates between this.loadStatus updates
+      // load steps, slowing down updates between this.loadStatus updates.
+      // This is just for demo purposes.
       await this.stationsStore.loadFromDb(250);
     },
     applySearch(txt) {
+      const oldCurrentSearch = this.currentSearch;
+      const oldLastSearch = this.viewStore.lastSearch;
       if (txt === null || txt === "") {
         this.filteredStations = null;
+        this.currentSearch = null;
       } else {
-        var l = [];
-        for (const station of this.stationsList) {
-          txt = txt.toLowerCase();
-          if (
-            station.nameFi.toLowerCase().includes(txt) ||
-            station.nameSe.toLowerCase().includes(txt) ||
-            station.nameEn.toLowerCase().includes(txt) ||
-            station.addrFi.toLowerCase().includes(txt) ||
-            station.addrSe.toLowerCase().includes(txt)
-          ) {
-            l.push(station);
+        if (txt != this.currentSearch) {
+          // change or restore
+          var l = [];
+          for (const station of this.stationsList) {
+            txt = txt.toLowerCase();
+            if (
+              station.nameFi.toLowerCase().includes(txt) ||
+              station.nameSe.toLowerCase().includes(txt) ||
+              station.nameEn.toLowerCase().includes(txt) ||
+              station.addrFi.toLowerCase().includes(txt) ||
+              station.addrSe.toLowerCase().includes(txt)
+            ) {
+              l.push(station);
+            }
           }
+          this.currentSearch = txt;
+          this.filteredStations = l;
+          // console.log("Found stations: " + l.length);
         }
-        this.filteredStations = l;
-        this.pagination.page = 1;
-        // console.log("Found stations: " + l.length);
       }
+      if (oldLastSearch != txt) {
+        this.viewStore.pagination.page = 1;
+      }
+      this.viewStore.lastSearch = txt;
     },
     navigateRowTarget(row) {
       const target = `/stations/${row.id}`;
@@ -347,14 +360,17 @@ export default {
   },
   watch: {
     searchText(newSearch, oldSearch) {
+      this.viewStore.searchText = newSearch;
       this.applySearch(newSearch);
     },
   },
   async mounted() {
     this.appstateStore.currentSection = this.myName;
+    this.searchText = this.viewStore.searchText;
     if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
       await this.stationsStore.loadFromDb(0);
     }
+    this.applySearch(this.viewStore.searchText); // restore search state
   },
 };
 </script>

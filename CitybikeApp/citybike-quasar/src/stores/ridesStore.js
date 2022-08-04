@@ -76,7 +76,9 @@ export const useRidesStore = defineStore("rides", {
     },
 
     reshapeRide(rawRide, stations) {
-      // reshape and inject station details and a guid in a ride record received from the backend
+      // Reshapes a ride record received from the backend:
+      // * inject station details
+      // * inject an id if not present already (backend type "RideBase" instead of "Ride")
       return {
         id: rawRide.id || this.cheapGuid(),
         depTime: new Date(rawRide.depTime),
