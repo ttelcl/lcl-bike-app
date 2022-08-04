@@ -384,7 +384,7 @@ FROM [dbo].[Rides]
         default:
           // Here be dragons...
           throw new NotImplementedException(
-            $"Sort orders other than default ar NYI");
+            $"Sort orders other than default are NotYetImplemented");
       }
       q += @"
 OFFSET @Offset ROWS
