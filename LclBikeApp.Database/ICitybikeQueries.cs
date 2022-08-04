@@ -70,7 +70,7 @@ namespace LclBikeApp.Database
     /// <returns>
     /// The requested page of rides
     /// </returns>
-    List<RideBase> GetRidesPage(
+    List<Ride> GetRidesPage(
       int pageSize,
       int pageOffset,
       DateTime? fromTime=null,
@@ -118,7 +118,7 @@ namespace LclBikeApp.Database
     /// <returns>
     /// The requested page of rides
     /// </returns>
-    IReadOnlyList<RideBase> GetDepartingRidesPage(
+    IReadOnlyList<Ride> GetDepartingRidesPage(
       int pageSize,
       int pageOffset,
       int depStationId,
@@ -172,7 +172,7 @@ namespace LclBikeApp.Database
     /// <returns>
     /// The requested page of rides
     /// </returns>
-    IReadOnlyList<RideBase> GetReturningRidesPage(
+    IReadOnlyList<Ride> GetReturningRidesPage(
       int pageSize,
       int pageOffset,
       int retStationId,

@@ -358,7 +358,7 @@ FROM [dbo].[Stations]
       return stations.ToList();
     }
 
-    List<RideBase> ICitybikeQueries.GetRidesPage(
+    List<Ride> ICitybikeQueries.GetRidesPage(
       int pageSize, int pageOffset, DateTime? fromTime, DateTime? toTime)
     {
       EnsureNotDisposed();
@@ -372,8 +372,8 @@ FROM [dbo].[Stations]
       }
       if(!fromTime.HasValue && !toTime.HasValue)
       {
-        var rides = Connection.Query<RideBase>(@"
-SELECT DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
+        var rides = Connection.Query<Ride>(@"
+SELECT Id, DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
 FROM [dbo].[Rides]
 ORDER BY DepTime, RetTime, DepStation, RetStation, Distance, Duration
 OFFSET @Offset ROWS
@@ -387,8 +387,8 @@ FETCH NEXT @PageSize ROWS ONLY
         // database compatible
         var tFrom = fromTime.HasValue ? fromTime.Value : new DateTime(2000, 1, 1);
         var tTo = toTime.HasValue ? toTime.Value : new DateTime(2100, 1, 1);
-        var rides = Connection.Query<RideBase>(@"
-SELECT DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
+        var rides = Connection.Query<Ride>(@"
+SELECT Id, DepTime, RetTime, DepStation AS DepStationId, RetStation AS RetStationId, Distance, Duration
 FROM [dbo].[Rides]
 WHERE DepTime >= @TFrom AND DepTime <= @TTo
 ORDER BY DepTime, RetTime, DepStation, RetStation, Distance, Duration
@@ -425,7 +425,7 @@ WHERE DepTime >= @TFrom AND DepTime <= @TTo
       }
     }
 
-    IReadOnlyList<RideBase> ICitybikeQueries.GetDepartingRidesPage(
+    IReadOnlyList<Ride> ICitybikeQueries.GetDepartingRidesPage(
       int pageSize, int pageOffset, int depStationId, DateTime? fromTime, DateTime? toTime)
     {
       EnsureNotDisposed();
@@ -459,7 +459,7 @@ WHERE DepStation = @StationId AND DepTime >= @TFrom AND DepTime <= @TTo
       }
     }
 
-    IReadOnlyList<RideBase> ICitybikeQueries.GetReturningRidesPage(
+    IReadOnlyList<Ride> ICitybikeQueries.GetReturningRidesPage(
       int pageSize, int pageOffset, int retStationId, DateTime? fromTime, DateTime? toTime)
     {
       EnsureNotDisposed();
@@ -511,12 +511,6 @@ WHERE Id = @StationId
 ", new { StationId = id });
       return station;
     }
-
-
-
-
-
-
 
   }
 

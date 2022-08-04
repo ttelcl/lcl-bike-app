@@ -268,7 +268,7 @@ namespace CitybikeApp.WebApi
     /// <response code="200">On success</response>
     /// <response code="400">On unrecognized date/time format</response>
     [HttpGet("ridespage")]
-    public ActionResult<List<RideBase>> GetRidesPage(
+    public ActionResult<List<Ride>> GetRidesPage(
       [FromServices] ICitybikeDb db,
       [FromQuery] int offset = 0,
       [FromQuery] int pagesize = 50,
