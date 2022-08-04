@@ -162,16 +162,16 @@ function formatTimespan(totalSeconds) {
 }
 
 const ridesColumns = [
-  {
-    // There must be an ID key in a q-table, but it doesn't need to show as column!
-    name: "id",
-    label: "Id",
-    field: "id",
-    required: true,
-    align: "left",
-    classes: "q-table--col-auto-width",
-    headerClasses: "q-table--col-auto-width",
-  },
+  // {
+  //   // There must be an ID key in a q-table, but it doesn't need to show as column!
+  //   name: "id",
+  //   label: "Id",
+  //   field: "id",
+  //   required: true,
+  //   align: "left",
+  //   classes: "q-table--col-auto-width",
+  //   headerClasses: "q-table--col-auto-width",
+  // },
   {
     name: "s_from",
     label: "From",
