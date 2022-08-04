@@ -9,7 +9,7 @@
       <div class="row q-gutter-md">
         <div class="row">
           <q-btn
-            label="Reset table (server-backed pagination)"
+            label="Reset table"
             color="purple"
             @click="initTable"
             no-caps
@@ -279,6 +279,9 @@ export default {
           "YYYY/MM/DD"
         );
       }
+    }
+    if (!this.ridesStore.currentPaginationInitialized) {
+      await this.initTable();
     }
   },
 };
