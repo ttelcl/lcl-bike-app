@@ -251,12 +251,6 @@ export default {
         from: "2021/06/01",
         to: "2021/06/30",
       },
-      pagination: {
-        rowsPerPage: 15,
-        page: 1,
-      },
-      snapshot: [],
-      loading: false,
     };
   },
   computed: {},
@@ -264,25 +258,8 @@ export default {
     async reloadRidesMetadata() {
       await this.ridesStore.reload(true);
     },
-    async loadSampleSnapshot() {
-      this.loading = true;
-      try {
-        await this.ridesStore.reload(false);
-        const snapshot = await this.ridesStore.getRidesPage(this.rideQuery);
-        console.log(`Received ${snapshot.length} rides`);
-        this.snapshot = snapshot;
-      } finally {
-        this.loading = false;
-      }
-    },
     async initTable() {
-      await this.ridesStore.initTable(
-        true,
-        this.pagination.rowsPerPage,
-        1,
-        null,
-        null
-      );
+      await this.ridesStore.initTable(true, 15, 1, null, null);
     },
     async updateTablePage(props) {
       await this.ridesStore.updateTablePage(props);
