@@ -49,6 +49,23 @@
         </div>
       </div>
       <hr />
+      <div class="row q-my-sm">
+        <h6 class="q-my-none">
+          Testing how performant /api/stationdaydepstats is.
+        </h6>
+      </div>
+      <div class="row q-my-xs">
+        <p class="q-my-none">(expected to return almost 40000 records)</p>
+      </div>
+      <div class="row q-my-md">
+        <div class="col-3">
+          <q-btn color="primary" @click="getStats">Load Big Data</q-btn>
+        </div>
+        <div class="col">
+          <div>"stationdaydepstats" return size: {{ statRecordCount }}</div>
+          <div>"station42Departures": {{ station42Departures }}</div>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
@@ -65,6 +82,8 @@ export default {
       myName: "Development Extras",
       backendData: null,
       errorMessage: "",
+      statRecords: [], // TEMPORARY
+      station42Departures: 0,
     };
   },
   computed: {
@@ -74,6 +93,9 @@ export default {
     },
     serverTime() {
       return this.backendData ? this.backendData.ServerTime : null;
+    },
+    statRecordCount() {
+      return this.statRecords.length;
     },
   },
   methods: {
@@ -94,6 +116,26 @@ export default {
         console.log("getData(4): ERROR");
         console.log(err);
         this.backendData = null;
+        this.errorMessage = err;
+      }
+    },
+    async getStats() {
+      try {
+        this.statRecords = [];
+        this.station42Departures = 0;
+        this.errorMessage = "...";
+        const response = await backend.getStationDayDepartureRideCounts();
+        const data = response.data;
+        this.statRecords = data;
+        this.errorMessage = "";
+        var sum = 0;
+        for (const r of data) {
+          if (r.stationId == 42) {
+            sum += r.count;
+          }
+        }
+        this.station42Departures = sum;
+      } catch (err) {
         this.errorMessage = err;
       }
     },
