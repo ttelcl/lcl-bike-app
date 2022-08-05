@@ -416,6 +416,28 @@ FROM [dbo].[Rides]
       return Connection.QuerySingle<int>(q);
     }
 
+    StationDateCount[] ICitybikeQueries.GetDepartureStats()
+    {
+      EnsureNotDisposed();
+      var query = @"
+SELECT DepStation AS StationId, CONVERT(DATE, DepTime) AS [Day], COUNT(*) AS [Count]
+FROM [Rides]
+GROUP BY DepStation, CONVERT(DATE, DepTime)";
+      var results = Connection.Query<StationDateCount>(query);
+      return results.ToArray();
+    }
+
+    StationDateCount[] ICitybikeQueries.GetReturnStats()
+    {
+      EnsureNotDisposed();
+      var query = @"
+SELECT RetStation AS StationId, CONVERT(DATE, RetTime) AS [Day], COUNT(*) AS [Count]
+FROM [Rides]
+GROUP BY RetStation, CONVERT(DATE, RetTime)";
+      var results = Connection.Query<StationDateCount>(query);
+      return results.ToArray();
+    }
+
     private List<string> QueryConditions(
       DateTime? fromTime,
       DateTime? toTime,
@@ -561,7 +583,6 @@ ON [dbo].[Rides] (RetStation, RetTime)";
 
       return count;
     }
-
   }
 
 }
