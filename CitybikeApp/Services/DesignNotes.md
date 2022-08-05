@@ -17,7 +17,7 @@ Services that act as cache are typically implemented as two layers:
 
 The singleton cache services require an explicit Load() call to load
 data before accessing their data. For example:
-`StationCacheService.loadCache()`. This load call requires access to
+`StationCacheService.LoadCache()`. This load call requires access to
 the database api object. The actual data access happens through
 _methods_ that fail when data isn't loaded yet.
 See for example `StationCacheService.GetCachedStations()`.
