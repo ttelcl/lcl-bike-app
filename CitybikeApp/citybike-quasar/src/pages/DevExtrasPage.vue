@@ -120,6 +120,9 @@ export default {
       }
     },
     async getStats() {
+      // This is a test to see if the 40000 records returned by
+      // /api/stationdaydepstats make anything choke (it does choke Swagger!)
+      // Conclusion: it works just fine!
       try {
         this.statRecords = [];
         this.station42Departures = 0;
