@@ -2,11 +2,11 @@ using System.IO;
 using System.Reflection;
 using System;
 
-using CitybikeApp.Services;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using CitybikeApp.Services;
 
 #pragma warning disable CS1591
 
@@ -33,7 +33,9 @@ namespace CitybikeApp
       // Add our own services
       builder.Services.AddSqlserverCitybikeDatabase("default");
       builder.Services.AddSingleton<StationCacheService>();
+      builder.Services.AddSingleton<RideStatsCacheService>();
       builder.Services.AddScoped<StationListService>();
+      builder.Services.AddScoped<RideStatsService>();
 
       // Tweaks. Note: there may be a security concern here ...
       builder.Services.AddResponseCompression(options => { 

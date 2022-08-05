@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 using LclBikeApp.Database.Models;
 using LclBikeApp.Database;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Globalization;
 using CitybikeApp.Services;
 
 namespace CitybikeApp.WebApi
@@ -21,34 +21,24 @@ namespace CitybikeApp.WebApi
   [ApiController]
   public class CitybikeController: ControllerBase
   {
+    private readonly ILogger _logger;
 
     /*
      * NOTE on the XML-comment formatting: the format is slightly unusual, because
      * the comments are picked up by Swagger, which uses Markdown-like formatting
      * instead of the usual .net XML-doc style
+     * 
+     * The declaration order of API methods matters for that same reason.
      */
 
     /// <summary>
-    /// Get a full list of all involved cities, loaded from the database (not the cache).
-    /// (Spoiler: that's just Helsinki and Espoo)
+    /// Create the controller
     /// </summary>
-    /// <remarks>
-    /// Example:
-    /// 
-    ///     GET api/citybike/cities-raw
-    /// </remarks>
-    /// <returns>
-    /// A list of <see cref="City"/> instances
-    /// </returns>
-    /// <response code="200">On success</response>
-    [HttpGet("cities-raw")]
-    public IReadOnlyList<City> GetCitiesRaw(
-      [FromServices] ICitybikeDb db // injected by DI
-    )
+    public CitybikeController(
+      ILogger<CitybikeController> logger)
     {
-      var icq = db.GetQueryApi();
-      var cities = icq.GetCities();
-      return cities;
+      _logger = logger;
+      // _logger.LogInformation("Hello CitybikeController!");
     }
 
     /// <summary>
@@ -71,59 +61,6 @@ namespace CitybikeApp.WebApi
     {
       var cities = sls.Cities.Values.ToList();
       return cities;
-    }
-
-    /// <summary>
-    /// Return one station record by station ID
-    /// </summary>
-    /// <param name="id">
-    /// The station ID
-    /// </param>
-    /// <param name="db">
-    /// The database accessor (injected by DI)
-    /// </param>
-    /// <remarks>
-    /// Example:
-    /// 
-    ///     GET api/citybike/station/123
-    /// </remarks>
-    /// <response code="200">On success</response>
-    /// <response code="404">When not found</response>
-    [HttpGet("station/{id}")]
-    public ActionResult<Station> GetStation(
-      int id,
-      [FromServices] ICitybikeDb db // injected by DI
-      )
-    {
-      var icq = db.GetQueryApi();
-      var station = icq.GetStation(id);
-      if(station == null)
-      {
-        return NotFound();
-      }
-      else
-      {
-        return station;
-      }
-    }
-
-    /// <summary>
-    /// Return the list of all known stations, loaded directly from the database
-    /// (not from the cache)
-    /// </summary>
-    /// <param name="db">
-    /// The database accessor service (injected by DI)
-    /// </param>
-    /// <returns>
-    /// The list of stations on success
-    /// </returns>
-    /// <response code="200">On success</response>
-    [HttpGet("stations-raw")]
-    public IReadOnlyList<Station> GetStationsRaw(
-      [FromServices] ICitybikeDb db)
-    {
-      var icq = db.GetQueryApi();
-      return icq.GetStations();
     }
 
     /// <summary>
@@ -171,132 +108,6 @@ namespace CitybikeApp.WebApi
       {
         return result;
       }
-    }
-
-    /// <summary>
-    /// Return the number of rides in the given time interval.
-    /// DEPRECATED: use "ridescount2" instead.
-    /// </summary>
-    /// <param name="db">
-    /// The DB service
-    /// </param>
-    /// <param name="t0">
-    /// The start time. Date-only values are interpreted as time 00:00:00.
-    /// </param>
-    /// <param name="t1">
-    /// The end time. Date-only values are interpreted as time 23:59:59
-    /// </param>
-    /// <returns>
-    /// The total number of rides in the given time interval
-    /// </returns>
-    /// <remarks>
-    /// The following time formats are supported:
-    /// 
-    /// * _(blank or omitted)_
-    /// * yyyy-MM-dd
-    /// * yyyyMMdd
-    /// * yyyyMMdd-HHmm
-    /// * yyyyMMdd-HHmmss
-    /// 
-    /// Some example calls:
-    /// 
-    ///     GET api/citybike/ridescount
-    ///     GET api/citybike/ridescount?t0=2021-07-30&amp;t1=2021-07-31
-    ///     GET api/citybike/ridescount?t0=20210730&amp;t1=20210731
-    ///     GET api/citybike/ridescount?t0=20210730-120000&amp;t1=20210730-180000
-    /// 
-    /// </remarks>
-    /// <response code="200">On success</response>
-    /// <response code="400">On unrecognized date/time format</response>
-    [HttpGet("ridescount")]
-    public ActionResult<int> GetRidesCount(
-      [FromServices] ICitybikeDb db,
-      [FromQuery] string? t0 = null,
-      [FromQuery] string? t1 = null)
-    {
-      DateTime? dt0, dt1;
-      try
-      {
-        dt0 = ParseTime(t0, false);
-      }
-      catch(ArgumentException aex)
-      {
-        return BadRequest(aex.Message);
-      }
-      try
-      {
-        dt1 = ParseTime(t1, true);
-      }
-      catch(ArgumentException aex)
-      {
-        return BadRequest(aex.Message);
-      }
-
-      var icq = db.GetQueryApi();
-      return icq.GetRidesCount(dt0, dt1);
-    }
-
-    /// <summary>
-    /// Get a page of the rides table in the given time interval.
-    /// DEPRECATED: use "ridespage2" instead.
-    /// </summary>
-    /// <param name="db">
-    /// The database accessor
-    /// </param>
-    /// <param name="offset">
-    /// The ride offset where the page starts (default 0)
-    /// </param>
-    /// <param name="pagesize">
-    /// the page size (default 50)
-    /// </param>
-    /// <param name="t0">
-    /// The start time. Date-only values are interpreted as time 00:00:00.
-    /// </param>
-    /// <param name="t1">
-    /// The end time. Date-only values are interpreted as time 23:59:59
-    /// </param>
-    /// <returns>
-    /// A list of up to <paramref name="pagesize"/> rides
-    /// </returns>
-    /// <remarks>
-    /// The following time formats are supported:
-    /// 
-    /// * _(blank or omitted)_
-    /// * yyyy-MM-dd
-    /// * yyyyMMdd
-    /// * yyyyMMdd-HHmm
-    /// * yyyyMMdd-HHmmss
-    /// </remarks>
-    /// <response code="200">On success</response>
-    /// <response code="400">On unrecognized date/time format</response>
-    [HttpGet("ridespage")]
-    public ActionResult<List<Ride>> GetRidesPage(
-      [FromServices] ICitybikeDb db,
-      [FromQuery] int offset = 0,
-      [FromQuery] int pagesize = 50,
-      [FromQuery] string? t0 = null,
-      [FromQuery] string? t1 = null)
-    {
-      DateTime? dt0, dt1;
-      try
-      {
-        dt0 = ParseTime(t0, false);
-      }
-      catch(ArgumentException aex)
-      {
-        return BadRequest(aex.Message);
-      }
-      try
-      {
-        dt1 = ParseTime(t1, true);
-      }
-      catch(ArgumentException aex)
-      {
-        return BadRequest(aex.Message);
-      }
-      var icq = db.GetQueryApi();
-      var rides = icq.GetRidesPage(pagesize, offset, dt0, dt1);
-      return rides;
     }
 
     /// <summary>
@@ -547,6 +358,416 @@ namespace CitybikeApp.WebApi
       }
     }
 
+    /// <summary>
+    /// Get the full list of departure day-station-ridecount statistics
+    /// (expect around 40000 records - Swagger will choke on this unless you use the "cap" parameter!)
+    /// </summary>
+    /// <param name="rss">
+    /// The RideStatsService providing the data and assisting in caching it in the server
+    /// </param>
+    /// <param name="cap">
+    /// The maximum number of records to return. Use this parameter in Swagger to prevent
+    /// it from choking...
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="StationDateCount"/> records listing departure day, departure
+    /// station and total ride count for that combination.
+    /// </returns>
+    /// <remarks>
+    /// The result is intended to be cached by the client. It can be used for instance
+    /// to either project departures-by-day or departures-by-station.
+    /// 
+    /// As an alternative, use the API calls that aggregate the same data already.
+    /// </remarks>
+    /// <response code="200">On success</response>
+    [HttpGet("stationdaydepstats")]
+    public List<StationDateCount> GetStationDayDepartureStats(
+      [FromServices] RideStatsService rss,
+      [FromQuery] int cap = 0)
+    {
+      //var ua = Request.Headers["User-Agent"].ToString();
+      //_logger.LogInformation($"UA = {ua}");
+      var r =
+        cap > 0
+        ? rss.DepartureStats.Take(cap).ToList()
+        : rss.DepartureStats.ToList();
+      return r;
+    }
+
+    /// <summary>
+    /// Get the full list of return day-station-ridecount statistics
+    /// (expect around 40000 records - Swagger will choke on this unless you use the "cap" parameter!)
+    /// </summary>
+    /// <param name="rss">
+    /// The RideStatsService providing the data and assisting in caching it in the server
+    /// </param>
+    /// <param name="cap">
+    /// The maximum number of records to return. Use this parameter in Swagger to prevent
+    /// it from choking...
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="StationDateCount"/> records listing return day, return
+    /// station and total ride count for that combination.
+    /// </returns>
+    /// <remarks>
+    /// The result is intended to be cached by the client. It can be used for instance
+    /// to either project returns-by-day or returns-by-station.
+    /// 
+    /// As an alternative, use the API calls that aggregate the same data already.
+    /// </remarks>
+    /// <response code="200">On success</response>
+    [HttpGet("stationdayretstats")]
+    public List<StationDateCount> GetStationDayReturnStats(
+      [FromServices] RideStatsService rss,
+      [FromQuery] int cap = 0)
+    {
+      var r =
+        cap > 0
+        ? rss.ReturnStats.Take(cap).ToList()
+        : rss.ReturnStats.ToList();
+      return r;
+    }
+
+    /// <summary>
+    /// Get the number of rides departing from each station,
+    /// optionally constraining what days to look at.
+    /// </summary>
+    /// <param name="rss">
+    /// The RideStatsService providing and caching the data
+    /// </param>
+    /// <param name="firstDay">
+    /// Optional. The first day to look at, in "yyyy-MM-dd" or "yyyyMMdd" format.
+    /// </param>
+    /// <param name="lastDay">
+    /// Optional. The last day to look at, in "yyyy-MM-dd" or "yyyyMMdd" format.
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="StationCount"/> records, one for each station that had any
+    /// departures in the time range.
+    /// </returns>
+    /// <response code="200">On success</response>
+    /// <response code="400">When the arguments are not in a recognized format</response>
+    [HttpGet("departuresbystation")]
+    public ActionResult<List<StationCount>> GetDeparturesByStation(
+      [FromServices] RideStatsService rss,
+      [FromQuery] string? firstDay = null,
+      [FromQuery] string? lastDay = null)
+    {
+      try
+      {
+        var d0 = ParseDay(firstDay);
+        var d1 = ParseDay(lastDay);
+        var results = rss.GetDeparturesForStations(d0, d1);
+        return results;
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+    }
+
+    /// <summary>
+    /// Get the number of rides returning to each station,
+    /// optionally constraining what days to look at.
+    /// </summary>
+    /// <param name="rss">
+    /// The RideStatsService providing and caching the data
+    /// </param>
+    /// <param name="firstDay">
+    /// Optional. The first return day to look at, in "yyyy-MM-dd" or "yyyyMMdd" format.
+    /// </param>
+    /// <param name="lastDay">
+    /// Optional. The last return day to look at, in "yyyy-MM-dd" or "yyyyMMdd" format.
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="StationCount"/> records, one for each station that had any
+    /// returns in the time range.
+    /// </returns>
+    /// <response code="200">On success</response>
+    /// <response code="400">When the arguments are not in a recognized format</response>
+    [HttpGet("returnsbystation")]
+    public ActionResult<List<StationCount>> GetReturnsByStation(
+      [FromServices] RideStatsService rss,
+      [FromQuery] string? firstDay = null,
+      [FromQuery] string? lastDay = null)
+    {
+      try
+      {
+        var d0 = ParseDay(firstDay);
+        var d1 = ParseDay(lastDay);
+        var results = rss.GetReturnsForStations(d0, d1);
+        return results;
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+    }
+
+    /// <summary>
+    /// Get the number of rides departing on each day,
+    /// optionally constraining what station to look at.
+    /// </summary>
+    /// <param name="rss">
+    /// The RideStatsService providing and caching the data
+    /// </param>
+    /// <param name="station">
+    /// Optional. The station to look at. When omitted or 0: sum over all stations
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="DayCount"/> records, one for each day that had any
+    /// departures for the station (or all stations)
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("departuresbyday")]
+    public ActionResult<List<DayCount>> GetDeparturesByDay(
+      [FromServices] RideStatsService rss,
+      [FromQuery] int station = 0)
+    {
+      try
+      {
+        var results = rss.GetDeparturesForDays(station);
+        return results;
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+    }
+
+    /// <summary>
+    /// Get the number of rides returned each day,
+    /// optionally constraining what station to look at.
+    /// </summary>
+    /// <param name="rss">
+    /// The RideStatsService providing and caching the data
+    /// </param>
+    /// <param name="station">
+    /// Optional. The station to look at. When omitted or 0: sum over all stations
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="DayCount"/> records, one for each day that had any
+    /// returns for the station (or all stations)
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("returnsbyday")]
+    public ActionResult<List<DayCount>> GetReturnsByDay(
+      [FromServices] RideStatsService rss,
+      [FromQuery] int station = 0)
+    {
+      try
+      {
+        var results = rss.GetReturnsForDays(station);
+        return results;
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+    }
+
+    /// <summary>
+    /// Return one station record by station ID
+    /// </summary>
+    /// <param name="id">
+    /// The station ID
+    /// </param>
+    /// <param name="db">
+    /// The database accessor (injected by DI)
+    /// </param>
+    /// <remarks>
+    /// Example:
+    /// 
+    ///     GET api/citybike/station/123
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="404">When not found</response>
+    [HttpGet("station/{id}")]
+    public ActionResult<Station> GetStation(
+      int id,
+      [FromServices] ICitybikeDb db // injected by DI
+      )
+    {
+      var icq = db.GetQueryApi();
+      var station = icq.GetStation(id);
+      if(station == null)
+      {
+        return NotFound();
+      }
+      else
+      {
+        return station;
+      }
+    }
+
+    /// <summary>
+    /// Get a full list of all involved cities, loaded from the database (not the cache).
+    /// (Spoiler: that's just Helsinki and Espoo)
+    /// </summary>
+    /// <remarks>
+    /// Example:
+    /// 
+    ///     GET api/citybike/cities-raw
+    /// </remarks>
+    /// <returns>
+    /// A list of <see cref="City"/> instances
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("cities-raw")]
+    public IReadOnlyList<City> GetCitiesRaw(
+      [FromServices] ICitybikeDb db // injected by DI
+    )
+    {
+      var icq = db.GetQueryApi();
+      var cities = icq.GetCities();
+      return cities;
+    }
+
+    /// <summary>
+    /// Return the list of all known stations, loaded directly from the database
+    /// (not from the cache)
+    /// </summary>
+    /// <param name="db">
+    /// The database accessor service (injected by DI)
+    /// </param>
+    /// <returns>
+    /// The list of stations on success
+    /// </returns>
+    /// <response code="200">On success</response>
+    [HttpGet("stations-raw")]
+    public IReadOnlyList<Station> GetStationsRaw(
+      [FromServices] ICitybikeDb db)
+    {
+      var icq = db.GetQueryApi();
+      return icq.GetStations();
+    }
+
+    /// <summary>
+    /// Return the number of rides in the given time interval.
+    /// DEPRECATED: use "ridescount2" instead.
+    /// </summary>
+    /// <param name="db">
+    /// The DB service
+    /// </param>
+    /// <param name="t0">
+    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// </param>
+    /// <param name="t1">
+    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// </param>
+    /// <returns>
+    /// The total number of rides in the given time interval
+    /// </returns>
+    /// <remarks>
+    /// The following time formats are supported:
+    /// 
+    /// * _(blank or omitted)_
+    /// * yyyy-MM-dd
+    /// * yyyyMMdd
+    /// * yyyyMMdd-HHmm
+    /// * yyyyMMdd-HHmmss
+    /// 
+    /// Some example calls:
+    /// 
+    ///     GET api/citybike/ridescount
+    ///     GET api/citybike/ridescount?t0=2021-07-30&amp;t1=2021-07-31
+    ///     GET api/citybike/ridescount?t0=20210730&amp;t1=20210731
+    ///     GET api/citybike/ridescount?t0=20210730-120000&amp;t1=20210730-180000
+    /// 
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="400">On unrecognized date/time format</response>
+    [HttpGet("ridescount")]
+    public ActionResult<int> GetRidesCount(
+      [FromServices] ICitybikeDb db,
+      [FromQuery] string? t0 = null,
+      [FromQuery] string? t1 = null)
+    {
+      DateTime? dt0, dt1;
+      try
+      {
+        dt0 = ParseTime(t0, false);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      try
+      {
+        dt1 = ParseTime(t1, true);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+
+      var icq = db.GetQueryApi();
+      return icq.GetRidesCount(dt0, dt1);
+    }
+
+    /// <summary>
+    /// Get a page of the rides table in the given time interval.
+    /// DEPRECATED: use "ridespage2" instead.
+    /// </summary>
+    /// <param name="db">
+    /// The database accessor
+    /// </param>
+    /// <param name="offset">
+    /// The ride offset where the page starts (default 0)
+    /// </param>
+    /// <param name="pagesize">
+    /// the page size (default 50)
+    /// </param>
+    /// <param name="t0">
+    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// </param>
+    /// <param name="t1">
+    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// </param>
+    /// <returns>
+    /// A list of up to <paramref name="pagesize"/> rides
+    /// </returns>
+    /// <remarks>
+    /// The following time formats are supported:
+    /// 
+    /// * _(blank or omitted)_
+    /// * yyyy-MM-dd
+    /// * yyyyMMdd
+    /// * yyyyMMdd-HHmm
+    /// * yyyyMMdd-HHmmss
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="400">On unrecognized date/time format</response>
+    [HttpGet("ridespage")]
+    public ActionResult<List<Ride>> GetRidesPage(
+      [FromServices] ICitybikeDb db,
+      [FromQuery] int offset = 0,
+      [FromQuery] int pagesize = 50,
+      [FromQuery] string? t0 = null,
+      [FromQuery] string? t1 = null)
+    {
+      DateTime? dt0, dt1;
+      try
+      {
+        dt0 = ParseTime(t0, false);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      try
+      {
+        dt1 = ParseTime(t1, true);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      var icq = db.GetQueryApi();
+      var rides = icq.GetRidesPage(pagesize, offset, dt0, dt1);
+      return rides;
+    }
+
     private static readonly string[] __dateOnlyPatterns =
       new[] { "yyyy-MM-dd", "yyyyMMdd" };
     private static readonly string[] __dateTimePatterns =
@@ -586,7 +807,29 @@ namespace CitybikeApp.WebApi
           $"date/time is not in a recognized format: {txt}");
       }
     }
-  
+
+    private static DateOnly? ParseDay(string? txt)
+    {
+      if(String.IsNullOrEmpty(txt))
+      {
+        return null;
+      }
+      else if(DateTime.TryParseExact(
+        txt,
+        __dateOnlyPatterns,
+        CultureInfo.InvariantCulture,
+        DateTimeStyles.None,
+        out var dt1))
+      {
+        return DateOnly.FromDateTime(dt1);
+      }
+      else
+      {
+        throw new ArgumentException(
+          $"date/time is not in a recognized format: {txt}");
+      }
+    }
+
   }
 
 }

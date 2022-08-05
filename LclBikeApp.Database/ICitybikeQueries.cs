@@ -12,7 +12,7 @@ using LclBikeApp.Database.Models;
 namespace LclBikeApp.Database
 {
   /// <summary>
-  /// Models the query API that will be exposed to clients
+  /// Models the database query API to be exposed to clients
   /// </summary>
   public interface ICitybikeQueries
   {
@@ -196,114 +196,39 @@ namespace LclBikeApp.Database
       int durMin = 0,
       int durMax = Int32.MaxValue);
 
-    ///// <summary>
-    ///// Return a page from the Rides table for a specific departure station,
-    ///// sorted in the order
-    ///// DepTime, RetTime, DepStation, RetStation, Distance, Duration,
-    ///// in the specified departure time range
-    ///// </summary>
-    ///// <param name="pageSize">
-    ///// The page size
-    ///// </param>
-    ///// <param name="pageOffset">
-    ///// The page offset
-    ///// </param>
-    ///// <param name="depStationId">
-    ///// The identifier of the departure station to look for
-    ///// </param>
-    ///// <param name="fromTime">
-    ///// The earliest departure time to report (or null to not restrict)
-    ///// </param>
-    ///// <param name="toTime">
-    ///// The final departure time to report (or null to not restrict)
-    ///// </param>
-    ///// <returns>
-    ///// The requested page of rides
-    ///// </returns>
-    //IReadOnlyList<Ride> GetDepartingRidesPage(
-    //  int pageSize,
-    //  int pageOffset,
-    //  int depStationId,
-    //  DateTime? fromTime = null,
-    //  DateTime? toTime = null);
+    /// <summary>
+    /// Returns a list of (DepartureStation, DepartureDay, RideCount) triplets.
+    /// </summary>
+    /// <returns>
+    /// A list of StationDateCount records with ride departure information. 
+    /// The order is random.
+    /// </returns>
+    /// <remarks>
+    /// The return value is intended to be cached by the backend and reshaped
+    /// to (station, count) or (day, count) pairs for the client. With the
+    /// initial data there are just below 40000 records in the result.
+    /// </remarks>
+    StationDateCount[] GetDepartureStats();
 
-    ///// <summary>
-    ///// Return the total number of rides in the given departure time range
-    ///// for the given departure station
-    ///// (suitable for calculating the number of pages available from
-    ///// GetDepartingRidesPage())
-    ///// </summary>
-    ///// <param name="depStationId">
-    ///// The identifier of the departure station to look for
-    ///// </param>
-    ///// <param name="fromTime">
-    ///// The earliest departure time to report (or null to not restrict)
-    ///// </param>
-    ///// <param name="toTime">
-    ///// The final departure time to report (or null to not restrict)
-    ///// </param>
-    ///// <returns>
-    ///// The number of rides in the specified time range
-    ///// </returns>
-    //int GetDepartingRidesCount(
-    //  int depStationId,
-    //  DateTime? fromTime = null,
-    //  DateTime? toTime = null);
-
-    ///// <summary>
-    ///// Return a page from the Rides table for a specific return station,
-    ///// sorted in the order
-    ///// DepTime, RetTime, DepStation, RetStation, Distance, Duration,
-    ///// in the specified RETURN time range
-    ///// </summary>
-    ///// <param name="pageSize">
-    ///// The page size
-    ///// </param>
-    ///// <param name="pageOffset">
-    ///// The page offset
-    ///// </param>
-    ///// <param name="retStationId">
-    ///// The identifier of the return station to look for
-    ///// </param>
-    ///// <param name="fromTime">
-    ///// The earliest RETURN time to report (or null to not restrict)
-    ///// </param>
-    ///// <param name="toTime">
-    ///// The final RETURN time to report (or null to not restrict)
-    ///// </param>
-    ///// <returns>
-    ///// The requested page of rides
-    ///// </returns>
-    //IReadOnlyList<Ride> GetReturningRidesPage(
-    //  int pageSize,
-    //  int pageOffset,
-    //  int retStationId,
-    //  DateTime? fromTime = null,
-    //  DateTime? toTime = null);
-
-    ///// <summary>
-    ///// Return the total number of rides in the given RETURN time range
-    ///// for the given return station
-    ///// (suitable for calculating the number of pages available from
-    ///// GetReturningRidesPage())
-    ///// </summary>
-    ///// <param name="retStationId">
-    ///// The identifier of the RETURN station to look for
-    ///// </param>
-    ///// <param name="fromTime">
-    ///// The earliest return time to report (or null to not restrict)
-    ///// </param>
-    ///// <param name="toTime">
-    ///// The final return time to report (or null to not restrict)
-    ///// </param>
-    ///// <returns>
-    ///// The number of rides in the specified time range
-    ///// </returns>
-    //int GetReturningRidesCount(
-    //  int retStationId,
-    //  DateTime? fromTime = null,
-    //  DateTime? toTime = null);
-
+    /// <summary>
+    /// Returns a list of (ReturnStation, ReturnDay, RideCount) triplets.
+    /// </summary>
+    /// <returns>
+    /// A list of StationDateCount records with ride return information
+    /// The order is random.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// The return value is intended to be cached by the backend and reshaped
+    /// to (station, count) or (day, count) pairs for the client. With the
+    /// initial data there are just below 40000 records in the result.
+    /// </para>
+    /// <para>
+    /// Beware: the days in these records are the day of return. Most other
+    /// timestamps / days in the API are about ride departure.
+    /// </para>
+    /// </remarks>
+    StationDateCount[] GetReturnStats();
   }
 }
 

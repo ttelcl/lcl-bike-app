@@ -310,5 +310,37 @@ namespace UnitTests.Database
 
       }
     }
+
+    [Fact]
+    public void CanGetStats()
+    {
+      var connstring = _configuration["TestDb:ConnectionString"];
+      Assert.NotNull(connstring);
+
+      using(var db = new CitybikeDbSqlServer(connstring))
+      {
+        db.InitDb();
+        var icq = db as ICitybikeQueries;
+        Assert.NotNull(icq);
+
+        var depstats = icq.GetDepartureStats();
+        Assert.NotNull(depstats);
+        _output.WriteLine($"There are {depstats.Length} departure statistics rows (in the unit test DB)");
+        Assert.NotEmpty(depstats);
+        foreach(var dep in depstats.Take(5))
+        {
+          _output.WriteLine($" DEP ({dep.StationId}, {dep.Day:yyyy-MM-dd}) => {dep.Count}");
+        }
+
+        var retstats = icq.GetReturnStats();
+        Assert.NotNull(retstats);
+        _output.WriteLine($"There are {retstats.Length} return statistics rows (in the unit test DB)");
+        Assert.NotEmpty(retstats);
+        foreach(var ret in retstats.Take(5))
+        {
+          _output.WriteLine($" RET ({ret.StationId}, {ret.Day:yyyy-MM-dd}) => {ret.Count}");
+        }
+      }
+    }
   }
 }

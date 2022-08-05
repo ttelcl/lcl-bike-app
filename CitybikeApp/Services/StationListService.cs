@@ -21,7 +21,7 @@ namespace CitybikeApp.Services
     private readonly StationCacheService _stationCacheService;
 
     /// <summary>
-    /// Create a new StationCacheService instance
+    /// Create a new StationListService instance and load the cache
     /// </summary>
     public StationListService(
       StationCacheService stationCacheService,

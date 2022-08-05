@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 
 using LclBikeApp.Database.Models;
 using LclBikeApp.Database;
-
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Globalization;
-using System.Diagnostics;
 
 namespace CitybikeApp.Services
 {
