@@ -1,7 +1,7 @@
 # City bike application
 
 > :warning: This is a work in progress. _As long as this banner is present, 
-the assignment has not been submitted for evaluation yet!_
+  the assignment has not been submitted for evaluation yet!_
 >
 > Status 2021-08-05: still progressing ... Apologies for it taking so long.
 
@@ -24,8 +24,8 @@ dev mode, deploying, etc. will be added here later.))
 This section describes the various technologies used.
 
 * The main development environment used is Visual Studio 2022.
-To open (almost) everything, open the the solution `lcl-bike-app.sln`.
-The following "workloads" and components of VS 2022 are used:
+  To open (almost) everything, open the the solution `lcl-bike-app.sln`.
+  The following "workloads" and components of VS 2022 are used:
     * The standard C# support
     * "ASP.NET and web development"
     * F#
@@ -35,28 +35,28 @@ The following "workloads" and components of VS 2022 are used:
     * "Data storage and processing"
         * This includes SQL Server LocalDb.
 * Some parts of the project are not exposed in that solution, but
-were developed using VS Code as editor:
+  were developed using VS Code as editor:
     * Documentation: this very README.md file, as well as the other
-    markdown files in the `design-and-implementation-notes` folder.
+      markdown files in the `design-and-implementation-notes` folder.
     * The frontend SPA. Apologies for hiding it a bit. It lives in
-    the folder `CitybikeApp/citybike-quasar/`. It therefore actually
-    is exposed in Visual Studio 2022 as part of the `CitybikeApp`
-    project (the backend), but development of the SPA is done in 
-    Visual Studio Code.
+      the folder `CitybikeApp/citybike-quasar/`. It therefore actually
+      is exposed in Visual Studio 2022 as part of the `CitybikeApp`
+      project (the backend), but development of the SPA is done in 
+      Visual Studio Code.
 * Backend libraries are implemented in C# (`LclBikeApp.Database`,
   `LclBikeApp.DataWrangling`)
   * These in turn use another project of mine. For ease
     of use I included it here as the project `XsvLib`, but you can
     find the original at https://github.com/ttelcl/LclXsv .
 * The backend and data loading utility is implemented in F# (using the 
-above-mentioned C# libraries): `CitybikeUtility`.
+  above-mentioned C# libraries): `CitybikeUtility`.
 * The database implementation currently assumes SQL Server and was
-tested against a LocalDb version and a serverless Azure SQL version.
+  tested against a LocalDb version and a serverless Azure SQL version.
 * Web API and server side UI are implemented in C# using ASP.NET Core 6,
-see `CitybikeApp`. Currently both of those are implemented in the same
-app. The server side UI uses Razor pages.
-However, the `CitybikeApp/citybike-quasar/` subfolder is not part of the
-backend but actually is the frontend...
+  see `CitybikeApp`. Currently both of those are implemented in the same
+  app. The server side UI uses Razor pages.
+  However, the `CitybikeApp/citybike-quasar/` subfolder is not part of the
+  backend but actually is the frontend...
     * Update: In practice it is mostly a Web API server, with minimal or
       no server side UI. Reason: actually the client app seems to work
       well enough, so no need for much server side UI.
@@ -67,6 +67,7 @@ backend but actually is the frontend...
   Technologies used:
     * Quasar (https://quasar.dev/).
     * ... which in turn builds on top of Vue 3 (https://vuejs.org/)
+    * Pinia (https://pinia.vuejs.org/) for state storage sharing
     * I use the recommended approach of Quasar CLI with VITE (as 
       implication: so I am _not_ using WebPack for building).
     * The code in it is JavaScript, not TypeScript. Since I had already
@@ -74,10 +75,10 @@ backend but actually is the frontend...
       I didn't want to further complicate it by adding _"learn TypeScript"_
       to the to-do list for this project :)
 * To aid with database development (including the creation of an initial empty
-database) I used SMSS (SQL Server Management Studio), see
-https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms
+  database) I used SMSS (SQL Server Management Studio), see
+  https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms
 * I also created an SQL Server database in Azure, but it seems I won't have
-time to put that to proper use before the project deadline.
+  time to put that to proper use before the project deadline.
 
 ## Development process
 
@@ -89,10 +90,10 @@ links to more detailed information)
 * Phase 3: Database and database access layer library implementation
     * See the library code in folder `LclBikeApp.Database` and Unit Tests in `UnitTests.Database`.
     * Also see the library code in folder `LclBikeApp.DataWrangling` and Unit Tests in
-    `UnitTests.DataWrangling`.
+      `UnitTests.DataWrangling`.
 * Phase 4: [Database Loading](design-and-implementation-notes/DatabaseLoading.md)
     * The data loading command line app is in the folder `CitybikeUtility`. Note that
-    to compile it your Visual Studio 2022 needs to have the F# support components installed
+      to compile it your Visual Studio 2022 needs to have the F# support components installed
 * Phase 5: [Web API design](design-and-implementation-notes/WebApiDesign.md) and implementation.
     * Of course this is an ongoing design cycle together with Phase 7.
 * Phase 6: Server side UI _\[MOSTLY SKIPPED\]_
