@@ -195,6 +195,7 @@ const stationColumns = [
     // classes: "q-table--col-auto-width",
     classes: "colStyleId",
     // headerClasses: "q-table--col-auto-width",
+    sortable: true,
   },
   {
     name: "nameFi",
@@ -202,6 +203,7 @@ const stationColumns = [
     field: "nameFi",
     align: "left",
     classes: "colStyleName",
+    sortable: true,
   },
   {
     name: "nameSe",
@@ -209,6 +211,7 @@ const stationColumns = [
     field: "nameSe",
     align: "left",
     classes: "colStyleName",
+    sortable: true,
   },
   {
     name: "nameEn",
@@ -216,6 +219,7 @@ const stationColumns = [
     field: "nameEn",
     align: "left",
     classes: "colStyleName",
+    sortable: true,
   },
   {
     name: "addrFi",
@@ -223,6 +227,7 @@ const stationColumns = [
     field: "addrFi",
     classes: "colStyleAddr",
     align: "left",
+    sortable: true,
   },
   {
     name: "addrSe",
@@ -230,6 +235,7 @@ const stationColumns = [
     field: "addrSe",
     classes: "colStyleAddr",
     align: "left",
+    sortable: true,
   },
   {
     name: "city",
