@@ -65,8 +65,11 @@ export const useStationsStore = defineStore("stations", {
         const raw = response.data;
         // console.log(raw);
         console.log(`Received ${raw.length} stations.`);
+        // Augment the response records
         for (var s of raw) {
           s.city = cities.cities[s.cityId];
+          s.depCount = 0; // preallocate total ride departure count
+          s.retCount = 0; // preallocate total ride return count
           this.stations[s.id] = s;
         }
         this.errorMessage = null;

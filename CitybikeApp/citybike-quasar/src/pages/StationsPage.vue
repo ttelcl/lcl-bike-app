@@ -182,6 +182,7 @@ import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
 import { useStationsStore } from "src/stores/stationsStore";
 import { useStationsViewStore } from "../stores/stationsViewStore";
+import { useRideCountStore } from "src/stores/rideCountStore";
 import DesignNote from "components/DesignNote.vue";
 
 // ref https://quasar.dev/vue-components/table
@@ -252,6 +253,33 @@ const stationColumns = [
     align: "left",
   },
   {
+    name: "depCount",
+    label: "Departures",
+    field: "depCount",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "retCount",
+    label: "Returns",
+    field: "retCount",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "rideCount",
+    label: "Total",
+    field: (row) => row.depCount + row.retCount,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
     // virtual column to put action buttons in
     name: "actions",
     align: "left",
@@ -260,9 +288,9 @@ const stationColumns = [
 ];
 
 const columnSetDefs = {
-  FI: ["id", "nameFi", "addrFi", "city", "actions"],
-  SE: ["id", "nameSe", "addrSe", "citySe", "actions"],
-  EN: ["id", "nameEn", "addrFi", "city", "actions"],
+  FI: ["id", "nameFi", "addrFi", "city", "depCount", "retCount", "actions"],
+  SE: ["id", "nameSe", "addrSe", "citySe", "depCount", "retCount", "actions"],
+  EN: ["id", "nameEn", "addrFi", "city", "depCount", "retCount", "actions"],
 };
 
 export default {
@@ -272,7 +300,14 @@ export default {
     const citiesStore = useCitiesStore();
     const stationsStore = useStationsStore();
     const viewStore = useStationsViewStore();
-    return { appstateStore, citiesStore, stationsStore, viewStore };
+    const rideCountStore = useRideCountStore();
+    return {
+      appstateStore,
+      citiesStore,
+      stationsStore,
+      viewStore,
+      rideCountStore,
+    };
   },
   data() {
     return {
@@ -322,8 +357,12 @@ export default {
     async reload() {
       // The parameter specifies an artificial delay in milliseconds between
       // load steps, slowing down updates between this.loadStatus updates.
-      // This is just for demo purposes.
-      await this.stationsStore.loadFromDb(250);
+      // This is just for demo/debug purposes.
+      await this.load(250);
+    },
+    async load(debugDelay = 0) {
+      await this.stationsStore.loadFromDb(debugDelay);
+      await this.rideCountStore.load();
     },
     applySearch(txt) {
       const oldCurrentSearch = this.currentSearch;
@@ -373,7 +412,7 @@ export default {
     this.appstateStore.currentSection = this.myName;
     this.searchText = this.viewStore.searchText;
     if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
-      await this.stationsStore.loadFromDb(0);
+      await this.load(0);
     }
     this.applySearch(this.viewStore.searchText); // restore search state
   },
@@ -402,6 +441,9 @@ export default {
 }
 .colStyleCity {
   width: 6rem;
+}
+.colStyleRideCount {
+  width: 5rem;
 }
 .problem {
   font-style: italic;
