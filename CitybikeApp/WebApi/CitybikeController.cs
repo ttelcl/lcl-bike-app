@@ -359,6 +359,65 @@ namespace CitybikeApp.WebApi
     }
 
     /// <summary>
+    /// Return a list of (departure station, return station, ride count)
+    /// records, optionally constrained to the given time interval.
+    /// Beware! Use the "cap" parameter when invoking from Swagger,
+    /// or it will choke on the large result!
+    /// </summary>
+    /// <param name="db">
+    /// The database accessor
+    /// </param>
+    /// <param name="t0">
+    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// </param>
+    /// <param name="t1">
+    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// </param>
+    /// <param name="cap">
+    /// When present and above 0: only return the first <paramref name="cap"/>
+    /// results. This is a hack to avoid Swagger from choking.
+    /// </param>
+    /// <returns>
+    /// The requested list
+    /// </returns>
+    /// <remarks>
+    /// The following time formats are supported:
+    /// 
+    /// * _(blank or omitted)_
+    /// * yyyy-MM-dd
+    /// * yyyyMMdd
+    /// * yyyyMMdd-HHmm
+    /// * yyyyMMdd-HHmmss
+    /// </remarks>
+    /// <response code="200">On success</response>
+    /// <response code="400">On unrecognized date/time format</response>
+    [HttpGet("stationpaircounts")]
+    public ActionResult<StationPairCount[]> GetStationPairCounts(
+      [FromServices] ICitybikeDb db,
+      [FromQuery] string? t0 = null,
+      [FromQuery] string? t1 = null,
+      [FromQuery] int? cap = null)
+    {
+      DateTime? dt0, dt1;
+      try
+      {
+        dt0 = ParseTime(t0, false);
+        dt1 = ParseTime(t1, true);
+      }
+      catch(ArgumentException aex)
+      {
+        return BadRequest(aex.Message);
+      }
+      var icq = db.GetQueryApi();
+      var spcs = icq.GetStationPairCounts(dt0, dt1);
+      if(cap.HasValue && cap.Value > 0)
+      {
+        spcs = spcs.Take(cap.Value).ToArray();
+      }
+      return spcs;
+    }
+
+    /// <summary>
     /// Get the full list of departure day-station-ridecount statistics
     /// (expect around 40000 records - Swagger will choke on this unless you use the "cap" parameter!)
     /// </summary>

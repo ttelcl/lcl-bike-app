@@ -107,6 +107,20 @@ export const backend = {
     });
   },
 
+  async getStationDayDepartureRideCounts(timeOut = 10000) {
+    return await api.get("/api/citybike/stationdaydepstats", {
+      timeout: timeOut,
+    });
+  },
+
+  // Returns the raw axios response from /api/citybike/stationpaircounts
+  async getStationPairRideCounts(timeOut = 10000) {
+    return await api.get("/api/citybike/stationpaircounts", {
+      timeout: timeOut,
+    });
+  },
+
+  // Internal helper
   makeRideQueryParams(t0 = null, t1 = null, depSid = null, retSid = null) {
     var params = {};
     if (typeof t0 == "string" && t0.match(/^\d{4}-\d{2}-\d{2}$/)) {

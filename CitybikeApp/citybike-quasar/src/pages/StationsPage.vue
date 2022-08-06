@@ -136,6 +136,20 @@
               >
             </q-td>
           </template>
+          <template #body-cell-actions="props">
+            <q-td :props="props">
+              <span class="external-link">
+                <a
+                  :href="googleMapsUrl(props.row)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  on map
+                  <q-icon right name="open_in_new" />
+                </a>
+              </span>
+            </q-td>
+          </template>
         </q-table>
       </div>
       <div v-if="!isLoaded" class="problem">
@@ -182,6 +196,7 @@ import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
 import { useStationsStore } from "src/stores/stationsStore";
 import { useStationsViewStore } from "../stores/stationsViewStore";
+import { useRideCountStore } from "src/stores/rideCountStore";
 import DesignNote from "components/DesignNote.vue";
 
 // ref https://quasar.dev/vue-components/table
@@ -195,6 +210,7 @@ const stationColumns = [
     // classes: "q-table--col-auto-width",
     classes: "colStyleId",
     // headerClasses: "q-table--col-auto-width",
+    sortable: true,
   },
   {
     name: "nameFi",
@@ -202,6 +218,7 @@ const stationColumns = [
     field: "nameFi",
     align: "left",
     classes: "colStyleName",
+    sortable: true,
   },
   {
     name: "nameSe",
@@ -209,6 +226,7 @@ const stationColumns = [
     field: "nameSe",
     align: "left",
     classes: "colStyleName",
+    sortable: true,
   },
   {
     name: "nameEn",
@@ -216,6 +234,7 @@ const stationColumns = [
     field: "nameEn",
     align: "left",
     classes: "colStyleName",
+    sortable: true,
   },
   {
     name: "addrFi",
@@ -223,6 +242,7 @@ const stationColumns = [
     field: "addrFi",
     classes: "colStyleAddr",
     align: "left",
+    sortable: true,
   },
   {
     name: "addrSe",
@@ -230,6 +250,7 @@ const stationColumns = [
     field: "addrSe",
     classes: "colStyleAddr",
     align: "left",
+    sortable: true,
   },
   {
     name: "city",
@@ -246,6 +267,33 @@ const stationColumns = [
     align: "left",
   },
   {
+    name: "depCount",
+    label: "Departures",
+    field: "depCount",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "retCount",
+    label: "Returns",
+    field: "retCount",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "rideCount",
+    label: "Total",
+    field: (row) => row.depCount + row.retCount,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
     // virtual column to put action buttons in
     name: "actions",
     align: "left",
@@ -254,9 +302,9 @@ const stationColumns = [
 ];
 
 const columnSetDefs = {
-  FI: ["id", "nameFi", "addrFi", "city", "actions"],
-  SE: ["id", "nameSe", "addrSe", "citySe", "actions"],
-  EN: ["id", "nameEn", "addrFi", "city", "actions"],
+  FI: ["id", "nameFi", "addrFi", "city", "depCount", "retCount", "actions"],
+  SE: ["id", "nameSe", "addrSe", "citySe", "depCount", "retCount", "actions"],
+  EN: ["id", "nameEn", "addrFi", "city", "depCount", "retCount", "actions"],
 };
 
 export default {
@@ -266,7 +314,14 @@ export default {
     const citiesStore = useCitiesStore();
     const stationsStore = useStationsStore();
     const viewStore = useStationsViewStore();
-    return { appstateStore, citiesStore, stationsStore, viewStore };
+    const rideCountStore = useRideCountStore();
+    return {
+      appstateStore,
+      citiesStore,
+      stationsStore,
+      viewStore,
+      rideCountStore,
+    };
   },
   data() {
     return {
@@ -313,11 +368,23 @@ export default {
     },
   },
   methods: {
+    /*
+      Reminder on Google Maps links:
+      https://www.google.com/maps/@{lat},{long},{zoom}z
+      https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
+    */
+    googleMapsUrl(station) {
+      return `https://www.google.com/maps/@${station.latitude},${station.longitude},20z`;
+    },
     async reload() {
       // The parameter specifies an artificial delay in milliseconds between
       // load steps, slowing down updates between this.loadStatus updates.
-      // This is just for demo purposes.
-      await this.stationsStore.loadFromDb(250);
+      // This is just for demo/debug purposes.
+      await this.load(250);
+    },
+    async load(debugDelay = 0) {
+      await this.stationsStore.loadFromDb(debugDelay);
+      await this.rideCountStore.load();
     },
     applySearch(txt) {
       const oldCurrentSearch = this.currentSearch;
@@ -367,7 +434,7 @@ export default {
     this.appstateStore.currentSection = this.myName;
     this.searchText = this.viewStore.searchText;
     if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
-      await this.stationsStore.loadFromDb(0);
+      await this.load(0);
     }
     this.applySearch(this.viewStore.searchText); // restore search state
   },
@@ -397,8 +464,17 @@ export default {
 .colStyleCity {
   width: 6rem;
 }
+.colStyleRideCount {
+  width: 5rem;
+}
 .problem {
   font-style: italic;
   color: #eeaa33;
+}
+.external-link a {
+  color: #88aadd;
+}
+.external-link a:visited {
+  color: #5577aa;
 }
 </style>

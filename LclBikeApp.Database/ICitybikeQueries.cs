@@ -229,6 +229,26 @@ namespace LclBikeApp.Database
     /// </para>
     /// </remarks>
     StationDateCount[] GetReturnStats();
+
+    /// <summary>
+    /// Return the total number of rides between all pairs of stations,
+    /// optionally constrained to a specific time interval.
+    /// </summary>
+    /// <param name="fromTime">
+    /// If not null: the oldest ride departure time to include.
+    /// </param>
+    /// <param name="toTime">
+    /// If not null: the newest ride _departure_ time to include.
+    /// Yes, "departure time", not "return time", for the sake of database
+    /// efficiency.
+    /// </param>
+    /// <returns>
+    /// A list of departure station - return station - count triplets, in no
+    /// particular order.
+    /// </returns>
+    StationPairCount[] GetStationPairCounts(
+      DateTime? fromTime = null,
+      DateTime? toTime = null);
   }
 }
 
