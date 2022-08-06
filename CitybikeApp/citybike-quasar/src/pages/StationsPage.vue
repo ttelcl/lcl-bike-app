@@ -136,6 +136,20 @@
               >
             </q-td>
           </template>
+          <template #body-cell-actions="props">
+            <q-td :props="props">
+              <span class="external-link">
+                <a
+                  :href="googleMapsUrl(props.row)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  on map
+                  <q-icon right name="open_in_new" />
+                </a>
+              </span>
+            </q-td>
+          </template>
         </q-table>
       </div>
       <div v-if="!isLoaded" class="problem">
@@ -354,6 +368,14 @@ export default {
     },
   },
   methods: {
+    /*
+      Reminder on Google Maps links:
+      https://www.google.com/maps/@{lat},{long},{zoom}z
+      https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
+    */
+    googleMapsUrl(station) {
+      return `https://www.google.com/maps/@${station.latitude},${station.longitude},20z`;
+    },
     async reload() {
       // The parameter specifies an artificial delay in milliseconds between
       // load steps, slowing down updates between this.loadStatus updates.
@@ -448,5 +470,11 @@ export default {
 .problem {
   font-style: italic;
   color: #eeaa33;
+}
+.external-link a {
+  color: #88aadd;
+}
+.external-link a:visited {
+  color: #5577aa;
 }
 </style>
