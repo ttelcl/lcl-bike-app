@@ -498,6 +498,11 @@ export default {
         await this.rideCountStore.load();
       }
     }
+    if (this.$route.query.search) {
+      const search = this.$route.query.search;
+      this.viewStore.searchText = search;
+      this.searchText = search;
+    }
     this.applySearch(this.viewStore.searchText); // restore search state
   },
 };
