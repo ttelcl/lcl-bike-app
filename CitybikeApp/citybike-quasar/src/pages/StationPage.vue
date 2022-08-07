@@ -72,7 +72,6 @@
                             title="Opens in new tab"
                           >
                             show in google maps
-                            <q-icon name="language" size="xs" />
                             <q-icon name="open_in_new" size="xs" /> </a
                           >)
                         </span>

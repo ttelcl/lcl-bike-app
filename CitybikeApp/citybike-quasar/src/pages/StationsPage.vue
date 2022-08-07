@@ -41,7 +41,7 @@
       <q-input
         v-model="searchText"
         outlined
-        placeholder="Search for station name or address (in any of the supported languages)"
+        placeholder="Search for a station name or address (in any of the supported languages)"
         dense
         clearable
         debounce="750"
@@ -142,8 +142,8 @@
                   rel="noopener noreferrer"
                   title="Show in Google Maps in new tab"
                 >
-                  <q-icon right name="language" size="xs" />
-                  <q-icon name="open_in_new" size="xs" />
+                  <!-- <q-icon right name="language" size="xs" /> -->
+                  <q-icon right name="open_in_new" size="xs" />
                 </a>
               </span>
             </q-td>
@@ -153,7 +153,7 @@
               <span> {{ props.row.addrSe }} </span>
               <span class="external-link">
                 <a
-                  :href="googleMapsUrl(props.row)"
+                  :href="stationsStore.googleMapsUrl(props.row)"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
