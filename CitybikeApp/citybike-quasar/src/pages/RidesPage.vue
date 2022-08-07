@@ -124,8 +124,6 @@
       </div>
     </div>
     <hr />
-    <div>Query pending: {{ parametersChanged }}</div>
-    <hr />
     <div v-if="ridesStore.currentPaginationInitialized">
       <q-table
         title="Rides"

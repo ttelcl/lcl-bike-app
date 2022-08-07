@@ -70,6 +70,7 @@ export const useStationsStore = defineStore("stations", {
           s.city = cities.cities[s.cityId];
           s.depCount = 0; // preallocate total ride departure count
           s.retCount = 0; // preallocate total ride return count
+          s.rideRank = 0; // preallocate ride count rank
           this.stations[s.id] = s;
         }
         this.errorMessage = null;

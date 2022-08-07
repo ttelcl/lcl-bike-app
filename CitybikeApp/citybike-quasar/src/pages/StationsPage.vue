@@ -320,6 +320,15 @@ const stationColumns = [
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
+    required: false, // hide by default
+  },
+  {
+    name: "rank",
+    label: "Rank",
+    field: "rideRank",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
     required: true,
   },
   {
