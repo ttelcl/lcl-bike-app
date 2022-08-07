@@ -136,7 +136,36 @@
               >
             </q-td>
           </template>
-          <template #body-cell-actions="props">
+          <template #body-cell-addrFi="props">
+            <q-td :props="props">
+              <span> {{ props.row.addrFi }} </span>
+              <span class="external-link">
+                <a
+                  :href="googleMapsUrl(props.row)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <q-icon right name="open_in_new" />
+                </a>
+              </span>
+            </q-td>
+          </template>
+          <template #body-cell-addrSe="props">
+            <q-td :props="props">
+              <span> {{ props.row.addrSe }} </span>
+              <span class="external-link">
+                <a
+                  :href="googleMapsUrl(props.row)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <q-icon right name="open_in_new" />
+                </a>
+              </span>
+            </q-td>
+          </template>
+          <!-- map link functionality into address columns -->
+          <!-- <template #body-cell-actions="props">
             <q-td :props="props">
               <span class="external-link">
                 <a
@@ -149,7 +178,7 @@
                 </a>
               </span>
             </q-td>
-          </template>
+          </template> -->
         </q-table>
       </div>
       <div v-if="!isLoaded" class="problem">
@@ -268,7 +297,7 @@ const stationColumns = [
   },
   {
     name: "depCount",
-    label: "Departures",
+    label: "Starts",
     field: "depCount",
     classes: "colStyleRideCount",
     align: "right",
@@ -277,7 +306,7 @@ const stationColumns = [
   },
   {
     name: "retCount",
-    label: "Returns",
+    label: "Ends",
     field: "retCount",
     classes: "colStyleRideCount",
     align: "right",
@@ -465,7 +494,7 @@ export default {
   width: 6rem;
 }
 .colStyleRideCount {
-  width: 5rem;
+  width: 4rem;
 }
 .problem {
   font-style: italic;
