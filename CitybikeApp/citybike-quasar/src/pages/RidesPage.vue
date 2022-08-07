@@ -116,7 +116,7 @@
           <q-btn
             label="Reset"
             color="primary"
-            @click="resetQuery"
+            @click="resetQuery(false)"
             no-caps
             class="btnWidthHack"
           />
@@ -446,14 +446,20 @@ export default {
     async reloadRidesMetadata() {
       await this.ridesStore.reload(true);
     },
-    async resetQuery() {
+    // "soft=true" only resets the parameters
+    // "soft=false" additionally clears the query of the URL and executes the
+    // reset query
+    async resetQuery(soft = false) {
       this.ridesStore.nextQueryParameters.t0 = null;
       this.ridesStore.nextQueryParameters.t1 = null;
       this.ridesStore.nextQueryParameters.depId = 0;
       this.ridesStore.nextQueryParameters.retId = 0;
       this.parametersChanged = false;
-      await this.ridesStore.initTable(true, 15, 1, null, null, null, null);
-      this.parametersChanged = false;
+      if (!soft) {
+        this.$router.replace({ query: null });
+        await this.ridesStore.initTable(true, 15, 1, null, null, null, null);
+        this.parametersChanged = false;
+      }
     },
     // Apply the query:
     async initTable() {
@@ -548,8 +554,26 @@ export default {
       }
     }
     if (!this.ridesStore.currentPaginationInitialized) {
-      await this.resetQuery();
+      await this.resetQuery(true);
     }
+    const oldAutoApply = this.ridesStore.autoApplyQuery;
+    try {
+      if (!isNaN(this.$route.query.dep)) {
+        this.depStationId = this.$route.query.dep;
+      }
+      if (!isNaN(this.$route.query.ret)) {
+        this.retStationId = this.$route.query.ret;
+      }
+      if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.from)) {
+        this.startDate = this.$route.query.from;
+      }
+      if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.to)) {
+        this.endDate = this.$route.query.to;
+      }
+    } finally {
+      this.ridesStore.autoApplyQuery = oldAutoApply;
+    }
+    await this.initTable();
   },
 };
 </script>

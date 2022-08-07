@@ -107,11 +107,47 @@
           </template> -->
           <template #body-cell-nameFi="props">
             <q-td :props="props">
-              <router-link
+              <!-- <router-link
                 :to="`/stations/${props.row.id}`"
                 class="text-green-2"
                 >{{ props.row.nameFi }}</router-link
-              >
+              > -->
+              <div class="row">
+                <div class="col">
+                  <router-link
+                    :to="`/stations/${props.row.id}`"
+                    class="text-green-2"
+                  >
+                    {{ props.row.nameFi }}
+                  </router-link>
+                </div>
+                <div class="col-auto">
+                  <q-btn
+                    icon="logout"
+                    :to="`/rides?dep=${props.row.id}`"
+                    color="primary"
+                    dense
+                    size="xs"
+                    class="q-mx-xs q-px-xs"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides starting here
+                    </q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    icon="login"
+                    :to="`/rides?ret=${props.row.id}`"
+                    color="primary"
+                    dense
+                    size="xs"
+                    class="q-px-xs"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides ending here
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
             </q-td>
           </template>
           <template #body-cell-nameSe="props">
@@ -142,7 +178,6 @@
                   rel="noopener noreferrer"
                   title="Show in Google Maps in new tab"
                 >
-                  <!-- <q-icon right name="language" size="xs" /> -->
                   <q-icon right name="open_in_new" size="xs" />
                 </a>
               </span>
@@ -162,7 +197,6 @@
               </span>
             </q-td>
           </template>
-          <!-- map link functionality into address columns -->
           <!-- <template #body-cell-actions="props">
             <q-td :props="props">
               <span class="external-link">
@@ -177,6 +211,16 @@
               </span>
             </q-td>
           </template> -->
+          <template #body-cell-actions="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/rides/?dep=${props.row.id}`"
+                class="text-green-2"
+              >
+                TEST
+              </router-link>
+            </q-td>
+          </template>
         </q-table>
       </div>
       <div v-if="!isLoaded" class="problem">
@@ -523,7 +567,7 @@ export default {
   width: 3rem;
 }
 .colStyleName {
-  width: 12rem;
+  width: 15rem;
 }
 .colStyleAddr {
   width: 16rem;
