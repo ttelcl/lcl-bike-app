@@ -397,12 +397,12 @@ export default {
     },
   },
   methods: {
-    /*
-      Reminder on Google Maps links:
-      https://www.google.com/maps/@{lat},{long},{zoom}z
-      https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
-    */
     googleMapsUrl(station) {
+      /*
+        Reminder on Google Maps links:
+        https://www.google.com/maps/@{lat},{long},{zoom}z
+        https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
+      */
       return `https://www.google.com/maps/@${station.latitude},${station.longitude},20z`;
     },
     async reload() {

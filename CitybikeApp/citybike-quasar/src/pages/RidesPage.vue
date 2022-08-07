@@ -100,15 +100,13 @@
         </div>
       </div>
       <div class="column col-auto">
-        <div
-          class="row rounded-borders"
-          :class="parametersChanged ? 'bg-warning' : 'bg-primary'"
-        >
+        <div class="row rounded-borders" :class="applyButtonColorClass">
           <q-btn
             label="Apply"
             @click="initTable"
             no-caps
             class="btnWidthHack2"
+            :disable="applyDisabled"
           />
           <q-checkbox v-model="ridesStore.autoApplyQuery" dense class="q-pr-xs">
             <q-tooltip> Auto-apply whenever a parameter changes </q-tooltip>
@@ -162,22 +160,50 @@
         </template>
         <template #body-cell-s_from="props">
           <q-td :props="props">
-            <router-link
-              :to="`/stations/${props.row.depStationId}`"
-              class="text-green-2"
-            >
-              {{ stationName(props.row.depStation) }}
-            </router-link>
+            <div class="row">
+              <div class="col">
+                <router-link
+                  :to="`/stations/${props.row.depStationId}`"
+                  class="text-green-2"
+                >
+                  {{ stationName(props.row.depStation) }}
+                </router-link>
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  :icon="depMatchesCurrent(props.row) ? 'search_off' : 'search'"
+                  @click.stop="depSearch(props.row)"
+                  padding="0 0"
+                  :color="depMatchesCurrent(props.row) ? 'red-14' : 'primary'"
+                  dense
+                  size="sm"
+                />
+              </div>
+            </div>
           </q-td>
         </template>
         <template #body-cell-s_to="props">
           <q-td :props="props">
-            <router-link
-              :to="`/stations/${props.row.retStationId}`"
-              class="text-green-2"
-            >
-              {{ stationName(props.row.retStation) }}
-            </router-link>
+            <div class="row">
+              <div class="col">
+                <router-link
+                  :to="`/stations/${props.row.retStationId}`"
+                  class="text-green-2"
+                >
+                  {{ stationName(props.row.retStation) }}
+                </router-link>
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  :icon="retMatchesCurrent(props.row) ? 'search_off' : 'search'"
+                  @click.stop="retSearch(props.row)"
+                  padding="0 0"
+                  :color="retMatchesCurrent(props.row) ? 'red-14' : 'primary'"
+                  dense
+                  size="sm"
+                />
+              </div>
+            </div>
           </q-td>
         </template>
       </q-table>
@@ -247,7 +273,7 @@ const ridesColumns = [
   {
     name: "s_from",
     label: "From",
-    field: (row) => row.depStation.nameFi,
+    // field: (row) => row.depStation.nameFi, // Unused! body cell picks up the right FI/SE name
     align: "left",
     classes: "colWidthStation",
     headerClasses: "colWidthStation",
@@ -255,7 +281,7 @@ const ridesColumns = [
   {
     name: "s_to",
     label: "To",
-    field: (row) => row.retStation.nameFi,
+    // field: (row) => row.retStation.nameFi, // Unused! body cell picks up the right FI/SE name
     align: "left",
     classes: "colWidthStation",
     headerClasses: "colWidthStation",
@@ -407,6 +433,16 @@ export default {
     finalMonth() {
       return date.formatDate(this.ridesStore.lastRideStart, "YYYY/MM");
     },
+    applyDisabled() {
+      return this.ridesStore.autoApplyQuery && !this.parametersChanged;
+    },
+    applyButtonColorClass() {
+      if (this.ridesStore.autoApplyQuery) {
+        return this.parametersChanged ? "bg-blue" : "bg-grey-9";
+      } else {
+        return this.parametersChanged ? "bg-warning" : "bg-primary";
+      }
+    },
   },
   methods: {
     async reloadRidesMetadata() {
@@ -454,9 +490,29 @@ export default {
       const lang = this.ridesStore.addressLanguage;
       return lang == "SE" ? station.nameSe : station.nameFi;
     },
-    wtf() {
-      console.log(this.$refs);
-      console.log(this.$refs.depIdField.hasError);
+    async depSearch(row) {
+      if (!isNaN(row.depStationId)) {
+        if (row.depStationId != this.depStationId) {
+          this.depStationId = row.depStationId;
+        } else {
+          this.depStationId = 0; // clear the departure search
+        }
+      }
+    },
+    depMatchesCurrent(row) {
+      return !isNaN(row.depStationId) && row.depStationId == this.depStationId;
+    },
+    async retSearch(row) {
+      if (!isNaN(row.retStationId)) {
+        if (row.retStationId != this.retStationId) {
+          this.retStationId = row.retStationId;
+        } else {
+          this.retStationId = 0; // clear the departure search
+        }
+      }
+    },
+    retMatchesCurrent(row) {
+      return !isNaN(row.retStationId) && row.retStationId == this.retStationId;
     },
   },
   watch: {
@@ -502,7 +558,7 @@ export default {
 
 <style lang="scss">
 .colWidthStation {
-  width: 12rem;
+  width: 13rem;
 }
 .colWidthDay {
   width: 6rem;
@@ -518,7 +574,7 @@ export default {
 }
 
 .dateInput {
-  width: 9rem;
+  width: 10rem;
 }
 
 .btnWidthHack {

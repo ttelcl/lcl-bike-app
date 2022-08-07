@@ -18,7 +18,7 @@ export const useRidesStore = defineStore("rides", {
     lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
 
     addressLanguage: "FI", // Valid values: "FI" and "SE" (not "EN"; streets don't have english names)
-    autoApplyQuery: false,
+    autoApplyQuery: true,
 
     currentPagination: {
       page: 1,
@@ -29,6 +29,11 @@ export const useRidesStore = defineStore("rides", {
       query: {}, // our own query info
     },
     currentPaginationInitialized: false,
+
+    /*
+      Caches the currently visible rows. The records in this array are crafted
+      by the "reshapeRide()" method below - look there for available fields.
+     */
     currentPageRows: [],
 
     nextQueryParameters: {
@@ -81,7 +86,7 @@ export const useRidesStore = defineStore("rides", {
     },
   },
   actions: {
-    // Create a new ride query state object
+    // Create a new ride query state object (used for server-side pagination)
     newRideQuery(
       pageSize = 15,
       t0 = null, // null or a string like 'YYYY-MM-DD'
