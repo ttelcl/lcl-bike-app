@@ -6,91 +6,127 @@
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
     <hr />
-    <h4 class="q-my-md">Query Parameters</h4>
+    <!-- <h4 class="q-my-md">Query Parameters</h4> -->
+    <!--
+      Helpful link for solving layout puzzles:
+      https://github.com/quasarframework/quasar/blob/dev/ui/src/css/core/flex.sass
+    -->
+    <!-- The query parameters bar -->
     <div class="row q-gutter-md q-py-sm">
-      <q-btn label="Reset" color="primary" @click="resetQuery" no-caps />
-      <q-input
-        v-model.number="ridesStore.nextQueryParameters.depId"
-        type="number"
-        outlined
-        class="numInput"
-        label="From Station Id"
-        debounce="750"
-        :hint="ridesStore.nextDepStationName"
-        :rules="stationIdRules"
-        ref="depIdField"
-        @focus="(input) => input.target.select()"
-      />
-      <q-input
-        v-model.number="ridesStore.nextQueryParameters.retId"
-        type="number"
-        outlined
-        class="numInput"
-        label="To Station Id"
-        debounce="750"
-        :hint="ridesStore.nextRetStationName"
-        :rules="stationIdRules"
-        ref="retIdField"
-        @focus="(input) => input.target.select()"
-      />
-      <q-input
-        v-model="startDate"
-        mask="####-##-##"
-        outlined
-        class="dateInput"
-        label="start date"
-        readonly
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy
-              cover
-              transition-show="scale"
-              transition-hide="scale"
-            >
-              <q-date
-                mask="YYYY-MM-DD"
-                v-model="startDate"
-                :default-year-month="initialMonth"
-              >
-                <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Close" color="primary" flat />
-                </div>
-              </q-date>
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
-      <q-input
-        v-model="endDate"
-        mask="####-##-##"
-        outlined
-        class="dateInput"
-        label="end date"
-        readonly
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy
-              cover
-              transition-show="scale"
-              transition-hide="scale"
-            >
-              <q-date
-                mask="YYYY-MM-DD"
-                v-model="endDate"
-                :default-year-month="finalMonth"
-              >
-                <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Close" color="primary" flat />
-                </div>
-              </q-date>
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
-      <q-btn label="Apply" color="primary" @click="initTable" no-caps />
+      <div class="col-auto">
+        <div class="row q-col-gutter-md">
+          <!-- ridesStore.nextQueryParameters.depId -->
+          <q-input
+            v-model.number="depStationId"
+            type="number"
+            outlined
+            class="numInput"
+            label="From Station Id"
+            debounce="750"
+            :hint="ridesStore.nextDepStationName"
+            :rules="stationIdRules"
+            ref="depIdField"
+            @focus="(input) => input.target.select()"
+          />
+          <!-- ridesStore.nextQueryParameters.retId -->
+          <q-input
+            v-model.number="retStationId"
+            type="number"
+            outlined
+            class="numInput"
+            label="To Station Id"
+            debounce="750"
+            :hint="ridesStore.nextRetStationName"
+            :rules="stationIdRules"
+            ref="retIdField"
+            @focus="(input) => input.target.select()"
+          />
+          <q-input
+            v-model="startDate"
+            mask="####-##-##"
+            outlined
+            class="dateInput"
+            label="start date"
+            readonly
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date
+                    mask="YYYY-MM-DD"
+                    v-model="startDate"
+                    :default-year-month="initialMonth"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+          <q-input
+            v-model="endDate"
+            mask="####-##-##"
+            outlined
+            class="dateInput"
+            label="end date"
+            readonly
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date
+                    mask="YYYY-MM-DD"
+                    v-model="endDate"
+                    :default-year-month="finalMonth"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div class="column col-auto">
+        <div
+          class="row rounded-borders"
+          :class="parametersChanged ? 'bg-warning' : 'bg-primary'"
+        >
+          <q-btn
+            label="Apply"
+            @click="initTable"
+            no-caps
+            class="btnWidthHack2"
+          />
+          <q-checkbox v-model="ridesStore.autoApplyQuery" dense class="q-pr-xs">
+            <q-tooltip> Auto-apply whenever a parameter changes </q-tooltip>
+          </q-checkbox>
+        </div>
+        <div class="row q-pt-sm">
+          <q-btn
+            label="Reset"
+            color="primary"
+            @click="resetQuery"
+            no-caps
+            class="btnWidthHack"
+          />
+        </div>
+      </div>
     </div>
+    <hr />
+    <div>Query pending: {{ parametersChanged }}</div>
     <hr />
     <div v-if="ridesStore.currentPaginationInitialized">
       <q-table
@@ -107,13 +143,31 @@
         :loading="ridesStore.loading"
         @request="updateTablePage"
       >
+        <template v-slot:top>
+          <div class="row fit justify-between">
+            <div class="row">
+              <div class="q-table__title">Rides</div>
+            </div>
+            <div class="row">
+              <q-btn-toggle
+                v-model="ridesStore.addressLanguage"
+                toggle-color="primary"
+                :options="[
+                  { label: 'FI', value: 'FI' },
+                  { label: 'SE', value: 'SE' },
+                ]"
+              />
+            </div>
+          </div>
+        </template>
         <template #body-cell-s_from="props">
           <q-td :props="props">
             <router-link
               :to="`/stations/${props.row.depStationId}`"
               class="text-green-2"
-              >{{ props.row.depStation.nameFi }}</router-link
             >
+              {{ stationName(props.row.depStation) }}
+            </router-link>
           </q-td>
         </template>
         <template #body-cell-s_to="props">
@@ -121,8 +175,9 @@
             <router-link
               :to="`/stations/${props.row.retStationId}`"
               class="text-green-2"
-              >{{ props.row.retStation.nameFi }}</router-link
             >
+              {{ stationName(props.row.retStation) }}
+            </router-link>
           </q-td>
         </template>
       </q-table>
@@ -282,6 +337,8 @@ export default {
       },
       depErr: false,
       retErr: false,
+      parametersChanged: false,
+      queryPending: false,
     };
   },
   computed: {
@@ -298,7 +355,9 @@ export default {
         }
       },
       set(nt) {
+        const changed = this.ridesStore.nextQueryParameters.t0 != nt;
         this.ridesStore.nextQueryParameters.t0 = nt ? nt : null;
+        this.parametersChanged = changed;
       },
     },
     endDate: {
@@ -311,7 +370,29 @@ export default {
         }
       },
       set(nt) {
+        const changed = this.ridesStore.nextQueryParameters.t1 != nt;
         this.ridesStore.nextQueryParameters.t1 = nt ? nt : null;
+        this.parametersChanged = changed;
+      },
+    },
+    retStationId: {
+      get() {
+        return this.ridesStore.nextQueryParameters.retId;
+      },
+      set(n) {
+        const changed = this.ridesStore.nextQueryParameters.retId != n;
+        this.ridesStore.nextQueryParameters.retId = n;
+        this.parametersChanged = changed;
+      },
+    },
+    depStationId: {
+      get() {
+        return this.ridesStore.nextQueryParameters.depId;
+      },
+      set(n) {
+        const changed = this.ridesStore.nextQueryParameters.depId != n;
+        this.ridesStore.nextQueryParameters.depId = n;
+        this.parametersChanged = changed;
       },
     },
     initialDate() {
@@ -336,9 +417,13 @@ export default {
       this.ridesStore.nextQueryParameters.t1 = null;
       this.ridesStore.nextQueryParameters.depId = 0;
       this.ridesStore.nextQueryParameters.retId = 0;
+      this.parametersChanged = false;
       await this.ridesStore.initTable(true, 15, 1, null, null, null, null);
+      this.parametersChanged = false;
     },
+    // Apply the query:
     async initTable() {
+      this.parametersChanged = false;
       await this.ridesStore.initTable(
         true,
         15,
@@ -348,13 +433,49 @@ export default {
         this.ridesStore.nextQueryParameters.depId,
         this.ridesStore.nextQueryParameters.retId
       );
+      this.queryPending = false;
     },
     async updateTablePage(props) {
       await this.ridesStore.updateTablePage(props);
     },
+    startQuery() {
+      if (!this.queryPending) {
+        this.initTable().then(() => this.finishQuery());
+      } else {
+        console.log(
+          "Not starting new query while previous one is still running"
+        );
+      }
+    },
+    finishQuery() {
+      this.queryPending = false;
+    },
+    stationName(station) {
+      const lang = this.ridesStore.addressLanguage;
+      return lang == "SE" ? station.nameSe : station.nameFi;
+    },
     wtf() {
       console.log(this.$refs);
       console.log(this.$refs.depIdField.hasError);
+    },
+  },
+  watch: {
+    // tmpDepId(n, o) {
+    //   if (n != this.ridesStore.nextQueryParameters.depId) {
+    //     this.ridesStore.nextQueryParameters.depId = n;
+    //     this.parametersChanged = true;
+    //   }
+    // },
+    // tmpRetId(n, o) {
+    //   if (n != this.ridesStore.nextQueryParameters.retId) {
+    //     this.ridesStore.nextQueryParameters.retId = n;
+    //     this.parametersChanged = true;
+    //   }
+    // },
+    parametersChanged(n, o) {
+      if (n && this.ridesStore.autoApplyQuery) {
+        this.startQuery();
+      }
     },
   },
   async mounted() {
@@ -398,6 +519,14 @@ export default {
 
 .dateInput {
   width: 9rem;
+}
+
+.btnWidthHack {
+  min-width: 7rem;
+}
+
+.btnWidthHack2 {
+  min-width: 5rem;
 }
 
 // Remove adornments from number inputs:
