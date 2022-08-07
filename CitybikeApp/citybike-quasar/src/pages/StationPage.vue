@@ -23,20 +23,22 @@
               <tbody>
                 <tr>
                   <td class="propcolName larger text-green-14">Name</td>
-                  <td class="propcolVal larger">{{ station.nameFi }}</td>
-                  <td class="propcolVal">{{ station.nameSe }}</td>
-                  <td class="propcolVal">{{ station.nameEn }}</td>
+                  <td class="propcolNameVal larger">{{ station.nameFi }}</td>
+                  <td class="propcolNameVal">{{ station.nameSe }}</td>
+                  <td class="propcolNameVal">{{ station.nameEn }}</td>
                 </tr>
                 <tr>
                   <td class="propcolName larger text-green-14">Address</td>
-                  <td class="propcolVal larger">{{ station.addrFi }}</td>
-                  <td class="propcolVal">{{ station.addrSe }}</td>
-                  <td class="propcolVal"></td>
+                  <td class="propcolNameVal larger">{{ station.addrFi }}</td>
+                  <td class="propcolNameVal">{{ station.addrSe }}</td>
+                  <td class="propcolNameVal"></td>
                 </tr>
                 <tr>
                   <td class="propcolName larger text-green-14">City</td>
-                  <td class="propcolVal larger">{{ station.city.CityFi }}</td>
-                  <td class="propcolVal">{{ station.city.CitySe }}</td>
+                  <td class="propcolNameVal larger">
+                    {{ station.city.CityFi }}
+                  </td>
+                  <td class="propcolNameVal">{{ station.city.CitySe }}</td>
                 </tr>
               </tbody>
             </q-markup-table>
@@ -54,10 +56,28 @@
                 <tr>
                   <td class="propcolName larger text-green-14">Coordinates</td>
                   <td class="propcolVal">
-                    <span> {{ station.latitude }} </span>
-                    <span class="text-green-14"> N, </span>
-                    <span> {{ station.longitude }} </span>
-                    <span class="text-green-14"> E </span>
+                    <div class="row justify-between">
+                      <div class="col-auto">
+                        <span> {{ station.latitude }} </span>
+                        <span class="text-green-14"> N, </span>
+                        <span> {{ station.longitude }} </span>
+                        <span class="text-green-14"> E </span>
+                      </div>
+                      <div class="col-auto">
+                        <span class="external-link">
+                          (<a
+                            :href="stationsStore.googleMapsUrl(station)"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Opens in new tab"
+                          >
+                            show in google maps
+                            <q-icon name="language" size="xs" />
+                            <q-icon name="open_in_new" size="xs" /> </a
+                          >)
+                        </span>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -79,6 +99,7 @@
 import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
 import { useStationsStore } from "src/stores/stationsStore";
+import { useRideCountStore } from "src/stores/rideCountStore";
 import DesignNote from "components/DesignNote.vue";
 
 export default {
@@ -87,7 +108,8 @@ export default {
     const appstateStore = useAppstateStore();
     const citiesStore = useCitiesStore();
     const stationsStore = useStationsStore();
-    return { appstateStore, citiesStore, stationsStore };
+    const rideCountStore = useRideCountStore();
+    return { appstateStore, citiesStore, stationsStore, rideCountStore };
   },
   data() {
     return {
@@ -136,6 +158,17 @@ export default {
     if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
       await this.stationsStore.loadFromDb(0);
     }
+    if (!this.appstateStore.manualLoadStations) {
+      if (!this.stationsStore.loaded) {
+        await this.load(0);
+      } else {
+        // This branch is relevant when something else loaded the
+        // stationsStore already, but nothing loaded the ride counts
+        // yet. Example flow where that happens: Home -> Rides -> Stations.
+        await this.rideCountStore.load();
+      }
+    }
+
     this.appstateStore.currentSection = `${this.myName} - ${this.stationNameCompact}`;
   },
 };
@@ -143,12 +176,16 @@ export default {
 
 <style scoped>
 .propcolName {
-  width: 7em;
+  width: 7rem;
   text-align: right;
   font-style: italic;
 }
+.propcolNameVal {
+  width: 10rem;
+  text-align: left;
+}
 .propcolVal {
-  width: 15em;
+  width: 30rem;
   text-align: left;
 }
 .larger {

@@ -41,7 +41,7 @@
       <q-input
         v-model="searchText"
         outlined
-        placeholder="Filter"
+        placeholder="Search for station name or address (in any of the supported languages)"
         dense
         clearable
         debounce="750"
@@ -54,10 +54,6 @@
         <template v-slot:prepend>
           <q-icon name="search" />
         </template>
-        <q-tooltip>
-          Type text to search in any part of the station data: name (Finnish,
-          Swedish, English) or address (Finnish, Swedish).
-        </q-tooltip>
       </q-input>
       <div>
         <q-table
@@ -141,11 +137,13 @@
               <span> {{ props.row.addrFi }} </span>
               <span class="external-link">
                 <a
-                  :href="googleMapsUrl(props.row)"
+                  :href="stationsStore.googleMapsUrl(props.row)"
                   target="_blank"
                   rel="noopener noreferrer"
+                  title="Show in Google Maps in new tab"
                 >
-                  <q-icon right name="open_in_new" />
+                  <q-icon right name="language" size="xs" />
+                  <q-icon name="open_in_new" size="xs" />
                 </a>
               </span>
             </q-td>
@@ -340,9 +338,36 @@ const stationColumns = [
 ];
 
 const columnSetDefs = {
-  FI: ["id", "nameFi", "addrFi", "city", "depCount", "retCount", "actions"],
-  SE: ["id", "nameSe", "addrSe", "citySe", "depCount", "retCount", "actions"],
-  EN: ["id", "nameEn", "addrFi", "city", "depCount", "retCount", "actions"],
+  FI: [
+    "id",
+    "nameFi",
+    "addrFi",
+    "city",
+    "depCount",
+    "retCount",
+    "rank",
+    "actions",
+  ],
+  SE: [
+    "id",
+    "nameSe",
+    "addrSe",
+    "citySe",
+    "depCount",
+    "retCount",
+    "rank",
+    "actions",
+  ],
+  EN: [
+    "id",
+    "nameEn",
+    "addrFi",
+    "city",
+    "depCount",
+    "retCount",
+    "rank",
+    "actions",
+  ],
 };
 
 export default {
@@ -406,14 +431,6 @@ export default {
     },
   },
   methods: {
-    googleMapsUrl(station) {
-      /*
-        Reminder on Google Maps links:
-        https://www.google.com/maps/@{lat},{long},{zoom}z
-        https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
-      */
-      return `https://www.google.com/maps/@${station.latitude},${station.longitude},20z`;
-    },
     async reload() {
       // The parameter specifies an artificial delay in milliseconds between
       // load steps, slowing down updates between this.loadStatus updates.
@@ -515,11 +532,5 @@ export default {
 .problem {
   font-style: italic;
   color: #eeaa33;
-}
-.external-link a {
-  color: #88aadd;
-}
-.external-link a:visited {
-  color: #5577aa;
 }
 </style>
