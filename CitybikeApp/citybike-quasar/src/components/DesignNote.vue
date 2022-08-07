@@ -57,7 +57,7 @@ export default {
 }
 .design-note-in-alt {
   max-width: 40em;
-  background-color: #583811;
+  background-color: #585040;
   color: #ddddcc;
   font-style: italic;
   font-size: inherit;

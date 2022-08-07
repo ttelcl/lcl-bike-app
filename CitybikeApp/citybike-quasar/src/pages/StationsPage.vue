@@ -41,7 +41,7 @@
       <q-input
         v-model="searchText"
         outlined
-        placeholder="Filter"
+        placeholder="Search for a station name or address (in any of the supported languages)"
         dense
         clearable
         debounce="750"
@@ -54,10 +54,6 @@
         <template v-slot:prepend>
           <q-icon name="search" />
         </template>
-        <q-tooltip>
-          Type text to search in any part of the station data: name (Finnish,
-          Swedish, English) or address (Finnish, Swedish).
-        </q-tooltip>
       </q-input>
       <div>
         <q-table
@@ -111,11 +107,47 @@
           </template> -->
           <template #body-cell-nameFi="props">
             <q-td :props="props">
-              <router-link
+              <!-- <router-link
                 :to="`/stations/${props.row.id}`"
                 class="text-green-2"
                 >{{ props.row.nameFi }}</router-link
-              >
+              > -->
+              <div class="row">
+                <div class="col">
+                  <router-link
+                    :to="`/stations/${props.row.id}`"
+                    class="text-green-2"
+                  >
+                    {{ props.row.nameFi }}
+                  </router-link>
+                </div>
+                <div class="col-auto">
+                  <q-btn
+                    icon="logout"
+                    :to="`/rides?dep=${props.row.id}`"
+                    color="primary"
+                    dense
+                    size="xs"
+                    class="q-mx-xs q-px-xs"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides starting here
+                    </q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    icon="login"
+                    :to="`/rides?ret=${props.row.id}`"
+                    color="primary"
+                    dense
+                    size="xs"
+                    class="q-px-xs"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides ending here
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
             </q-td>
           </template>
           <template #body-cell-nameSe="props">
@@ -136,7 +168,36 @@
               >
             </q-td>
           </template>
-          <template #body-cell-actions="props">
+          <template #body-cell-addrFi="props">
+            <q-td :props="props">
+              <span> {{ props.row.addrFi }} </span>
+              <span class="external-link">
+                <a
+                  :href="stationsStore.googleMapsUrl(props.row)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Show in Google Maps in new tab"
+                >
+                  <q-icon right name="open_in_new" size="xs" />
+                </a>
+              </span>
+            </q-td>
+          </template>
+          <template #body-cell-addrSe="props">
+            <q-td :props="props">
+              <span> {{ props.row.addrSe }} </span>
+              <span class="external-link">
+                <a
+                  :href="stationsStore.googleMapsUrl(props.row)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <q-icon right name="open_in_new" />
+                </a>
+              </span>
+            </q-td>
+          </template>
+          <!-- <template #body-cell-actions="props">
             <q-td :props="props">
               <span class="external-link">
                 <a
@@ -148,6 +209,16 @@
                   <q-icon right name="open_in_new" />
                 </a>
               </span>
+            </q-td>
+          </template> -->
+          <template #body-cell-actions="props">
+            <q-td :props="props">
+              <router-link
+                :to="`/rides/?dep=${props.row.id}`"
+                class="text-green-2"
+              >
+                TEST
+              </router-link>
             </q-td>
           </template>
         </q-table>
@@ -268,7 +339,7 @@ const stationColumns = [
   },
   {
     name: "depCount",
-    label: "Departures",
+    label: "Starts",
     field: "depCount",
     classes: "colStyleRideCount",
     align: "right",
@@ -277,7 +348,7 @@ const stationColumns = [
   },
   {
     name: "retCount",
-    label: "Returns",
+    label: "Ends",
     field: "retCount",
     classes: "colStyleRideCount",
     align: "right",
@@ -288,6 +359,15 @@ const stationColumns = [
     name: "rideCount",
     label: "Total",
     field: (row) => row.depCount + row.retCount,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: false, // hide by default
+  },
+  {
+    name: "rank",
+    label: "Rank",
+    field: "rideRank",
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
@@ -302,9 +382,36 @@ const stationColumns = [
 ];
 
 const columnSetDefs = {
-  FI: ["id", "nameFi", "addrFi", "city", "depCount", "retCount", "actions"],
-  SE: ["id", "nameSe", "addrSe", "citySe", "depCount", "retCount", "actions"],
-  EN: ["id", "nameEn", "addrFi", "city", "depCount", "retCount", "actions"],
+  FI: [
+    "id",
+    "nameFi",
+    "addrFi",
+    "city",
+    "depCount",
+    "retCount",
+    "rank",
+    "actions",
+  ],
+  SE: [
+    "id",
+    "nameSe",
+    "addrSe",
+    "citySe",
+    "depCount",
+    "retCount",
+    "rank",
+    "actions",
+  ],
+  EN: [
+    "id",
+    "nameEn",
+    "addrFi",
+    "city",
+    "depCount",
+    "retCount",
+    "rank",
+    "actions",
+  ],
 };
 
 export default {
@@ -368,14 +475,6 @@ export default {
     },
   },
   methods: {
-    /*
-      Reminder on Google Maps links:
-      https://www.google.com/maps/@{lat},{long},{zoom}z
-      https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
-    */
-    googleMapsUrl(station) {
-      return `https://www.google.com/maps/@${station.latitude},${station.longitude},20z`;
-    },
     async reload() {
       // The parameter specifies an artificial delay in milliseconds between
       // load steps, slowing down updates between this.loadStatus updates.
@@ -433,8 +532,20 @@ export default {
   async mounted() {
     this.appstateStore.currentSection = this.myName;
     this.searchText = this.viewStore.searchText;
-    if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
-      await this.load(0);
+    if (!this.appstateStore.manualLoadStations) {
+      if (!this.stationsStore.loaded) {
+        await this.load(0);
+      } else {
+        // This branch is relevant when something else loaded the
+        // stationsStore already, but nothing loaded the ride counts
+        // yet. Example flow where that happens: Home -> Rides -> Stations.
+        await this.rideCountStore.load();
+      }
+    }
+    if (this.$route.query.search) {
+      const search = this.$route.query.search;
+      this.viewStore.searchText = search;
+      this.searchText = search;
     }
     this.applySearch(this.viewStore.searchText); // restore search state
   },
@@ -456,7 +567,7 @@ export default {
   width: 3rem;
 }
 .colStyleName {
-  width: 12rem;
+  width: 15rem;
 }
 .colStyleAddr {
   width: 16rem;
@@ -465,16 +576,10 @@ export default {
   width: 6rem;
 }
 .colStyleRideCount {
-  width: 5rem;
+  width: 4rem;
 }
 .problem {
   font-style: italic;
   color: #eeaa33;
-}
-.external-link a {
-  color: #88aadd;
-}
-.external-link a:visited {
-  color: #5577aa;
 }
 </style>

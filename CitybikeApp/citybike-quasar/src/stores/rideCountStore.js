@@ -84,6 +84,19 @@ export const useRideCountStore = defineStore("ridecounts", {
         station.depCount = adc[station.id] || 0;
         station.retCount = arc[station.id] || 0;
       }
+      // Calculate ranks
+      const ranks = new Array(stationsStore.stationCount);
+      let i = 0;
+      for (const station of Object.values(stationsStore.stations)) {
+        ranks[i++] = {
+          id: station.id,
+          rides: station.depCount + station.retCount,
+        };
+      }
+      ranks.sort((a, b) => b.rides - a.rides);
+      for (i = 0; i < ranks.length; i++) {
+        stationsStore.stations[ranks[i].id].rideRank = i + 1;
+      }
     },
   },
 });

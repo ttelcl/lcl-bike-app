@@ -38,7 +38,16 @@ export const useStationsStore = defineStore("stations", {
     },
   },
   actions: {
+    googleMapsUrl(station) {
+      /*
+        Reminder on Google Maps links:
+        https://www.google.com/maps/@{lat},{long},{zoom}z
+        https://www.google.com/maps/@60.1635308918594,24.9145164996449,20z
+      */
+      return `https://www.google.com/maps/@${station.latitude},${station.longitude},20z`;
+    },
     sleep(milliseconds = 400) {
+      // debug helper ...
       return new Promise((r) => setTimeout(r, milliseconds));
     },
     async loadFromDb(stepDelay = 0) {
@@ -70,6 +79,7 @@ export const useStationsStore = defineStore("stations", {
           s.city = cities.cities[s.cityId];
           s.depCount = 0; // preallocate total ride departure count
           s.retCount = 0; // preallocate total ride return count
+          s.rideRank = 0; // preallocate ride count rank
           this.stations[s.id] = s;
         }
         this.errorMessage = null;

@@ -1,4 +1,6 @@
-// This pinia store mostly acts as API for ride data access
+// This pinia store both acts as API for ride data access as well
+// as view state store for the rides browser. Apologies for putting
+// two distinct functionalities in one store.
 
 import { defineStore } from "pinia";
 import { backend } from "../webapi/backend";
@@ -15,6 +17,9 @@ export const useRidesStore = defineStore("rides", {
     firstRideStart: new Date("2021-05-01T00:00:00"), // best guess placeholder until loaded!
     lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
 
+    addressLanguage: "FI", // Valid values: "FI" and "SE" (not "EN"; streets don't have english names)
+    autoApplyQuery: true,
+
     currentPagination: {
       page: 1,
       rowsPerPage: 15,
@@ -24,11 +29,16 @@ export const useRidesStore = defineStore("rides", {
       query: {}, // our own query info
     },
     currentPaginationInitialized: false,
+
+    /*
+      Caches the currently visible rows. The records in this array are crafted
+      by the "reshapeRide()" method below - look there for available fields.
+     */
     currentPageRows: [],
 
     nextQueryParameters: {
-      t0: null,
-      t1: null,
+      t0: null, // null or a string like 'YYYY-MM-DD'
+      t1: null, // null or a string like 'YYYY-MM-DD'
       depId: 0,
       retId: 0,
       distMin: 0,
@@ -76,11 +86,11 @@ export const useRidesStore = defineStore("rides", {
     },
   },
   actions: {
-    // Create a new ride query state object
+    // Create a new ride query state object (used for server-side pagination)
     newRideQuery(
       pageSize = 15,
-      t0 = null,
-      t1 = null,
+      t0 = null, // null or a string like 'YYYY-MM-DD'
+      t1 = null, // null or a string like 'YYYY-MM-DD'
       depSid = null,
       retSid = null
     ) {
@@ -125,35 +135,14 @@ export const useRidesStore = defineStore("rides", {
       return response.data;
     },
 
-    cheapGuid() {
-      return this.nextRideId++;
-    },
-
-    reshapeRide(rawRide, stations) {
-      // Reshapes a ride record received from the backend:
-      // * inject station details
-      // * inject an id if not present already (backend type "RideBase" instead of "Ride")
-      return {
-        id: rawRide.id || this.cheapGuid(),
-        depTime: new Date(rawRide.depTime),
-        retTime: new Date(rawRide.retTime),
-        depStationId: rawRide.depStationId,
-        retStationId: rawRide.retStationId,
-        distance: rawRide.distance,
-        duration: rawRide.duration,
-        depStation: stations.stations[rawRide.depStationId],
-        retStation: stations.stations[rawRide.retStationId],
-      };
-    },
-
     // Set up the currentPagination for a new query, starting at page 1 with
     // new search parameters
     async initTable(
       loadFirstPage = false,
       pageSize = 15,
       page = 1,
-      t0 = null,
-      t1 = null,
+      t0 = null, // null or a string like 'YYYY-MM-DD'
+      t1 = null, // null or a string like 'YYYY-MM-DD'
       depSid = null,
       retSid = null
     ) {
@@ -229,6 +218,27 @@ export const useRidesStore = defineStore("rides", {
       }
       // console.log(l);
       return l;
+    },
+
+    reshapeRide(rawRide, stations) {
+      // Reshapes a ride record received from the backend:
+      // * inject station details
+      // * inject an id if not present already (backend type "RideBase" instead of "Ride")
+      return {
+        id: rawRide.id || this.cheapGuid(),
+        depTime: new Date(rawRide.depTime),
+        retTime: new Date(rawRide.retTime),
+        depStationId: rawRide.depStationId,
+        retStationId: rawRide.retStationId,
+        distance: rawRide.distance,
+        duration: rawRide.duration,
+        depStation: stations.stations[rawRide.depStationId],
+        retStation: stations.stations[rawRide.retStationId],
+      };
+    },
+
+    cheapGuid() {
+      return this.nextRideId++;
     },
 
     async reload(force = true) {
