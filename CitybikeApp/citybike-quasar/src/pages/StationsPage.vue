@@ -462,8 +462,15 @@ export default {
   async mounted() {
     this.appstateStore.currentSection = this.myName;
     this.searchText = this.viewStore.searchText;
-    if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
-      await this.load(0);
+    if (!this.appstateStore.manualLoadStations) {
+      if (!this.stationsStore.loaded) {
+        await this.load(0);
+      } else {
+        // This branch is relevant when something else loaded the
+        // stationsStore already, but nothing loaded the ride counts
+        // yet. Example flow where that happens: Home -> Rides -> Stations.
+        await this.rideCountStore.load();
+      }
     }
     this.applySearch(this.viewStore.searchText); // restore search state
   },
