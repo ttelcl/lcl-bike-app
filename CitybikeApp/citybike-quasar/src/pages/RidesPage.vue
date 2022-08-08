@@ -14,7 +14,6 @@
     <div class="row q-gutter-md q-py-sm">
       <div class="col-auto">
         <div class="row q-col-gutter-md">
-          <!-- ridesStore.nextQueryParameters.depId -->
           <q-input
             v-model.number="depStationId"
             type="number"
@@ -25,19 +24,6 @@
             :hint="ridesStore.nextDepStationName"
             :rules="stationIdRules"
             ref="depIdField"
-            @focus="(input) => input.target.select()"
-          />
-          <!-- ridesStore.nextQueryParameters.retId -->
-          <q-input
-            v-model.number="retStationId"
-            type="number"
-            outlined
-            class="numInput"
-            label="To Station Id"
-            debounce="750"
-            :hint="ridesStore.nextRetStationName"
-            :rules="stationIdRules"
-            ref="retIdField"
             @focus="(input) => input.target.select()"
           />
           <q-input
@@ -69,6 +55,31 @@
             </template>
           </q-input>
           <q-input
+            v-model.number="minDist"
+            type="number"
+            outlined
+            class="numInput"
+            label="Min. km"
+            debounce="750"
+            step="0.001"
+            :rules="distanceRules"
+            @focus="(input) => input.target.select()"
+          />
+        </div>
+        <div class="row q-col-gutter-md">
+          <q-input
+            v-model.number="retStationId"
+            type="number"
+            outlined
+            class="numInput"
+            label="To Station Id"
+            debounce="750"
+            :hint="ridesStore.nextRetStationName"
+            :rules="stationIdRules"
+            ref="retIdField"
+            @focus="(input) => input.target.select()"
+          />
+          <q-input
             v-model="endDate"
             mask="####-##-##"
             outlined
@@ -96,21 +107,6 @@
               </q-icon>
             </template>
           </q-input>
-        </div>
-        <div class="row q-col-gutter-md">
-          <!-- ridesStore.nextQueryParameters.minDist -->
-          <q-input
-            v-model.number="minDist"
-            type="number"
-            outlined
-            class="numInput"
-            label="Min. km"
-            debounce="750"
-            step="0.001"
-            :rules="distanceRules"
-            @focus="(input) => input.target.select()"
-          />
-          <!-- ridesStore.nextQueryParameters.maxDist -->
           <q-input
             v-model.number="maxDist"
             type="number"
@@ -565,10 +561,10 @@ export default {
     // Apply the query:
     async initTable() {
       this.parametersChanged = false;
-      // console.log(
-      //   "Page initTable NQP=" +
-      //     JSON.stringify(this.ridesStore.nextQueryParameters)
-      // );
+      console.log(
+        "Page initTable NQP=" +
+          JSON.stringify(this.ridesStore.nextQueryParameters)
+      );
       await this.ridesStore.initTable(
         true,
         15,
