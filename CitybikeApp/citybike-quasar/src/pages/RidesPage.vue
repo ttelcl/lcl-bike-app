@@ -6,7 +6,6 @@
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
     <hr />
-    <!-- <h4 class="q-my-md">Query Parameters</h4> -->
     <!--
       Helpful link for solving layout puzzles:
       https://github.com/quasarframework/quasar/blob/dev/ui/src/css/core/flex.sass
@@ -124,6 +123,7 @@
       </div>
     </div>
     <hr />
+    <!-- The actual table (or load failure error message) -->
     <div v-if="ridesStore.currentPaginationInitialized">
       <q-table
         title="Rides"
@@ -146,16 +146,22 @@
             </div>
             <div class="row">
               <q-btn-toggle
-                v-model="ridesStore.addressLanguage"
+                v-model="ridesStore.stationNameLanguage"
                 toggle-color="primary"
                 :options="[
                   { label: 'FI', value: 'FI' },
                   { label: 'SE', value: 'SE' },
+                  { label: 'EN', value: 'EN' },
                 ]"
               />
             </div>
           </div>
         </template>
+        <!--
+          Design Note! We solve the "how to show names in different lanaguages?" problem
+          here in a different way than on the station page (for historical reasons ...).
+          Here we have only one column, and its content adapts to the language selector.
+        -->
         <template #body-cell-s_from="props">
           <q-td :props="props">
             <div class="row">
@@ -164,7 +170,7 @@
                   :to="`/stations/${props.row.depStationId}`"
                   class="text-green-2"
                 >
-                  {{ stationName(props.row.depStation) }}
+                  {{ ridesStore.getStationName(props.row.depStation) }}
                 </router-link>
               </div>
               <div class="col-auto">
@@ -188,7 +194,7 @@
                   :to="`/stations/${props.row.retStationId}`"
                   class="text-green-2"
                 >
-                  {{ stationName(props.row.retStation) }}
+                  {{ ridesStore.getStationName(props.row.retStation) }}
                 </router-link>
               </div>
               <div class="col-auto">
@@ -490,10 +496,6 @@ export default {
     finishQuery() {
       this.queryPending = false;
     },
-    stationName(station) {
-      const lang = this.ridesStore.addressLanguage;
-      return lang == "SE" ? station.nameSe : station.nameFi;
-    },
     async depSearch(row) {
       if (!isNaN(row.depStationId)) {
         if (row.depStationId != this.depStationId) {
@@ -580,7 +582,7 @@ export default {
 
 <style lang="scss">
 .colWidthStation {
-  width: 13rem;
+  width: 16rem;
 }
 .colWidthDay {
   width: 6rem;

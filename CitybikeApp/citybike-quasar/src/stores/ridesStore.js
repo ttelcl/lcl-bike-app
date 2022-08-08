@@ -17,7 +17,7 @@ export const useRidesStore = defineStore("rides", {
     firstRideStart: new Date("2021-05-01T00:00:00"), // best guess placeholder until loaded!
     lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
 
-    addressLanguage: "FI", // Valid values: "FI" and "SE" (not "EN"; streets don't have english names)
+    stationNameLanguage: "FI", // Valid values: "FI", "SE", and "EN"
     autoApplyQuery: true,
 
     currentPagination: {
@@ -70,7 +70,7 @@ export const useRidesStore = defineStore("rides", {
     },
     nextDepStationName() {
       const station = this.nextDepStation;
-      return station ? station.nameFi : "((all stations))";
+      return station ? this.getStationName(station) : "((all stations))";
     },
     nextRetStation() {
       if (this.nextQueryParameters.retId <= 0) {
@@ -82,10 +82,18 @@ export const useRidesStore = defineStore("rides", {
     },
     nextRetStationName() {
       const station = this.nextRetStation;
-      return station ? station.nameFi : "((all stations))";
+      return station ? this.getStationName(station) : "((all stations))";
     },
   },
   actions: {
+    getStationName(station) {
+      const lang = this.stationNameLanguage;
+      return lang == "SE"
+        ? station.nameSe
+        : lang == "EN"
+        ? station.nameEn
+        : station.nameFi;
+    },
     // Create a new ride query state object (used for server-side pagination)
     newRideQuery(
       pageSize = 15,
