@@ -55,7 +55,7 @@
             </template>
           </q-input>
           <q-input
-            v-model.number="minDist"
+            v-model.number="distMin"
             type="number"
             outlined
             class="numInput"
@@ -108,7 +108,7 @@
             </template>
           </q-input>
           <q-input
-            v-model.number="maxDist"
+            v-model.number="distMax"
             type="number"
             outlined
             class="numInput"
@@ -454,7 +454,7 @@ export default {
         this.parametersChanged = changed;
       },
     },
-    minDist: {
+    distMin: {
       get() {
         if (!Number.isFinite(this.ridesStore.nextQueryParameters.distMin)) {
           return null;
@@ -477,7 +477,7 @@ export default {
         }
       },
     },
-    maxDist: {
+    distMax: {
       get() {
         if (!Number.isFinite(this.ridesStore.nextQueryParameters.distMax)) {
           return null;
@@ -665,17 +665,27 @@ export default {
     }
     const oldAutoApply = this.ridesStore.autoApplyQuery;
     try {
-      if (Number.isFinite(this.$route.query.dep)) {
-        this.depStationId = this.$route.query.dep;
+      const dep = parseInt(this.$route.query.dep);
+      if (Number.isFinite(dep)) {
+        this.depStationId = dep;
       }
-      if (Number.isFinite(this.$route.query.ret)) {
-        this.retStationId = this.$route.query.ret;
+      const ret = parseInt(this.$route.query.ret);
+      if (Number.isFinite(ret)) {
+        this.retStationId = ret;
       }
       if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.from)) {
         this.startDate = this.$route.query.from;
       }
       if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.to)) {
         this.endDate = this.$route.query.to;
+      }
+      const distmin = parseInt(this.$route.query.distmin);
+      if (Number.isFinite(distmin)) {
+        this.distMin = distmin / 1000;
+      }
+      const distmax = parseInt(this.$route.query.distmax);
+      if (Number.isFinite(distmax)) {
+        this.distMax = distmax / 1000;
       }
     } finally {
       this.ridesStore.autoApplyQuery = oldAutoApply;
