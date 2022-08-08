@@ -88,84 +88,28 @@
               </div>
             </div>
           </template>
-          <!-- <template #body-cell-actions="props">
-            <q-td :props="props">
-              <div class="q-gutter-xs">
-                <q-btn
-                  icon-right="info_outline"
-                  @click.stop="navigateRowTarget(props.row)"
-                  padding="0 1ex"
-                  color="grey-9"
-                  text-color="primary"
-                >
-                  <q-tooltip :delay="500">
-                    Open station details page
-                  </q-tooltip>
-                </q-btn>
-              </div>
-            </q-td>
-          </template> -->
+          <!--
+            Design Note! We solve the "how to show names in different languages?"
+            problem here in a different way than on the rides page (for historical
+            reasons ...).
+            Here we have three separate columns, and we show/hide columns based on
+            the language selector.
+            To avoid duplication, I introduced a dedicated component for the
+            content of the name columns
+          -->
           <template #body-cell-nameFi="props">
             <q-td :props="props">
-              <!-- <router-link
-                :to="`/stations/${props.row.id}`"
-                class="text-green-2"
-                >{{ props.row.nameFi }}</router-link
-              > -->
-              <div class="row">
-                <div class="col">
-                  <router-link
-                    :to="`/stations/${props.row.id}`"
-                    class="text-green-2"
-                  >
-                    {{ props.row.nameFi }}
-                  </router-link>
-                </div>
-                <div class="col-auto">
-                  <q-btn
-                    icon="logout"
-                    :to="`/rides?dep=${props.row.id}`"
-                    color="primary"
-                    dense
-                    size="xs"
-                    class="q-mx-xs q-px-xs"
-                  >
-                    <q-tooltip :delay="500" class="text-body2">
-                      Show rides starting here
-                    </q-tooltip>
-                  </q-btn>
-                  <q-btn
-                    icon="login"
-                    :to="`/rides?ret=${props.row.id}`"
-                    color="primary"
-                    dense
-                    size="xs"
-                    class="q-px-xs"
-                  >
-                    <q-tooltip :delay="500" class="text-body2">
-                      Show rides ending here
-                    </q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
+              <StationNameColumn :row="props.row" name-field="nameFi" />
             </q-td>
           </template>
           <template #body-cell-nameSe="props">
             <q-td :props="props">
-              <router-link
-                :to="`/stations/${props.row.id}`"
-                class="text-green-2"
-                >{{ props.row.nameSe }}</router-link
-              >
+              <StationNameColumn :row="props.row" name-field="nameSe" />
             </q-td>
           </template>
           <template #body-cell-nameEn="props">
             <q-td :props="props">
-              <router-link
-                :to="`/stations/${props.row.id}`"
-                class="text-green-2"
-                >{{ props.row.nameEn }}</router-link
-              >
+              <StationNameColumn :row="props.row" name-field="nameEn" />
             </q-td>
           </template>
           <template #body-cell-addrFi="props">
@@ -199,20 +143,6 @@
           </template>
           <!-- <template #body-cell-actions="props">
             <q-td :props="props">
-              <span class="external-link">
-                <a
-                  :href="googleMapsUrl(props.row)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  on map
-                  <q-icon right name="open_in_new" />
-                </a>
-              </span>
-            </q-td>
-          </template> -->
-          <template #body-cell-actions="props">
-            <q-td :props="props">
               <router-link
                 :to="`/rides/?dep=${props.row.id}`"
                 class="text-green-2"
@@ -220,7 +150,7 @@
                 TEST
               </router-link>
             </q-td>
-          </template>
+          </template> -->
         </q-table>
       </div>
       <div v-if="!isLoaded" class="problem">
@@ -269,6 +199,7 @@ import { useStationsStore } from "src/stores/stationsStore";
 import { useStationsViewStore } from "../stores/stationsViewStore";
 import { useRideCountStore } from "src/stores/rideCountStore";
 import DesignNote from "components/DesignNote.vue";
+import StationNameColumn from "src/components/StationNameColumn.vue";
 
 // ref https://quasar.dev/vue-components/table
 const stationColumns = [
@@ -442,6 +373,7 @@ export default {
   },
   components: {
     DesignNote,
+    StationNameColumn,
   },
   computed: {
     currentColumnSet() {
