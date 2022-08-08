@@ -43,8 +43,8 @@ export const useRidesStore = defineStore("rides", {
       retId: 0,
       distMin: null,
       distmax: null,
-      durMin: null,
-      durMax: null,
+      secMin: null,
+      secMax: null,
     },
   }),
   getters: {
@@ -106,7 +106,7 @@ export const useRidesStore = defineStore("rides", {
       secMin = null,
       secMax = null
     ) {
-      if (isNaN(pageSize) || pageSize < 1) {
+      if (!Number.isFinite(pageSize) || pageSize < 1) {
         throw "pageSize must be a number >= 1";
       }
       if (
@@ -121,22 +121,22 @@ export const useRidesStore = defineStore("rides", {
       ) {
         throw "t1 must be a null or a string of the form 'yyyy-mm-dd'";
       }
-      if (depSid !== null && isNaN(depSid)) {
+      if (depSid !== null && !Number.isFinite(depSid)) {
         throw "depSid (departure station id) must be null or an integer";
       }
-      if (retSid !== null && isNaN(retSid)) {
+      if (retSid !== null && !Number.isFinite(retSid)) {
         throw "retSid (return station id) must be null or an integer";
       }
-      if (distMin !== null && isNaN(distMin)) {
+      if (distMin !== null && !Number.isFinite(distMin)) {
         throw "distMin (minimum distance in meters) must be null or an integer";
       }
-      if (distMax !== null && isNaN(distMax)) {
+      if (distMax !== null && !Number.isFinite(distMax)) {
         throw "distMax (maximum distance in meters) must be null or an integer";
       }
-      if (secMin !== null && isNaN(secMin)) {
+      if (secMin !== null && !Number.isFinite(secMin)) {
         throw "secMin (minimum duration in seconds) must be null or an integer";
       }
-      if (secMax !== null && isNaN(secMax)) {
+      if (secMax !== null && !Number.isFinite(secMax)) {
         throw "secMax (maximum duration in seconds) must be null or an integer";
       }
       return {
@@ -197,6 +197,9 @@ export const useRidesStore = defineStore("rides", {
         secMax
       );
       q.offset = (page - 1) * pageSize;
+      // console.log(
+      //   "initTable Q=" + JSON.stringify(this.currentPagination.query)
+      // );
       var ridesCount = await this.getRidesCount(q);
       this.currentPagination = {
         page,
@@ -224,7 +227,9 @@ export const useRidesStore = defineStore("rides", {
         // first sync q-table's pagination with our own query object
         this.currentPagination.query.offset = (page - 1) * rowsPerPage;
         this.currentPagination.query.pageSize = rowsPerPage;
-        // console.log(this.currentPagination.query);
+        // console.log(
+        //   "updateTablePage Q=" + JSON.stringify(this.currentPagination.query)
+        // );
         const serverData = await this.getRidesPage(
           this.currentPagination.query
         );
@@ -246,6 +251,7 @@ export const useRidesStore = defineStore("rides", {
         console.log("Triggering Stations data Loading from Rides Query!");
         await stations.loadFromDb();
       }
+      // console.log("RideQuery is " + JSON.stringify(rideQuery));
       const response = await backend.getRidesPage2(
         {
           offset: rideQuery.offset,

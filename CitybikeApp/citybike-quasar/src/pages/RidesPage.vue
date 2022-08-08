@@ -97,6 +97,32 @@
             </template>
           </q-input>
         </div>
+        <div class="row q-col-gutter-md">
+          <!-- ridesStore.nextQueryParameters.minDist -->
+          <q-input
+            v-model.number="minDist"
+            type="number"
+            outlined
+            class="numInput"
+            label="Min. km"
+            debounce="750"
+            step="0.001"
+            :rules="distanceRules"
+            @focus="(input) => input.target.select()"
+          />
+          <!-- ridesStore.nextQueryParameters.maxDist -->
+          <q-input
+            v-model.number="maxDist"
+            type="number"
+            outlined
+            class="numInput"
+            label="Max. km"
+            debounce="750"
+            step="0.001"
+            :rules="distanceRules"
+            @focus="(input) => input.target.select()"
+          />
+        </div>
       </div>
       <div class="column col-auto">
         <div class="row rounded-borders" :class="applyButtonColorClass">
@@ -347,6 +373,12 @@ export default {
       (val) => (val >= 0 && val <= 999) || "0 <= ID <= 999",
       (val) => val == 0 || stationsStore.stations[val] || "Unknown station",
     ];
+    const distanceRules = [
+      (val) =>
+        val === null ||
+        (Number.isFinite(val) && val >= 0.0 && val <= 40.0) ||
+        "0.000 <= distance <= 40.000",
+    ];
     return {
       appstateStore,
       ridesStore,
@@ -354,6 +386,7 @@ export default {
       utilities,
       date,
       stationIdRules,
+      distanceRules,
     };
   },
   data() {
@@ -425,6 +458,52 @@ export default {
         this.parametersChanged = changed;
       },
     },
+    minDist: {
+      get() {
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.distMin)) {
+          return null;
+        } else {
+          return this.ridesStore.nextQueryParameters.distMin / 1000;
+        }
+      },
+      set(n) {
+        if (!Number.isFinite(n)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.distMin
+          );
+          this.ridesStore.nextQueryParameters.distMin = null;
+          this.parametersChanged = changed;
+        } else {
+          const n1000 = Math.round(n * 1000);
+          const changed = this.ridesStore.nextQueryParameters.distMin !== n1000;
+          this.ridesStore.nextQueryParameters.distMin = n1000;
+          this.parametersChanged = changed;
+        }
+      },
+    },
+    maxDist: {
+      get() {
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.distMax)) {
+          return null;
+        } else {
+          return this.ridesStore.nextQueryParameters.distMax / 1000;
+        }
+      },
+      set(n) {
+        if (!Number.isFinite(n)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.distMax
+          );
+          this.ridesStore.nextQueryParameters.distMax = null;
+          this.parametersChanged = changed;
+        } else {
+          const n1000 = Math.round(n * 1000);
+          const changed = this.ridesStore.nextQueryParameters.distMax !== n1000;
+          this.ridesStore.nextQueryParameters.distMax = n1000;
+          this.parametersChanged = changed;
+        }
+      },
+    },
     initialDate() {
       return date.formatDate(this.ridesStore.firstRideStart, "YYYY-MM-DD");
     },
@@ -460,16 +539,36 @@ export default {
       this.ridesStore.nextQueryParameters.t1 = null;
       this.ridesStore.nextQueryParameters.depId = 0;
       this.ridesStore.nextQueryParameters.retId = 0;
+      this.ridesStore.nextQueryParameters.distMin = null;
+      this.ridesStore.nextQueryParameters.distMax = null;
+      this.ridesStore.nextQueryParameters.secMin = null;
+      this.ridesStore.nextQueryParameters.secMax = null;
       this.parametersChanged = false;
       if (!soft) {
         this.$router.replace({ query: null });
-        await this.ridesStore.initTable(true, 15, 1, null, null, null, null);
+        await this.ridesStore.initTable(
+          true,
+          15,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        );
         this.parametersChanged = false;
       }
     },
     // Apply the query:
     async initTable() {
       this.parametersChanged = false;
+      // console.log(
+      //   "Page initTable NQP=" +
+      //     JSON.stringify(this.ridesStore.nextQueryParameters)
+      // );
       await this.ridesStore.initTable(
         true,
         15,
@@ -477,7 +576,11 @@ export default {
         this.ridesStore.nextQueryParameters.t0,
         this.ridesStore.nextQueryParameters.t1,
         this.ridesStore.nextQueryParameters.depId,
-        this.ridesStore.nextQueryParameters.retId
+        this.ridesStore.nextQueryParameters.retId,
+        this.ridesStore.nextQueryParameters.distMin,
+        this.ridesStore.nextQueryParameters.distMax,
+        this.ridesStore.nextQueryParameters.secMin,
+        this.ridesStore.nextQueryParameters.secMax
       );
       this.queryPending = false;
     },
@@ -497,7 +600,7 @@ export default {
       this.queryPending = false;
     },
     async depSearch(row) {
-      if (!isNaN(row.depStationId)) {
+      if (Number.isFinite(row.depStationId)) {
         if (row.depStationId != this.depStationId) {
           this.depStationId = row.depStationId;
         } else {
@@ -506,10 +609,13 @@ export default {
       }
     },
     depMatchesCurrent(row) {
-      return !isNaN(row.depStationId) && row.depStationId == this.depStationId;
+      return (
+        Number.isFinite(row.depStationId) &&
+        row.depStationId == this.depStationId
+      );
     },
     async retSearch(row) {
-      if (!isNaN(row.retStationId)) {
+      if (Number.isFinite(row.retStationId)) {
         if (row.retStationId != this.retStationId) {
           this.retStationId = row.retStationId;
         } else {
@@ -518,7 +624,10 @@ export default {
       }
     },
     retMatchesCurrent(row) {
-      return !isNaN(row.retStationId) && row.retStationId == this.retStationId;
+      return (
+        Number.isFinite(row.retStationId) &&
+        row.retStationId == this.retStationId
+      );
     },
   },
   watch: {
@@ -560,10 +669,10 @@ export default {
     }
     const oldAutoApply = this.ridesStore.autoApplyQuery;
     try {
-      if (!isNaN(this.$route.query.dep)) {
+      if (Number.isFinite(this.$route.query.dep)) {
         this.depStationId = this.$route.query.dep;
       }
-      if (!isNaN(this.$route.query.ret)) {
+      if (Number.isFinite(this.$route.query.ret)) {
         this.retStationId = this.$route.query.ret;
       }
       if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.from)) {

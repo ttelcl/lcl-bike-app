@@ -130,6 +130,7 @@ export const backend = {
       secMin,
       secMax,
     });
+    // console.log("Executing query: " + JSON.stringify(params));
     params.offset = offset;
     params.pageSize = pageSize;
     return await api.get("/api/citybike/ridespage2", {
@@ -169,22 +170,22 @@ export const backend = {
     if (typeof t1 == "string" && t1.match(/^\d{4}-\d{2}-\d{2}$/)) {
       params.t1 = t1;
     }
-    if (!isNaN(depSid) && depSid > 0) {
+    if (Number.isFinite(depSid) && depSid > 0) {
       params.depid = depSid;
     }
-    if (!isNaN(retSid) && retSid > 0) {
+    if (Number.isFinite(retSid) && retSid > 0) {
       params.retid = retSid;
     }
-    if (!isNaN(distMin) && distMin > 0) {
+    if (Number.isFinite(distMin) && distMin > 0) {
       params.distMin = distMin;
     }
-    if (!isNaN(distMax) && distMax > 0) {
+    if (Number.isFinite(distMax) && distMax > 0) {
       params.distMax = distMax;
     }
-    if (!isNaN(secMin) && secMin > 0) {
+    if (Number.isFinite(secMin) && secMin > 0) {
       params.secMin = secMin;
     }
-    if (!isNaN(secMax) && secMax > 0) {
+    if (Number.isFinite(secMax) && secMax > 0) {
       params.secMax = secMax;
     }
     return params;

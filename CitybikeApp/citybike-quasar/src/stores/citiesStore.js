@@ -23,7 +23,7 @@ export const useCitiesStore = defineStore("cities", {
         // await new Promise((r) => setTimeout(r, 5000)); // FAKE DELAY
         const response = await backend.getCitiesCached(4000);
         const raw = response.data;
-        console.log(raw);
+        // console.log(raw);
         for (const c of raw) {
           const c2 = {
             id: c.id,
