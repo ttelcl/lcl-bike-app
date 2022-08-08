@@ -2,7 +2,11 @@
 # based on my standard .hgignore that evolved over time
 
 .vs/
-.vscode/
+
+/.vscode
+!/CitybikeApp/citybike-quasar/.vscode/
+/CitybikeApp/citybike-quasar/.vscode/*
+!/CitybikeApp/citybike-quasar/.vscode/extensions.json
 
 .git/
 .hg/

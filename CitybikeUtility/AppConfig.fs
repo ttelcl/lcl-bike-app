@@ -14,7 +14,8 @@ let run args =
   cp "Loading and merging configuration files..."
   let cfg = getConfig().Root
   cp "Found the following configuration settings:"
-  for kvp in cfg.AsEnumerable() do
+  let entries = cfg.AsEnumerable() |> Seq.toList |> List.rev
+  for kvp in entries do
     let key = kvp.Key.Replace(":","\fw:\fg")
     if kvp.Value <> null then
       cp $"\fG{key}\f0 = \f0{kvp.Value}\f0"

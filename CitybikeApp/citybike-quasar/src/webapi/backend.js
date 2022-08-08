@@ -22,6 +22,7 @@ export const backend = {
     return await api.get("/api/citybike/timerange", { timeout: timeOut });
   },
 
+  // DEPRECATED
   async getRidesCount(t0 = null, t1 = null, timeOut = 5000) {
     var params = {};
     if (typeof t0 == "string" && t0.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -36,6 +37,7 @@ export const backend = {
     });
   },
 
+  // DEPRECATED
   async getRidesPage(
     offset = 0,
     t0 = null,
@@ -68,13 +70,28 @@ export const backend = {
   },
 
   async getRidesCount2(
-    t0 = null,
-    t1 = null,
-    depSid = null,
-    retSid = null,
-    timeOut = 5000
+    {
+      t0 = null,
+      t1 = null,
+      depSid = null,
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null,
+    } = {},
+    { timeOut = 5000 } = {}
   ) {
-    var params = this.makeRideQueryParams(t0, t1, depSid, retSid);
+    var params = this.makeRideQueryParams({
+      t0,
+      t1,
+      depSid,
+      retSid,
+      distMin,
+      distMax,
+      secMin,
+      secMax,
+    });
     return await api.get("/api/citybike/ridescount2", {
       timeout: timeOut,
       params,
@@ -82,13 +99,18 @@ export const backend = {
   },
 
   async getRidesPage2(
-    offset = 0,
-    t0 = null,
-    t1 = null,
-    depSid = null,
-    retSid = null,
-    pageSize = 15,
-    timeOut = 5000
+    { offset = 0, pageSize = 15 } = {},
+    {
+      t0 = null,
+      t1 = null,
+      depSid = null,
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null,
+    } = {},
+    { timeOut = 5000 } = {}
   ) {
     if (typeof offset != "number" || offset < 0) {
       console.log("Invalid 'offset' argument type; using value '0'");
@@ -98,7 +120,17 @@ export const backend = {
       console.log("Invalid 'pageSize' argument type; using value '15'");
       pageSize = 15;
     }
-    var params = this.makeRideQueryParams(t0, t1, depSid, retSid);
+    var params = this.makeRideQueryParams({
+      t0,
+      t1,
+      depSid,
+      retSid,
+      distMin,
+      distMax,
+      secMin,
+      secMax,
+    });
+    // console.log("Executing query: " + JSON.stringify(params));
     params.offset = offset;
     params.pageSize = pageSize;
     return await api.get("/api/citybike/ridespage2", {
@@ -120,8 +152,17 @@ export const backend = {
     });
   },
 
-  // Internal helper
-  makeRideQueryParams(t0 = null, t1 = null, depSid = null, retSid = null) {
+  // Internal helper for validation and URL query parameter selector
+  makeRideQueryParams({
+    t0 = null,
+    t1 = null,
+    depSid = null,
+    retSid = null,
+    distMin = null,
+    distMax = null,
+    secMin = null,
+    secMax = null,
+  }) {
     var params = {};
     if (typeof t0 == "string" && t0.match(/^\d{4}-\d{2}-\d{2}$/)) {
       params.t0 = t0;
@@ -129,11 +170,23 @@ export const backend = {
     if (typeof t1 == "string" && t1.match(/^\d{4}-\d{2}-\d{2}$/)) {
       params.t1 = t1;
     }
-    if (!isNaN(depSid) && depSid > 0) {
+    if (Number.isFinite(depSid) && depSid > 0) {
       params.depid = depSid;
     }
-    if (!isNaN(retSid) && retSid > 0) {
+    if (Number.isFinite(retSid) && retSid > 0) {
       params.retid = retSid;
+    }
+    if (Number.isFinite(distMin) && distMin > 0) {
+      params.distMin = distMin;
+    }
+    if (Number.isFinite(distMax) && distMax > 0) {
+      params.distMax = distMax;
+    }
+    if (Number.isFinite(secMin) && secMin > 0) {
+      params.secMin = secMin;
+    }
+    if (Number.isFinite(secMax) && secMax > 0) {
+      params.secMax = secMax;
     }
     return params;
   },

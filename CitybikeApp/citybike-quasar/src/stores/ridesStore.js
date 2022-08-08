@@ -17,7 +17,7 @@ export const useRidesStore = defineStore("rides", {
     firstRideStart: new Date("2021-05-01T00:00:00"), // best guess placeholder until loaded!
     lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
 
-    addressLanguage: "FI", // Valid values: "FI" and "SE" (not "EN"; streets don't have english names)
+    stationNameLanguage: "FI", // Valid values: "FI", "SE", and "EN"
     autoApplyQuery: true,
 
     currentPagination: {
@@ -41,10 +41,10 @@ export const useRidesStore = defineStore("rides", {
       t1: null, // null or a string like 'YYYY-MM-DD'
       depId: 0,
       retId: 0,
-      distMin: 0,
-      distmax: 0,
-      durMin: 0,
-      durMax: 0,
+      distMin: null,
+      distmax: null,
+      secMin: null,
+      secMax: null,
     },
   }),
   getters: {
@@ -70,7 +70,7 @@ export const useRidesStore = defineStore("rides", {
     },
     nextDepStationName() {
       const station = this.nextDepStation;
-      return station ? station.nameFi : "((all stations))";
+      return station ? this.getStationName(station) : "((all stations))";
     },
     nextRetStation() {
       if (this.nextQueryParameters.retId <= 0) {
@@ -82,19 +82,31 @@ export const useRidesStore = defineStore("rides", {
     },
     nextRetStationName() {
       const station = this.nextRetStation;
-      return station ? station.nameFi : "((all stations))";
+      return station ? this.getStationName(station) : "((all stations))";
     },
   },
   actions: {
+    getStationName(station) {
+      const lang = this.stationNameLanguage;
+      return lang == "SE"
+        ? station.nameSe
+        : lang == "EN"
+        ? station.nameEn
+        : station.nameFi;
+    },
     // Create a new ride query state object (used for server-side pagination)
     newRideQuery(
       pageSize = 15,
       t0 = null, // null or a string like 'YYYY-MM-DD'
       t1 = null, // null or a string like 'YYYY-MM-DD'
       depSid = null,
-      retSid = null
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null
     ) {
-      if (isNaN(pageSize) || pageSize < 1) {
+      if (!Number.isFinite(pageSize) || pageSize < 1) {
         throw "pageSize must be a number >= 1";
       }
       if (
@@ -109,11 +121,23 @@ export const useRidesStore = defineStore("rides", {
       ) {
         throw "t1 must be a null or a string of the form 'yyyy-mm-dd'";
       }
-      if (depSid !== null && isNaN(depSid)) {
+      if (depSid !== null && !Number.isFinite(depSid)) {
         throw "depSid (departure station id) must be null or an integer";
       }
-      if (retSid !== null && isNaN(retSid)) {
+      if (retSid !== null && !Number.isFinite(retSid)) {
         throw "retSid (return station id) must be null or an integer";
+      }
+      if (distMin !== null && !Number.isFinite(distMin)) {
+        throw "distMin (minimum distance in meters) must be null or an integer";
+      }
+      if (distMax !== null && !Number.isFinite(distMax)) {
+        throw "distMax (maximum distance in meters) must be null or an integer";
+      }
+      if (secMin !== null && !Number.isFinite(secMin)) {
+        throw "secMin (minimum duration in seconds) must be null or an integer";
+      }
+      if (secMax !== null && !Number.isFinite(secMax)) {
+        throw "secMax (maximum duration in seconds) must be null or an integer";
       }
       return {
         offset: 0,
@@ -122,16 +146,24 @@ export const useRidesStore = defineStore("rides", {
         t1,
         depSid,
         retSid,
+        distMin,
+        distMax,
+        secMin,
+        secMax,
       };
     },
 
     async getRidesCount(rideQuery) {
-      const response = await backend.getRidesCount2(
-        rideQuery.t0,
-        rideQuery.t1,
-        rideQuery.depSid,
-        rideQuery.retSid
-      );
+      const response = await backend.getRidesCount2({
+        t0: rideQuery.t0,
+        t1: rideQuery.t1,
+        depSid: rideQuery.depSid,
+        retSid: rideQuery.retSid,
+        distMin: rideQuery.distMin,
+        distMax: rideQuery.distMax,
+        secMin: rideQuery.secMin,
+        secMax: rideQuery.secMax,
+      });
       return response.data;
     },
 
@@ -144,15 +176,30 @@ export const useRidesStore = defineStore("rides", {
       t0 = null, // null or a string like 'YYYY-MM-DD'
       t1 = null, // null or a string like 'YYYY-MM-DD'
       depSid = null,
-      retSid = null
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null
     ) {
       this.currentPaginationInitialized = false;
       this.currentPageRows = [];
       await this.reload(false); // make sure the basics are present
-      var q = this.newRideQuery(pageSize, t0, t1, depSid, retSid);
+      var q = this.newRideQuery(
+        pageSize,
+        t0,
+        t1,
+        depSid,
+        retSid,
+        distMin,
+        distMax,
+        secMin,
+        secMax
+      );
       q.offset = (page - 1) * pageSize;
-      // var ridesCount =
-      //   t0 || t1 ? await this.getRidesCount(q) : this.allRidesCount;
+      // console.log(
+      //   "initTable Q=" + JSON.stringify(this.currentPagination.query)
+      // );
       var ridesCount = await this.getRidesCount(q);
       this.currentPagination = {
         page,
@@ -180,7 +227,9 @@ export const useRidesStore = defineStore("rides", {
         // first sync q-table's pagination with our own query object
         this.currentPagination.query.offset = (page - 1) * rowsPerPage;
         this.currentPagination.query.pageSize = rowsPerPage;
-        // console.log(this.currentPagination.query);
+        // console.log(
+        //   "updateTablePage Q=" + JSON.stringify(this.currentPagination.query)
+        // );
         const serverData = await this.getRidesPage(
           this.currentPagination.query
         );
@@ -202,13 +251,23 @@ export const useRidesStore = defineStore("rides", {
         console.log("Triggering Stations data Loading from Rides Query!");
         await stations.loadFromDb();
       }
+      // console.log("RideQuery is " + JSON.stringify(rideQuery));
       const response = await backend.getRidesPage2(
-        rideQuery.offset,
-        rideQuery.t0,
-        rideQuery.t1,
-        rideQuery.depSid,
-        rideQuery.retSid,
-        rideQuery.pageSize
+        {
+          offset: rideQuery.offset,
+          pageSize: rideQuery.pageSize,
+        },
+        {
+          t0: rideQuery.t0,
+          t1: rideQuery.t1,
+          depSid: rideQuery.depSid,
+          retSid: rideQuery.retSid,
+          distMin: rideQuery.distMin,
+          distMax: rideQuery.distMax,
+          secMin: rideQuery.secMin,
+          secMax: rideQuery.secMax,
+        },
+        {}
       );
       const raw = response.data;
       // console.log(raw);

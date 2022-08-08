@@ -6,7 +6,6 @@
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
     <hr />
-    <!-- <h4 class="q-my-md">Query Parameters</h4> -->
     <!--
       Helpful link for solving layout puzzles:
       https://github.com/quasarframework/quasar/blob/dev/ui/src/css/core/flex.sass
@@ -15,7 +14,6 @@
     <div class="row q-gutter-md q-py-sm">
       <div class="col-auto">
         <div class="row q-col-gutter-md">
-          <!-- ridesStore.nextQueryParameters.depId -->
           <q-input
             v-model.number="depStationId"
             type="number"
@@ -26,19 +24,6 @@
             :hint="ridesStore.nextDepStationName"
             :rules="stationIdRules"
             ref="depIdField"
-            @focus="(input) => input.target.select()"
-          />
-          <!-- ridesStore.nextQueryParameters.retId -->
-          <q-input
-            v-model.number="retStationId"
-            type="number"
-            outlined
-            class="numInput"
-            label="To Station Id"
-            debounce="750"
-            :hint="ridesStore.nextRetStationName"
-            :rules="stationIdRules"
-            ref="retIdField"
             @focus="(input) => input.target.select()"
           />
           <q-input
@@ -70,6 +55,31 @@
             </template>
           </q-input>
           <q-input
+            v-model.number="distMin"
+            type="number"
+            outlined
+            class="numInput"
+            label="Min. km"
+            debounce="750"
+            step="0.001"
+            :rules="distanceRules"
+            @focus="(input) => input.target.select()"
+          />
+        </div>
+        <div class="row q-col-gutter-md">
+          <q-input
+            v-model.number="retStationId"
+            type="number"
+            outlined
+            class="numInput"
+            label="To Station Id"
+            debounce="750"
+            :hint="ridesStore.nextRetStationName"
+            :rules="stationIdRules"
+            ref="retIdField"
+            @focus="(input) => input.target.select()"
+          />
+          <q-input
             v-model="endDate"
             mask="####-##-##"
             outlined
@@ -97,6 +107,17 @@
               </q-icon>
             </template>
           </q-input>
+          <q-input
+            v-model.number="distMax"
+            type="number"
+            outlined
+            class="numInput"
+            label="Max. km"
+            debounce="750"
+            step="0.001"
+            :rules="distanceRules"
+            @focus="(input) => input.target.select()"
+          />
         </div>
       </div>
       <div class="column col-auto">
@@ -124,6 +145,7 @@
       </div>
     </div>
     <hr />
+    <!-- The actual table (or load failure error message) -->
     <div v-if="ridesStore.currentPaginationInitialized">
       <q-table
         title="Rides"
@@ -146,16 +168,22 @@
             </div>
             <div class="row">
               <q-btn-toggle
-                v-model="ridesStore.addressLanguage"
+                v-model="ridesStore.stationNameLanguage"
                 toggle-color="primary"
                 :options="[
                   { label: 'FI', value: 'FI' },
                   { label: 'SE', value: 'SE' },
+                  { label: 'EN', value: 'EN' },
                 ]"
               />
             </div>
           </div>
         </template>
+        <!--
+          Design Note! We solve the "how to show names in different lanaguages?" problem
+          here in a different way than on the station page (for historical reasons ...).
+          Here we have only one column, and its content adapts to the language selector.
+        -->
         <template #body-cell-s_from="props">
           <q-td :props="props">
             <div class="row">
@@ -164,7 +192,7 @@
                   :to="`/stations/${props.row.depStationId}`"
                   class="text-green-2"
                 >
-                  {{ stationName(props.row.depStation) }}
+                  {{ ridesStore.getStationName(props.row.depStation) }}
                 </router-link>
               </div>
               <div class="col-auto">
@@ -188,7 +216,7 @@
                   :to="`/stations/${props.row.retStationId}`"
                   class="text-green-2"
                 >
-                  {{ stationName(props.row.retStation) }}
+                  {{ ridesStore.getStationName(props.row.retStation) }}
                 </router-link>
               </div>
               <div class="col-auto">
@@ -341,6 +369,12 @@ export default {
       (val) => (val >= 0 && val <= 999) || "0 <= ID <= 999",
       (val) => val == 0 || stationsStore.stations[val] || "Unknown station",
     ];
+    const distanceRules = [
+      (val) =>
+        val === null ||
+        (Number.isFinite(val) && val >= 0.0 && val <= 40.0) ||
+        "0.000 <= distance <= 40.000",
+    ];
     return {
       appstateStore,
       ridesStore,
@@ -348,6 +382,7 @@ export default {
       utilities,
       date,
       stationIdRules,
+      distanceRules,
     };
   },
   data() {
@@ -419,6 +454,52 @@ export default {
         this.parametersChanged = changed;
       },
     },
+    distMin: {
+      get() {
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.distMin)) {
+          return null;
+        } else {
+          return this.ridesStore.nextQueryParameters.distMin / 1000;
+        }
+      },
+      set(n) {
+        if (!Number.isFinite(n)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.distMin
+          );
+          this.ridesStore.nextQueryParameters.distMin = null;
+          this.parametersChanged = changed;
+        } else {
+          const n1000 = Math.round(n * 1000);
+          const changed = this.ridesStore.nextQueryParameters.distMin !== n1000;
+          this.ridesStore.nextQueryParameters.distMin = n1000;
+          this.parametersChanged = changed;
+        }
+      },
+    },
+    distMax: {
+      get() {
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.distMax)) {
+          return null;
+        } else {
+          return this.ridesStore.nextQueryParameters.distMax / 1000;
+        }
+      },
+      set(n) {
+        if (!Number.isFinite(n)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.distMax
+          );
+          this.ridesStore.nextQueryParameters.distMax = null;
+          this.parametersChanged = changed;
+        } else {
+          const n1000 = Math.round(n * 1000);
+          const changed = this.ridesStore.nextQueryParameters.distMax !== n1000;
+          this.ridesStore.nextQueryParameters.distMax = n1000;
+          this.parametersChanged = changed;
+        }
+      },
+    },
     initialDate() {
       return date.formatDate(this.ridesStore.firstRideStart, "YYYY-MM-DD");
     },
@@ -454,16 +535,36 @@ export default {
       this.ridesStore.nextQueryParameters.t1 = null;
       this.ridesStore.nextQueryParameters.depId = 0;
       this.ridesStore.nextQueryParameters.retId = 0;
+      this.ridesStore.nextQueryParameters.distMin = null;
+      this.ridesStore.nextQueryParameters.distMax = null;
+      this.ridesStore.nextQueryParameters.secMin = null;
+      this.ridesStore.nextQueryParameters.secMax = null;
       this.parametersChanged = false;
       if (!soft) {
         this.$router.replace({ query: null });
-        await this.ridesStore.initTable(true, 15, 1, null, null, null, null);
+        await this.ridesStore.initTable(
+          true,
+          15,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        );
         this.parametersChanged = false;
       }
     },
     // Apply the query:
     async initTable() {
       this.parametersChanged = false;
+      console.log(
+        "Page initTable NQP=" +
+          JSON.stringify(this.ridesStore.nextQueryParameters)
+      );
       await this.ridesStore.initTable(
         true,
         15,
@@ -471,7 +572,11 @@ export default {
         this.ridesStore.nextQueryParameters.t0,
         this.ridesStore.nextQueryParameters.t1,
         this.ridesStore.nextQueryParameters.depId,
-        this.ridesStore.nextQueryParameters.retId
+        this.ridesStore.nextQueryParameters.retId,
+        this.ridesStore.nextQueryParameters.distMin,
+        this.ridesStore.nextQueryParameters.distMax,
+        this.ridesStore.nextQueryParameters.secMin,
+        this.ridesStore.nextQueryParameters.secMax
       );
       this.queryPending = false;
     },
@@ -490,12 +595,8 @@ export default {
     finishQuery() {
       this.queryPending = false;
     },
-    stationName(station) {
-      const lang = this.ridesStore.addressLanguage;
-      return lang == "SE" ? station.nameSe : station.nameFi;
-    },
     async depSearch(row) {
-      if (!isNaN(row.depStationId)) {
+      if (Number.isFinite(row.depStationId)) {
         if (row.depStationId != this.depStationId) {
           this.depStationId = row.depStationId;
         } else {
@@ -504,10 +605,13 @@ export default {
       }
     },
     depMatchesCurrent(row) {
-      return !isNaN(row.depStationId) && row.depStationId == this.depStationId;
+      return (
+        Number.isFinite(row.depStationId) &&
+        row.depStationId == this.depStationId
+      );
     },
     async retSearch(row) {
-      if (!isNaN(row.retStationId)) {
+      if (Number.isFinite(row.retStationId)) {
         if (row.retStationId != this.retStationId) {
           this.retStationId = row.retStationId;
         } else {
@@ -516,7 +620,10 @@ export default {
       }
     },
     retMatchesCurrent(row) {
-      return !isNaN(row.retStationId) && row.retStationId == this.retStationId;
+      return (
+        Number.isFinite(row.retStationId) &&
+        row.retStationId == this.retStationId
+      );
     },
   },
   watch: {
@@ -558,17 +665,27 @@ export default {
     }
     const oldAutoApply = this.ridesStore.autoApplyQuery;
     try {
-      if (!isNaN(this.$route.query.dep)) {
-        this.depStationId = this.$route.query.dep;
+      const dep = parseInt(this.$route.query.dep);
+      if (Number.isFinite(dep)) {
+        this.depStationId = dep;
       }
-      if (!isNaN(this.$route.query.ret)) {
-        this.retStationId = this.$route.query.ret;
+      const ret = parseInt(this.$route.query.ret);
+      if (Number.isFinite(ret)) {
+        this.retStationId = ret;
       }
       if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.from)) {
         this.startDate = this.$route.query.from;
       }
       if (/^(\d{4}-\d{2}-\d{2})$/.test(this.$route.query.to)) {
         this.endDate = this.$route.query.to;
+      }
+      const distmin = parseInt(this.$route.query.distmin);
+      if (Number.isFinite(distmin)) {
+        this.distMin = distmin / 1000;
+      }
+      const distmax = parseInt(this.$route.query.distmax);
+      if (Number.isFinite(distmax)) {
+        this.distMax = distmax / 1000;
       }
     } finally {
       this.ridesStore.autoApplyQuery = oldAutoApply;
@@ -580,7 +697,7 @@ export default {
 
 <style lang="scss">
 .colWidthStation {
-  width: 13rem;
+  width: 16rem;
 }
 .colWidthDay {
   width: 6rem;
