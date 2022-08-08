@@ -41,10 +41,10 @@ export const useRidesStore = defineStore("rides", {
       t1: null, // null or a string like 'YYYY-MM-DD'
       depId: 0,
       retId: 0,
-      distMin: 0,
-      distmax: 0,
-      durMin: 0,
-      durMax: 0,
+      distMin: null,
+      distmax: null,
+      durMin: null,
+      durMax: null,
     },
   }),
   getters: {
@@ -100,7 +100,11 @@ export const useRidesStore = defineStore("rides", {
       t0 = null, // null or a string like 'YYYY-MM-DD'
       t1 = null, // null or a string like 'YYYY-MM-DD'
       depSid = null,
-      retSid = null
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null
     ) {
       if (isNaN(pageSize) || pageSize < 1) {
         throw "pageSize must be a number >= 1";
@@ -123,6 +127,18 @@ export const useRidesStore = defineStore("rides", {
       if (retSid !== null && isNaN(retSid)) {
         throw "retSid (return station id) must be null or an integer";
       }
+      if (distMin !== null && isNaN(distMin)) {
+        throw "distMin (minimum distance in meters) must be null or an integer";
+      }
+      if (distMax !== null && isNaN(distMax)) {
+        throw "distMax (maximum distance in meters) must be null or an integer";
+      }
+      if (secMin !== null && isNaN(secMin)) {
+        throw "secMin (minimum duration in seconds) must be null or an integer";
+      }
+      if (secMax !== null && isNaN(secMax)) {
+        throw "secMax (maximum duration in seconds) must be null or an integer";
+      }
       return {
         offset: 0,
         pageSize,
@@ -130,6 +146,10 @@ export const useRidesStore = defineStore("rides", {
         t1,
         depSid,
         retSid,
+        distMin,
+        distMax,
+        secMin,
+        secMax,
       };
     },
 
@@ -139,6 +159,10 @@ export const useRidesStore = defineStore("rides", {
         t1: rideQuery.t1,
         depSid: rideQuery.depSid,
         retSid: rideQuery.retSid,
+        distMin: rideQuery.distMin,
+        distMax: rideQuery.distMax,
+        secMin: rideQuery.secMin,
+        secMax: rideQuery.secMax,
       });
       return response.data;
     },
@@ -152,15 +176,27 @@ export const useRidesStore = defineStore("rides", {
       t0 = null, // null or a string like 'YYYY-MM-DD'
       t1 = null, // null or a string like 'YYYY-MM-DD'
       depSid = null,
-      retSid = null
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null
     ) {
       this.currentPaginationInitialized = false;
       this.currentPageRows = [];
       await this.reload(false); // make sure the basics are present
-      var q = this.newRideQuery(pageSize, t0, t1, depSid, retSid);
+      var q = this.newRideQuery(
+        pageSize,
+        t0,
+        t1,
+        depSid,
+        retSid,
+        distMin,
+        distMax,
+        secMin,
+        secMax
+      );
       q.offset = (page - 1) * pageSize;
-      // var ridesCount =
-      //   t0 || t1 ? await this.getRidesCount(q) : this.allRidesCount;
       var ridesCount = await this.getRidesCount(q);
       this.currentPagination = {
         page,
@@ -220,6 +256,10 @@ export const useRidesStore = defineStore("rides", {
           t1: rideQuery.t1,
           depSid: rideQuery.depSid,
           retSid: rideQuery.retSid,
+          distMin: rideQuery.distMin,
+          distMax: rideQuery.distMax,
+          secMin: rideQuery.secMin,
+          secMax: rideQuery.secMax,
         },
         {}
       );

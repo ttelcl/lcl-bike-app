@@ -70,10 +70,28 @@ export const backend = {
   },
 
   async getRidesCount2(
-    { t0 = null, t1 = null, depSid = null, retSid = null } = {},
+    {
+      t0 = null,
+      t1 = null,
+      depSid = null,
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null,
+    } = {},
     { timeOut = 5000 } = {}
   ) {
-    var params = this.makeRideQueryParams({ t0, t1, depSid, retSid });
+    var params = this.makeRideQueryParams({
+      t0,
+      t1,
+      depSid,
+      retSid,
+      distMin,
+      distMax,
+      secMin,
+      secMax,
+    });
     return await api.get("/api/citybike/ridescount2", {
       timeout: timeOut,
       params,
@@ -82,7 +100,16 @@ export const backend = {
 
   async getRidesPage2(
     { offset = 0, pageSize = 15 } = {},
-    { t0 = null, t1 = null, depSid = null, retSid = null } = {},
+    {
+      t0 = null,
+      t1 = null,
+      depSid = null,
+      retSid = null,
+      distMin = null,
+      distMax = null,
+      secMin = null,
+      secMax = null,
+    } = {},
     { timeOut = 5000 } = {}
   ) {
     if (typeof offset != "number" || offset < 0) {
@@ -93,7 +120,16 @@ export const backend = {
       console.log("Invalid 'pageSize' argument type; using value '15'");
       pageSize = 15;
     }
-    var params = this.makeRideQueryParams({ t0, t1, depSid, retSid });
+    var params = this.makeRideQueryParams({
+      t0,
+      t1,
+      depSid,
+      retSid,
+      distMin,
+      distMax,
+      secMin,
+      secMax,
+    });
     params.offset = offset;
     params.pageSize = pageSize;
     return await api.get("/api/citybike/ridespage2", {
@@ -115,8 +151,17 @@ export const backend = {
     });
   },
 
-  // Internal validation helper
-  makeRideQueryParams({ t0 = null, t1 = null, depSid = null, retSid = null }) {
+  // Internal helper for validation and URL query parameter selector
+  makeRideQueryParams({
+    t0 = null,
+    t1 = null,
+    depSid = null,
+    retSid = null,
+    distMin = null,
+    distMax = null,
+    secMin = null,
+    secMax = null,
+  }) {
     var params = {};
     if (typeof t0 == "string" && t0.match(/^\d{4}-\d{2}-\d{2}$/)) {
       params.t0 = t0;
@@ -129,6 +174,18 @@ export const backend = {
     }
     if (!isNaN(retSid) && retSid > 0) {
       params.retid = retSid;
+    }
+    if (!isNaN(distMin) && distMin > 0) {
+      params.distMin = distMin;
+    }
+    if (!isNaN(distMax) && distMax > 0) {
+      params.distMax = distMax;
+    }
+    if (!isNaN(secMin) && secMin > 0) {
+      params.secMin = secMin;
+    }
+    if (!isNaN(secMax) && secMax > 0) {
+      params.secMax = secMax;
     }
     return params;
   },
