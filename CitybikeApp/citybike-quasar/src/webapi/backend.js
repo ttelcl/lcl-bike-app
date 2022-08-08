@@ -22,6 +22,7 @@ export const backend = {
     return await api.get("/api/citybike/timerange", { timeout: timeOut });
   },
 
+  // DEPRECATED
   async getRidesCount(t0 = null, t1 = null, timeOut = 5000) {
     var params = {};
     if (typeof t0 == "string" && t0.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -36,6 +37,7 @@ export const backend = {
     });
   },
 
+  // DEPRECATED
   async getRidesPage(
     offset = 0,
     t0 = null,
@@ -68,13 +70,10 @@ export const backend = {
   },
 
   async getRidesCount2(
-    t0 = null,
-    t1 = null,
-    depSid = null,
-    retSid = null,
-    timeOut = 5000
+    { t0 = null, t1 = null, depSid = null, retSid = null } = {},
+    { timeOut = 5000 } = {}
   ) {
-    var params = this.makeRideQueryParams(t0, t1, depSid, retSid);
+    var params = this.makeRideQueryParams({ t0, t1, depSid, retSid });
     return await api.get("/api/citybike/ridescount2", {
       timeout: timeOut,
       params,
@@ -82,13 +81,9 @@ export const backend = {
   },
 
   async getRidesPage2(
-    offset = 0,
-    t0 = null,
-    t1 = null,
-    depSid = null,
-    retSid = null,
-    pageSize = 15,
-    timeOut = 5000
+    { offset = 0, pageSize = 15 } = {},
+    { t0 = null, t1 = null, depSid = null, retSid = null } = {},
+    { timeOut = 5000 } = {}
   ) {
     if (typeof offset != "number" || offset < 0) {
       console.log("Invalid 'offset' argument type; using value '0'");
@@ -98,7 +93,7 @@ export const backend = {
       console.log("Invalid 'pageSize' argument type; using value '15'");
       pageSize = 15;
     }
-    var params = this.makeRideQueryParams(t0, t1, depSid, retSid);
+    var params = this.makeRideQueryParams({ t0, t1, depSid, retSid });
     params.offset = offset;
     params.pageSize = pageSize;
     return await api.get("/api/citybike/ridespage2", {
@@ -120,8 +115,8 @@ export const backend = {
     });
   },
 
-  // Internal helper
-  makeRideQueryParams(t0 = null, t1 = null, depSid = null, retSid = null) {
+  // Internal validation helper
+  makeRideQueryParams({ t0 = null, t1 = null, depSid = null, retSid = null }) {
     var params = {};
     if (typeof t0 == "string" && t0.match(/^\d{4}-\d{2}-\d{2}$/)) {
       params.t0 = t0;

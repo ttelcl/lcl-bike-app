@@ -134,12 +134,12 @@ export const useRidesStore = defineStore("rides", {
     },
 
     async getRidesCount(rideQuery) {
-      const response = await backend.getRidesCount2(
-        rideQuery.t0,
-        rideQuery.t1,
-        rideQuery.depSid,
-        rideQuery.retSid
-      );
+      const response = await backend.getRidesCount2({
+        t0: rideQuery.t0,
+        t1: rideQuery.t1,
+        depSid: rideQuery.depSid,
+        retSid: rideQuery.retSid,
+      });
       return response.data;
     },
 
@@ -211,12 +211,17 @@ export const useRidesStore = defineStore("rides", {
         await stations.loadFromDb();
       }
       const response = await backend.getRidesPage2(
-        rideQuery.offset,
-        rideQuery.t0,
-        rideQuery.t1,
-        rideQuery.depSid,
-        rideQuery.retSid,
-        rideQuery.pageSize
+        {
+          offset: rideQuery.offset,
+          pageSize: rideQuery.pageSize,
+        },
+        {
+          t0: rideQuery.t0,
+          t1: rideQuery.t1,
+          depSid: rideQuery.depSid,
+          retSid: rideQuery.retSid,
+        },
+        {}
       );
       const raw = response.data;
       // console.log(raw);
