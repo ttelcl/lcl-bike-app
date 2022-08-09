@@ -269,9 +269,18 @@ const stationColumns = [
     align: "left",
   },
   {
+    name: "rank",
+    label: "Rank",
+    field: "rideRank",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
     name: "depCount",
     label: "Starts",
-    field: "depCount",
+    field: (row) => row.depStats.count || 0,
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
@@ -280,7 +289,7 @@ const stationColumns = [
   {
     name: "retCount",
     label: "Ends",
-    field: "retCount",
+    field: (row) => row.retStats.count || 0,
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
@@ -289,20 +298,11 @@ const stationColumns = [
   {
     name: "rideCount",
     label: "Total",
-    field: (row) => row.depCount + row.retCount,
+    field: (row) => row.depStats.count + row.retStats.count || 0,
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
     required: false, // hide by default
-  },
-  {
-    name: "rank",
-    label: "Rank",
-    field: "rideRank",
-    classes: "colStyleRideCount",
-    align: "right",
-    sortable: true,
-    required: true,
   },
   {
     // virtual column to put action buttons in
@@ -318,9 +318,9 @@ const columnSetDefs = {
     "nameFi",
     "addrFi",
     "city",
+    "rank",
     "depCount",
     "retCount",
-    "rank",
     "actions",
   ],
   SE: [
@@ -328,9 +328,9 @@ const columnSetDefs = {
     "nameSe",
     "addrSe",
     "citySe",
+    "rank",
     "depCount",
     "retCount",
-    "rank",
     "actions",
   ],
   EN: [
@@ -338,9 +338,9 @@ const columnSetDefs = {
     "nameEn",
     "addrFi",
     "city",
+    "rank",
     "depCount",
     "retCount",
-    "rank",
     "actions",
   ],
 };

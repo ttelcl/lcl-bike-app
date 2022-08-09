@@ -14,11 +14,11 @@ export const useRideCountStore = defineStore("ridecounts", {
     loading: false,
     errorMessage: null,
     // An unordered list caching ALL (depId, retId, count) records
-    allDepRetCounts: [],
+    allDepRetStats: [],
     // A mapping from departure station ID to total ride count
-    allDepCounts: {},
+    allDepStats: {},
     // A mapping from departure station ID to total ride count
-    allRetCounts: {},
+    allRetStats: {},
   }),
   getters: {},
   actions: {
@@ -30,14 +30,14 @@ export const useRideCountStore = defineStore("ridecounts", {
           console.log("loading ride counts");
           this.loaded = false;
           this.loading = true;
-          this.allDepRetCounts = [];
-          this.allDepCounts = {};
-          this.allRetCounts = {};
+          this.allDepRetStats = [];
+          this.allDepStats = {};
+          this.allRetStats = {};
           this.errorMessage = "Loading ...";
-          const response = await backend.getStationPairRideCounts();
+          const response = await backend.getStationPairRideStats();
           console.log("ride counts raw loaded");
           const data = response.data;
-          this.allDepRetCounts = data;
+          this.allDepRetStats = data;
           this.errorMessage = null;
           this.loaded = true;
           console.log("projecting ride counts");
@@ -54,43 +54,55 @@ export const useRideCountStore = defineStore("ridecounts", {
         return false;
       }
     },
-    // Rebuilds the allDepCounts and allRetCounts caches.
+    // Rebuilds the allDepStats and allRetStats caches.
+    // and injects their values in the station list
     // Normally called automatically by load()
     async projectCounts() {
       const stationsStore = useStationsStore();
       if (!stationsStore.loaded) {
         await stationsStore.loadFromDb();
       }
-      this.allDepCounts = {};
-      this.allRetCounts = {};
+      this.allDepStats = {};
+      this.allRetStats = {};
       // Project the counts along both departure and return axes:
       var adc = {};
       var arc = {};
       for (const stationId of Object.keys(stationsStore.stations)) {
-        adc[stationId] = 0;
-        arc[stationId] = 0;
+        adc[stationId] = { count: 0, distSum: 0, durSum: 0 };
+        arc[stationId] = { count: 0, distSum: 0, durSum: 0 };
       }
-      for (const r of this.allDepRetCounts) {
-        var v = r.count || 0;
-        const did = r.depId;
-        adc[did] = (adc[did] || 0) + v;
-        const rid = r.retId;
-        arc[rid] = (arc[rid] || 0) + v;
+      for (const r of this.allDepRetStats) {
+        var rd = adc[r.depId];
+        rd.count += r.count || 0;
+        rd.distSum += r.distSum || 0;
+        rd.durSum += r.durSum || 0;
+        var rr = arc[r.retId];
+        rr.count += r.count || 0;
+        rr.distSum += r.distSum || 0;
+        rr.durSum += r.durSum || 0;
       }
-      this.allDepCounts = adc;
-      this.allRetCounts = arc;
+      this.allDepStats = adc;
+      this.allRetStats = arc;
       // Copy into station records:
       for (const station of Object.values(stationsStore.stations)) {
-        station.depCount = adc[station.id] || 0;
-        station.retCount = arc[station.id] || 0;
+        station.depStats = adc[station.id] || {
+          count: 0,
+          distSum: 0,
+          durSum: 0,
+        };
+        station.retStats = arc[station.id] || {
+          count: 0,
+          distSum: 0,
+          durSum: 0,
+        };
       }
-      // Calculate ranks
+      // Calculate total ride count ranks
       const ranks = new Array(stationsStore.stationCount);
       let i = 0;
       for (const station of Object.values(stationsStore.stations)) {
         ranks[i++] = {
           id: station.id,
-          rides: station.depCount + station.retCount,
+          rides: station.depStats.count + station.retStats.count,
         };
       }
       ranks.sort((a, b) => b.rides - a.rides);

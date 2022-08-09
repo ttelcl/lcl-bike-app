@@ -392,7 +392,7 @@ namespace CitybikeApp.WebApi
     /// </remarks>
     /// <response code="200">On success</response>
     /// <response code="400">On unrecognized date/time format</response>
-    [HttpGet("stationpaircounts")]
+    [HttpGet("stationpairstats")]
     public ActionResult<StationPairStats[]> GetStationPairStats( 
       [FromServices] ICitybikeDb db,
       [FromQuery] string? t0 = null,
