@@ -142,8 +142,10 @@ namespace LclBikeApp.Database
       int durMax = Int32.MaxValue);
 
     /// <summary>
-    /// Return the total number of rides between all pairs of stations,
+    /// Return stats on all rides between all pairs of stations,
     /// optionally constrained to a specific time interval.
+    /// Returns counts, total distance and total duration for each
+    /// pair of stations that have any rides between them.
     /// </summary>
     /// <param name="fromTime">
     /// If not null: the oldest ride departure time to include.
@@ -154,10 +156,10 @@ namespace LclBikeApp.Database
     /// efficiency.
     /// </param>
     /// <returns>
-    /// A list of departure station - return station - count triplets, in no
-    /// particular order.
+    /// A list of departure station - return station - count - total distance - total duration
+    /// quintuplets, in no particular order.
     /// </returns>
-    StationPairCount[] GetStationPairCounts(
+    StationPairStats[] GetStationPairStats(
       DateTime? fromTime = null,
       DateTime? toTime = null);
 

@@ -442,7 +442,7 @@ GROUP BY RetStation, CONVERT(DATE, RetTime)";
       return results.ToArray();
     }
 
-    StationPairCount[] ICitybikeQueries.GetStationPairCounts(
+    StationPairStats[] ICitybikeQueries.GetStationPairStats(
       DateTime? fromTime, DateTime? toTime)
     {
       EnsureNotDisposed();
@@ -458,7 +458,8 @@ GROUP BY RetStation, CONVERT(DATE, RetTime)";
         conditions.Add("RetTime <= @TTo");
       }
       var query = @"
-SELECT  DepStation AS DepId, RetStation AS RetId, COUNT(*) AS [count] 
+SELECT  DepStation AS DepId, RetStation AS RetId, COUNT(*) AS [count],
+        SUM(Distance) AS DistSum, SUM(Duration) AS DurSum
 FROM Rides";
       if(conditions.Count > 0)
       {
@@ -467,7 +468,7 @@ WHERE " + String.Join(" AND ", conditions);
       }
       query += @"
 GROUP BY DepStation, RetStation";
-      var results = Connection.Query<StationPairCount>(query, new {TFrom = tFrom, TTo = tTo });
+      var results = Connection.Query<StationPairStats>(query, new {TFrom = tFrom, TTo = tTo });
       return results.ToArray();
     }
 
