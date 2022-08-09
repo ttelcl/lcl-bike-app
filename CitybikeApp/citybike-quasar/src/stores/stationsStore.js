@@ -50,6 +50,11 @@ export const useStationsStore = defineStore("stations", {
       // debug helper ...
       return new Promise((r) => setTimeout(r, milliseconds));
     },
+    async loadIfNotDoneSoYet() {
+      if (!this.loaded) {
+        await this.loadFromDb();
+      }
+    },
     async loadFromDb(stepDelay = 0) {
       try {
         // make sure cities are loaded first!

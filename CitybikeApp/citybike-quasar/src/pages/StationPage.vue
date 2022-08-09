@@ -84,6 +84,22 @@
           </div>
         </div>
       </div>
+      <div class="q-py-md">
+        <q-table
+          :title="'Info on rides to or from: ' + stationNameEx"
+          :rows="linkList"
+          :columns="columnDefs"
+          row-key="id"
+          separator="cell"
+          dense
+          :bordered="true"
+          v-model:pagination="stationFocusStore.pagination"
+          :loading="loading"
+          :rows-per-page-options="[10, 15, 20, 25, 30, 40, 50]"
+          table-header-class="qtblHeader"
+        >
+        </q-table>
+      </div>
     </div>
     <div v-else>
       <h2>Unknown citybike station #{{ stationId }}</h2>
@@ -103,9 +119,144 @@
 <script>
 import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
-import { useStationsStore } from "src/stores/stationsStore";
+import {
+  useStationsStore,
+  statsAvgDistance,
+  statsAvgDuration,
+} from "src/stores/stationsStore";
 import { useRideCountStore } from "src/stores/rideCountStore";
+import { useStationFocusStore } from "src/stores/stationFocusStore";
+import { utilities } from "../webapi/utilities";
 import DesignNote from "components/DesignNote.vue";
+
+function remoteName(row) {
+  return `${row.station.nameFi} (${row.station.city.CityFi})`;
+}
+
+const linkColumns = [
+  {
+    name: "id",
+    label: "Id",
+    field: "id",
+    required: true,
+    align: "right",
+    classes: "colStyleLinkId",
+    sortable: true,
+  },
+  {
+    name: "nameFi",
+    label: "Origin or Destination",
+    field: (row) => remoteName(row),
+    align: "left",
+    classes: "colStyleLinkName",
+    sortable: true,
+    required: true,
+  },
+  // {
+  //   name: "city",
+  //   label: "City",
+  //   field: (row) => row.station.city.CityFi,
+  //   classes: "colStyleLinkCity",
+  //   align: "left",
+  //   required: true,
+  // },
+  {
+    name: "rank",
+    label: "Rank",
+    field: "rank",
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "rankin",
+    label: "Rank-IN",
+    field: "rankIn",
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "rankout",
+    label: "Rank-OUT",
+    field: "rankOut",
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "incount",
+    label: "Incoming",
+    field: (row) => row.incoming.count,
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    name: "outcount",
+    label: "Outgoing",
+    field: (row) => row.outgoing.count,
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    name: "count",
+    label: "Total",
+    field: (row) => row.count,
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    name: "avg_dist_in",
+    label: "Avg dist IN",
+    field: (row) => statsAvgDistance(row.incoming) / 1000 || 0,
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    name: "avg_dist_out",
+    label: "Avg dist OUT",
+    field: (row) => statsAvgDistance(row.outgoing) / 1000 || 0,
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    name: "avg_dur_in",
+    label: "Avg dur IN",
+    field: (row) => utilities.formatTimespan(statsAvgDuration(row.incoming)),
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    name: "avg_dur_out",
+    label: "Avg dur OUT",
+    field: (row) => utilities.formatTimespan(statsAvgDuration(row.outgoing)),
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
+    // virtual column to put action buttons in
+    name: "actions",
+    align: "left",
+    required: true,
+  },
+];
 
 export default {
   name: "StationPage",
@@ -114,7 +265,14 @@ export default {
     const citiesStore = useCitiesStore();
     const stationsStore = useStationsStore();
     const rideCountStore = useRideCountStore();
-    return { appstateStore, citiesStore, stationsStore, rideCountStore };
+    const stationFocusStore = useStationFocusStore();
+    return {
+      appstateStore,
+      citiesStore,
+      stationsStore,
+      rideCountStore,
+      stationFocusStore,
+    };
   },
   data() {
     return {
@@ -123,6 +281,7 @@ export default {
         rowsPerPage: 15,
         page: 1,
       },
+      columnDefs: linkColumns,
     };
   },
   components: {},
@@ -141,6 +300,11 @@ export default {
         ? this.station.nameFi
         : `Unknown station #${this.stationId}`;
     },
+    stationNameEx() {
+      return this.station
+        ? this.station.nameFi + " (" + this.station.city.CityFi + ")"
+        : `Unknown station #${this.stationId}`;
+    },
     stationNameCompact() {
       return this.station ? this.station.nameFi : `#${this.stationId}?`;
     },
@@ -156,30 +320,22 @@ export default {
     englishDifferent() {
       return this.station.nameFi != this.station.nameEn;
     },
+    linkList() {
+      return this.stationFocusStore.linkStatsList;
+    },
   },
   methods: {},
   watch: {},
   async mounted() {
-    if (!this.appstateStore.manualLoadStations && !this.stationsStore.loaded) {
-      await this.stationsStore.loadFromDb(0);
-    }
-    if (!this.appstateStore.manualLoadStations) {
-      if (!this.stationsStore.loaded) {
-        await this.load(0);
-      } else {
-        // This branch is relevant when something else loaded the
-        // stationsStore already, but nothing loaded the ride counts
-        // yet. Example flow where that happens: Home -> Rides -> Stations.
-        await this.rideCountStore.load();
-      }
-    }
-
+    await this.stationsStore.loadIfNotDoneSoYet();
     this.appstateStore.currentSection = `${this.myName} - ${this.stationNameCompact}`;
+    await this.rideCountStore.load(false);
+    await this.stationFocusStore.reset(this.stationId);
   },
 };
 </script>
 
-<style scoped>
+<style>
 .propcolName {
   width: 7rem;
   text-align: right;
@@ -195,5 +351,20 @@ export default {
 }
 .larger {
   font-size: 120%;
+}
+.colStyleLinkId {
+  width: 3rem;
+}
+.colStyleLinkName {
+  width: 15rem;
+}
+.colStyleLinkAddr {
+  width: 16rem;
+}
+.colStyleLinkCity {
+  width: 6rem;
+}
+.colStyleLinkRideCount {
+  width: 4rem;
 }
 </style>

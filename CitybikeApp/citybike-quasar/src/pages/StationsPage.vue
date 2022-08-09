@@ -348,6 +348,7 @@ const stationColumns = [
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
+    sortOrder: "da",
     required: true,
   },
   {
@@ -357,6 +358,7 @@ const stationColumns = [
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
+    sortOrder: "da",
     required: true,
   },
   {
@@ -366,6 +368,7 @@ const stationColumns = [
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
+    sortOrder: "da",
     required: false, // hide by default
   },
   {
