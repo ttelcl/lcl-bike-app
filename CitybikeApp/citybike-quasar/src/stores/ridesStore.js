@@ -25,7 +25,7 @@ export const useRidesStore = defineStore("rides", {
       rowsPerPage: 15,
       sortBy: undefined,
       descending: false,
-      rowsNumber: 150, // not-undefined triggers server side pagination behaviour in <q-table>
+      rowsNumber: 0, // not-undefined triggers server side pagination behaviour in <q-table>
       query: {}, // our own query info
     },
     currentPaginationInitialized: false,
@@ -70,7 +70,7 @@ export const useRidesStore = defineStore("rides", {
     },
     nextDepStationName() {
       const station = this.nextDepStation;
-      return station ? this.getStationName(station) : "((all stations))";
+      return station ? this.getStationName(station) : "(( all stations ))";
     },
     nextRetStation() {
       if (this.nextQueryParameters.retId <= 0) {
@@ -82,7 +82,7 @@ export const useRidesStore = defineStore("rides", {
     },
     nextRetStationName() {
       const station = this.nextRetStation;
-      return station ? this.getStationName(station) : "((all stations))";
+      return station ? this.getStationName(station) : "(( all stations ))";
     },
   },
   actions: {

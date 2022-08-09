@@ -91,6 +91,12 @@
         <q-icon name="warning" size="lg" color="warning" /> {{ loadStatus }}
       </div>
     </div>
+    <div class="row q-pt-xl text-warning">
+      <h4>
+        <q-icon name="construction" /> This Page is still Under Construction!
+        <q-icon name="construction" />
+      </h4>
+    </div>
   </q-page>
 </template>
 

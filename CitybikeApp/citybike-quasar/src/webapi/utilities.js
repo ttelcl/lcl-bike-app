@@ -58,4 +58,22 @@ export const utilities = {
       return "";
     }
   },
+
+  parseTimespan(txt) {
+    if (txt) {
+      // (/^(?:(?:(?<hr>\d+):)?(?<min>\d+):)?(?<sec>\d+)$/.exec("12:34:56") || {}).groups;
+      // For validation only: /^(?:(?:(\d+):)?(\d+):)?(\d+)$/
+      const match = /^(?:(?:(?<hr>\d+):)?(?<min>\d+):)?(?<sec>\d+)$/.exec(txt);
+      if (match) {
+        const hours = parseInt(match.groups.hr || "0", 10);
+        const minutes = parseInt(match.groups.min || "0", 10);
+        const seconds = parseInt(match.groups.sec || "0", 10);
+        return seconds + 60 * (minutes + 60 * hours);
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  },
 };
