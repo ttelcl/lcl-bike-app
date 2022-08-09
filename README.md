@@ -54,6 +54,10 @@ This section describes the various technologies used.
   above-mentioned C# libraries): `CitybikeUtility`.
 - The database implementation currently assumes SQL Server and was
   tested against a LocalDb version and a serverless Azure SQL version.
+  - Known Issue: performance of loading a remote database is not where it
+    should be, but it seems I don't have enough time to fix that. The
+    read performance appears to be just fine, as is any operation on a
+    loacl DB; it is just the loading of a remote DB that has a problem.
 - Web API and server side UI are implemented in C# using ASP.NET Core 6,
   see `CitybikeApp`. Currently both of those are implemented in the same
   app. The server side UI uses Razor pages.
