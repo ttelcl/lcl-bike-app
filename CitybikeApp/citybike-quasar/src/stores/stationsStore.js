@@ -77,9 +77,9 @@ export const useStationsStore = defineStore("stations", {
         // Augment the response records
         for (var s of raw) {
           s.city = cities.cities[s.cityId];
-          s.depCount = 0; // preallocate total ride departure count
-          s.retCount = 0; // preallocate total ride return count
-          s.rideRank = 0; // preallocate ride count rank
+          s.depStats = { count: 0, distSum: 0, durSum: 0 }; // preallocate
+          s.retStats = { count: 0, distSum: 0, durSum: 0 }; // preallocate
+          s.rideRank = 0; // preallocate
           this.stations[s.id] = s;
         }
         this.errorMessage = null;
@@ -100,3 +100,15 @@ export const useStationsStore = defineStore("stations", {
     },
   },
 });
+
+export function statsAvgDistance(stats) {
+  if (stats && stats.count) {
+    return Math.round(stats.distSum / stats.count);
+  }
+}
+
+export function statsAvgDuration(stats) {
+  if (stats && stats.count) {
+    return Math.round(stats.durSum / stats.count);
+  }
+}

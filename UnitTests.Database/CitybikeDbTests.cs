@@ -272,7 +272,7 @@ namespace UnitTests.Database
         db.InitDb();
         var icq = db as ICitybikeQueries;
         Assert.NotNull(icq);
-        var ridesCount = icq.GetRidesCount(null, null);
+        var ridesCount = icq.GetRidesCount2(null, null);
         Assert.True(ridesCount > 0);
 
         _output.WriteLine($"There are {ridesCount} rides in this test db");
@@ -280,9 +280,19 @@ namespace UnitTests.Database
         var t0 = new DateTime(2021, 5, 31, 23, 50, 00);
         var t1 = new DateTime(2021, 5, 31, 23, 55, 00);
 
-        var rides2 = icq.GetRidesCount(t0, t1);
+        var rides2 = icq.GetRidesCount2(t0, t1);
         Assert.True(rides2 > 0);
-        _output.WriteLine($"Of those, there are {rides2} rides from {t0:s} to {t1:s}");
+        _output.WriteLine($"Of those {ridesCount}, there are {rides2} rides from {t0:s} to {t1:s}");
+
+        var depid = 4;
+        var rides3 = icq.GetRidesCount2(depId: depid);
+        Assert.True(rides3 > 0);
+        _output.WriteLine($"Of those {ridesCount}, there are {rides3} rides starting from station {depid}");
+
+        var retid = 62;
+        var rides4 = icq.GetRidesCount2(retId: retid);
+        Assert.True(rides4 > 0);
+        _output.WriteLine($"Of those {ridesCount}, there are {rides4} rides ending at station {retid}");
 
       }
     }

@@ -13,7 +13,7 @@
     <!-- The query parameters bar -->
     <div class="row q-gutter-md q-py-sm">
       <div class="col-auto">
-        <div class="row q-col-gutter-md">
+        <div class="row q-col-gutter-md q-pb-sm">
           <q-input
             v-model.number="depStationId"
             type="number"
@@ -21,7 +21,7 @@
             class="numInput"
             label="From Station Id"
             debounce="750"
-            :hint="ridesStore.nextDepStationName"
+            :hint="depStationHint"
             :rules="stationIdRules"
             ref="depIdField"
             @focus="(input) => input.target.select()"
@@ -33,6 +33,7 @@
             class="dateInput"
             label="start date"
             readonly
+            :hint="startDateHint"
           >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
@@ -63,6 +64,20 @@
             debounce="750"
             step="0.001"
             :rules="distanceRules"
+            :hint="distMinHint"
+            @focus="(input) => input.target.select()"
+          />
+          <q-input
+            v-model="durationMin"
+            type="text"
+            outlined
+            class="numInput"
+            label="Min. Dur."
+            mask="#:##:##"
+            debounce="750"
+            placeholder="0:00:00"
+            :rules="timespanRules"
+            :hint="durationMinHint"
             @focus="(input) => input.target.select()"
           />
         </div>
@@ -74,7 +89,7 @@
             class="numInput"
             label="To Station Id"
             debounce="750"
-            :hint="ridesStore.nextRetStationName"
+            :hint="retStationHint"
             :rules="stationIdRules"
             ref="retIdField"
             @focus="(input) => input.target.select()"
@@ -86,6 +101,7 @@
             class="dateInput"
             label="end date"
             readonly
+            :hint="endDateHint"
           >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
@@ -116,6 +132,20 @@
             debounce="750"
             step="0.001"
             :rules="distanceRules"
+            :hint="distMaxHint"
+            @focus="(input) => input.target.select()"
+          />
+          <q-input
+            v-model="durationMax"
+            type="text"
+            outlined
+            class="numInput"
+            label="Max. Dur."
+            mask="#:##:##"
+            debounce="750"
+            placeholder="4:00:00"
+            :rules="timespanRules"
+            :hint="durationMaxHint"
             @focus="(input) => input.target.select()"
           />
         </div>
@@ -163,8 +193,14 @@
       >
         <template v-slot:top>
           <div class="row fit justify-between">
-            <div class="row">
+            <div class="row items-baseline q-gutter-md">
               <div class="q-table__title">Rides</div>
+              <div>
+                (<span class="bright-green"> {{ queriedRidesCount }} </span> of
+                <span class="bright-other"> {{ allRidesCount }} </span> :
+                <span class="bright-third"> {{ ridesCountPercentage }} </span>%
+                )
+              </div>
             </div>
             <div class="row">
               <q-btn-toggle
@@ -182,7 +218,7 @@
         <!--
           Design Note! We solve the "how to show names in different lanaguages?" problem
           here in a different way than on the station page (for historical reasons ...).
-          Here we have only one column, and its content adapts to the language selector.
+          Here we have only one column (well, twice), and its content adapts to the language selector.
         -->
         <template #body-cell-s_from="props">
           <q-td :props="props">
@@ -238,11 +274,70 @@
       <div>Not yet initialized.</div>
     </div>
     <hr />
+    <div>
+      <q-expansion-item
+        expand-separator
+        label="Hints &amp; tips"
+        switch-toggle-side
+        v-model="appstateStore.showHintsInRidesBrowser"
+      >
+        <ul>
+          <li>
+            Use any of the
+            <q-btn
+              icon="search"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons in the To or From columns to filter on the station as
+            departure or return station.
+          </li>
+          <li>
+            Use any of the
+            <q-btn
+              icon="search_off"
+              color="red-14"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons in the To or From columns to clear the filter for that
+            station.
+          </li>
+          <li>
+            Sorry, sorting is not supported in the Rides Browser for performance
+            reasons.
+          </li>
+          <li>
+            Use any of the fields in the area above the table to filter the
+            visible rides.
+          </li>
+          <li>
+            Known Issue: the minimum / maximum duration fields act a bit
+            "funny".
+          </li>
+          <li>
+            Data only includes rides with a length between 400 m and 8 km.
+          </li>
+          <li>
+            Data only includes rides with a duration between 2 minutes and 4
+            hours.
+          </li>
+          <li>
+            Data only includes rides where the duration agrees with the
+            difference between the departure and return time (within a 20
+            seconds tolerance).
+          </li>
+        </ul>
+      </q-expansion-item>
+    </div>
+    <!-- <hr />
     <div class="text-grey-5 text-italic bg-brown-10">
       <h6 class="q-my-sm">Temporary Dev / Debug section</h6>
       <ul>
         <li>All Rides Count: {{ ridesStore.allRidesCount }}</li>
-        <!-- <li><q-btn label="fetch" @click="reloadRidesMetadata" /></li> -->
         <li>
           First ride started:
           {{
@@ -259,7 +354,7 @@
           }}
         </li>
       </ul>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
@@ -269,21 +364,6 @@ import { useAppstateStore } from "../stores/appstateStore";
 import { useRidesStore } from "../stores/ridesStore";
 import { useStationsStore } from "../stores/stationsStore";
 import { utilities } from "../webapi/utilities";
-
-function formatTimespan(totalSeconds) {
-  var rounded = Math.floor(totalSeconds);
-  var seconds = rounded % 60;
-  var totalMinutes = (rounded - seconds) / 60;
-  var minutes = totalMinutes % 60;
-  var hours = (totalMinutes - minutes) / 60;
-  return (
-    hours.toString() +
-    ":" +
-    minutes.toString().padStart(2, "0") +
-    ":" +
-    seconds.toString().padStart(2, "0")
-  );
-}
 
 const ridesColumns = [
   // {
@@ -339,7 +419,7 @@ const ridesColumns = [
   {
     name: "duration",
     label: "Duration",
-    field: (row) => formatTimespan(row.duration),
+    field: (row) => utilities.formatTimespan(row.duration),
     align: "right",
     classes: "colWidthDuration",
     headerClasses: "colWidthDuration",
@@ -375,6 +455,12 @@ export default {
         (Number.isFinite(val) && val >= 0.0 && val <= 40.0) ||
         "0.000 <= distance <= 40.000",
     ];
+    const timespanRules = [
+      (val) =>
+        val === null ||
+        /^(?:(?:(\d+):)?(\d+):)?(\d+)$/.test(val) ||
+        "Expecting the pattern HH:MM:SS, MM:SS or SS",
+    ];
     return {
       appstateStore,
       ridesStore,
@@ -383,6 +469,7 @@ export default {
       date,
       stationIdRules,
       distanceRules,
+      timespanRules,
     };
   },
   data() {
@@ -398,6 +485,7 @@ export default {
       retErr: false,
       parametersChanged: false,
       queryPending: false,
+      TEMP: null,
     };
   },
   computed: {
@@ -500,6 +588,68 @@ export default {
         }
       },
     },
+    durationMin: {
+      get() {
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.secMin)) {
+          return null;
+        } else {
+          return utilities.formatTimespan(
+            this.ridesStore.nextQueryParameters.secMin
+          );
+        }
+      },
+      set(s) {
+        var v = utilities.parseTimespan(s);
+        console.log(
+          "dur-min: Setting string value: " +
+            JSON.stringify(s) +
+            " that is value: " +
+            JSON.stringify(v)
+        );
+        if (!Number.isFinite(v)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.secMin
+          );
+          this.ridesStore.nextQueryParameters.secMin = null;
+          this.parametersChanged = changed;
+        } else {
+          const changed = this.ridesStore.nextQueryParameters.secMin !== v;
+          this.ridesStore.nextQueryParameters.secMin = v;
+          this.parametersChanged = changed;
+        }
+      },
+    },
+    durationMax: {
+      get() {
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.secMax)) {
+          return null;
+        } else {
+          return utilities.formatTimespan(
+            this.ridesStore.nextQueryParameters.secMax
+          );
+        }
+      },
+      set(s) {
+        var v = utilities.parseTimespan(s);
+        console.log(
+          "dur-max: Setting string value: " +
+            JSON.stringify(s) +
+            " that is value: " +
+            JSON.stringify(v)
+        );
+        if (!Number.isFinite(v)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.secMax
+          );
+          this.ridesStore.nextQueryParameters.secMax = null;
+          this.parametersChanged = changed;
+        } else {
+          const changed = this.ridesStore.nextQueryParameters.secMax !== v;
+          this.ridesStore.nextQueryParameters.secMax = v;
+          this.parametersChanged = changed;
+        }
+      },
+    },
     initialDate() {
       return date.formatDate(this.ridesStore.firstRideStart, "YYYY-MM-DD");
     },
@@ -521,6 +671,42 @@ export default {
       } else {
         return this.parametersChanged ? "bg-warning" : "bg-primary";
       }
+    },
+    allRidesCount() {
+      return this.ridesStore.allRidesCount;
+    },
+    queriedRidesCount() {
+      return this.ridesStore.currentPagination.rowsNumber;
+    },
+    ridesCountPercentage() {
+      return (
+        Math.round((100000 * this.queriedRidesCount) / this.allRidesCount) /
+        1000
+      );
+    },
+    depStationHint() {
+      return this.ridesStore.nextDepStationName;
+    },
+    retStationHint() {
+      return this.ridesStore.nextRetStationName;
+    },
+    startDateHint() {
+      return this.startDate ? undefined : "(( " + this.initialDate + " ))";
+    },
+    endDateHint() {
+      return this.endDate ? undefined : "(( " + this.finalDate + " ))";
+    },
+    distMinHint() {
+      return Number.isFinite(this.distMin) ? undefined : "(( 0.400 km ))";
+    },
+    distMaxHint() {
+      return Number.isFinite(this.distMax) ? undefined : "(( 8.000 km ))";
+    },
+    durationMinHint() {
+      return this.durationMin ? undefined : "(( 0:02:00 ))";
+    },
+    durationMaxHint() {
+      return this.durationMax ? undefined : "(( 4:00:00 ))";
     },
   },
   methods: {
@@ -561,10 +747,10 @@ export default {
     // Apply the query:
     async initTable() {
       this.parametersChanged = false;
-      console.log(
-        "Page initTable NQP=" +
-          JSON.stringify(this.ridesStore.nextQueryParameters)
-      );
+      // console.log(
+      //   "Page initTable NQP=" +
+      //     JSON.stringify(this.ridesStore.nextQueryParameters)
+      // );
       await this.ridesStore.initTable(
         true,
         15,

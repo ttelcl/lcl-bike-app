@@ -359,7 +359,8 @@ namespace CitybikeApp.WebApi
     }
 
     /// <summary>
-    /// Return a list of (departure station, return station, ride count)
+    /// Return a list of (departure station, return station, ride count,
+    /// total distance, total duration)
     /// records, optionally constrained to the given time interval.
     /// Beware! Use the "cap" parameter when invoking from Swagger,
     /// or it will choke on the large result!
@@ -368,10 +369,10 @@ namespace CitybikeApp.WebApi
     /// The database accessor
     /// </param>
     /// <param name="t0">
-    /// The start time. Date-only values are interpreted as time 00:00:00.
+    /// The start time. Date-only values are interpreted as having time 00:00:00.
     /// </param>
     /// <param name="t1">
-    /// The end time. Date-only values are interpreted as time 23:59:59
+    /// The end time. Date-only values are interpreted as having time 23:59:59
     /// </param>
     /// <param name="cap">
     /// When present and above 0: only return the first <paramref name="cap"/>
@@ -381,7 +382,7 @@ namespace CitybikeApp.WebApi
     /// The requested list
     /// </returns>
     /// <remarks>
-    /// The following time formats are supported:
+    /// The following time formats are supported for t0 and t1:
     /// 
     /// * _(blank or omitted)_
     /// * yyyy-MM-dd
@@ -391,8 +392,8 @@ namespace CitybikeApp.WebApi
     /// </remarks>
     /// <response code="200">On success</response>
     /// <response code="400">On unrecognized date/time format</response>
-    [HttpGet("stationpaircounts")]
-    public ActionResult<StationPairCount[]> GetStationPairCounts(
+    [HttpGet("stationpairstats")]
+    public ActionResult<StationPairStats[]> GetStationPairStats( 
       [FromServices] ICitybikeDb db,
       [FromQuery] string? t0 = null,
       [FromQuery] string? t1 = null,
@@ -409,7 +410,7 @@ namespace CitybikeApp.WebApi
         return BadRequest(aex.Message);
       }
       var icq = db.GetQueryApi();
-      var spcs = icq.GetStationPairCounts(dt0, dt1);
+      var spcs = icq.GetStationPairStats(dt0, dt1);
       if(cap.HasValue && cap.Value > 0)
       {
         spcs = spcs.Take(cap.Value).ToArray();
@@ -436,11 +437,11 @@ namespace CitybikeApp.WebApi
     /// The result is intended to be cached by the client. It can be used for instance
     /// to either project departures-by-day or departures-by-station.
     /// 
-    /// As an alternative, use the API calls that aggregate the same data already.
+    /// Currently not in use by the frontend app, but left in as a demo.
     /// </remarks>
     /// <response code="200">On success</response>
     [HttpGet("stationdaydepstats")]
-    public List<StationDateCount> GetStationDayDepartureStats(
+    public List<StationDateCount> GetStationDayDepartureStats( // Unused, but left as demo
       [FromServices] RideStatsService rss,
       [FromQuery] int cap = 0)
     {
@@ -472,11 +473,11 @@ namespace CitybikeApp.WebApi
     /// The result is intended to be cached by the client. It can be used for instance
     /// to either project returns-by-day or returns-by-station.
     /// 
-    /// As an alternative, use the API calls that aggregate the same data already.
+    /// Currently not in use by the frontend app, but left in as a demo.
     /// </remarks>
     /// <response code="200">On success</response>
     [HttpGet("stationdayretstats")]
-    public List<StationDateCount> GetStationDayReturnStats(
+    public List<StationDateCount> GetStationDayReturnStats( // Unused, but left as demo
       [FromServices] RideStatsService rss,
       [FromQuery] int cap = 0)
     {
@@ -486,6 +487,8 @@ namespace CitybikeApp.WebApi
         : rss.ReturnStats.ToList();
       return r;
     }
+
+#if UNUSED
 
     /// <summary>
     /// Get the number of rides departing from each station,
@@ -826,6 +829,7 @@ namespace CitybikeApp.WebApi
       var rides = icq.GetRidesPage(pagesize, offset, dt0, dt1);
       return rides;
     }
+#endif
 
     private static readonly string[] __dateOnlyPatterns =
       new[] { "yyyy-MM-dd", "yyyyMMdd" };

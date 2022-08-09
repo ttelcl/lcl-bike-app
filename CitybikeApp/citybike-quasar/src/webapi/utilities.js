@@ -39,4 +39,41 @@ export const utilities = {
       pad(Math.abs(tzo) % 60)
     );
   },
+
+  formatTimespan(totalSeconds) {
+    if (Number.isFinite(totalSeconds)) {
+      var rounded = Math.floor(totalSeconds);
+      var seconds = rounded % 60;
+      var totalMinutes = (rounded - seconds) / 60;
+      var minutes = totalMinutes % 60;
+      var hours = (totalMinutes - minutes) / 60;
+      return (
+        hours.toString() +
+        ":" +
+        minutes.toString().padStart(2, "0") +
+        ":" +
+        seconds.toString().padStart(2, "0")
+      );
+    } else {
+      return "";
+    }
+  },
+
+  parseTimespan(txt) {
+    if (txt) {
+      // (/^(?:(?:(?<hr>\d+):)?(?<min>\d+):)?(?<sec>\d+)$/.exec("12:34:56") || {}).groups;
+      // For validation only: /^(?:(?:(\d+):)?(\d+):)?(\d+)$/
+      const match = /^(?:(?:(?<hr>\d+):)?(?<min>\d+):)?(?<sec>\d+)$/.exec(txt);
+      if (match) {
+        const hours = parseInt(match.groups.hr || "0", 10);
+        const minutes = parseInt(match.groups.min || "0", 10);
+        const seconds = parseInt(match.groups.sec || "0", 10);
+        return seconds + 60 * (minutes + 60 * hours);
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  },
 };

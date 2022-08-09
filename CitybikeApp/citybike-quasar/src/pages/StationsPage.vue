@@ -165,6 +165,65 @@
         />
       </div>
     </div>
+    <div>
+      <q-expansion-item
+        expand-separator
+        label="Hints &amp; tips"
+        switch-toggle-side
+        v-model="appstateStore.showHintsInStationsList"
+      >
+        <ul>
+          <li>
+            Use any of the
+            <q-btn
+              icon="logout"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons to preselect the station as departure station in the rides
+            browser.
+          </li>
+          <li>
+            Use any of the
+            <q-btn
+              icon="login"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons to preselect the station as return station in the rides
+            browser.
+          </li>
+          <li>Click on column headers to sort.</li>
+          <li>
+            Click on the link in the Name column to see the details page for the
+            station.
+          </li>
+          <li>
+            Type in the <q-icon name="search" size="sm" /> text box to search
+            station names and addresses in any of the supported languages.
+          </li>
+          <li>
+            "Rank" is based on total number of incoming and outgoing rides
+          </li>
+          <li>
+            Data only includes rides with a length between 400 m and 8 km.
+          </li>
+          <li>
+            Data only includes rides with a duration between 2 minutes and 4
+            hours.
+          </li>
+          <li>
+            Data only includes rides where the duration agrees with the
+            difference between the departure and return time (within a 20
+            seconds tolerance).
+          </li>
+        </ul>
+      </q-expansion-item>
+    </div>
     <div class="dbginfo" v-if="loading || stationsStore.errorMessage">
       <h6 class="q-my-md">Debug / Develop Temporary section</h6>
       <ul>
@@ -195,9 +254,14 @@
 <script>
 import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
-import { useStationsStore } from "src/stores/stationsStore";
+import {
+  useStationsStore,
+  statsAvgDistance,
+  statsAvgDuration,
+} from "src/stores/stationsStore";
 import { useStationsViewStore } from "../stores/stationsViewStore";
 import { useRideCountStore } from "src/stores/rideCountStore";
+import { utilities } from "../webapi/utilities";
 import DesignNote from "components/DesignNote.vue";
 import StationNameColumn from "src/components/StationNameColumn.vue";
 
@@ -269,9 +333,18 @@ const stationColumns = [
     align: "left",
   },
   {
+    name: "rank",
+    label: "Rank",
+    field: "rideRank",
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
     name: "depCount",
     label: "Starts",
-    field: "depCount",
+    field: (row) => row.depStats.count || 0,
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
@@ -280,7 +353,7 @@ const stationColumns = [
   {
     name: "retCount",
     label: "Ends",
-    field: "retCount",
+    field: (row) => row.retStats.count || 0,
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
@@ -289,16 +362,43 @@ const stationColumns = [
   {
     name: "rideCount",
     label: "Total",
-    field: (row) => row.depCount + row.retCount,
+    field: (row) => row.depStats.count + row.retStats.count || 0,
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
     required: false, // hide by default
   },
   {
-    name: "rank",
-    label: "Rank",
-    field: "rideRank",
+    name: "avg_dist_in",
+    label: "Avg dist IN",
+    field: (row) => statsAvgDistance(row.retStats) / 1000 || 0,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "avg_dist_out",
+    label: "Avg dist OUT",
+    field: (row) => statsAvgDistance(row.depStats) / 1000 || 0,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "avg_dur_in",
+    label: "Avg dur IN",
+    field: (row) => utilities.formatTimespan(statsAvgDuration(row.retStats)),
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "avg_dur_out",
+    label: "Avg dur OUT",
+    field: (row) => utilities.formatTimespan(statsAvgDuration(row.depStats)),
     classes: "colStyleRideCount",
     align: "right",
     sortable: true,
@@ -318,9 +418,9 @@ const columnSetDefs = {
     "nameFi",
     "addrFi",
     "city",
+    "rank",
     "depCount",
     "retCount",
-    "rank",
     "actions",
   ],
   SE: [
@@ -328,9 +428,9 @@ const columnSetDefs = {
     "nameSe",
     "addrSe",
     "citySe",
+    "rank",
     "depCount",
     "retCount",
-    "rank",
     "actions",
   ],
   EN: [
@@ -338,9 +438,9 @@ const columnSetDefs = {
     "nameEn",
     "addrFi",
     "city",
+    "rank",
     "depCount",
     "retCount",
-    "rank",
     "actions",
   ],
 };

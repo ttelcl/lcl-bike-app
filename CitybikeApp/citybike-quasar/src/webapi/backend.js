@@ -146,8 +146,8 @@ export const backend = {
   },
 
   // Returns the raw axios response from /api/citybike/stationpaircounts
-  async getStationPairRideCounts(timeOut = 10000) {
-    return await api.get("/api/citybike/stationpaircounts", {
+  async getStationPairRideStats(timeOut = 10000) {
+    return await api.get("/api/citybike/stationpairstats", {
       timeout: timeOut,
     });
   },
