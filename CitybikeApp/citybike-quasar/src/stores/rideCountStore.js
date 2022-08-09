@@ -13,7 +13,7 @@ export const useRideCountStore = defineStore("ridecounts", {
     loaded: false,
     loading: false,
     errorMessage: null,
-    // An unordered list caching ALL (depId, retId, count) records
+    // An unordered list caching ALL (depId, retId, count, distSum, durSum) records
     allDepRetStats: [],
     // A mapping from departure station ID to total ride count
     allDepStats: {},
