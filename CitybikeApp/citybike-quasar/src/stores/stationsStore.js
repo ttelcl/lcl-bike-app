@@ -100,3 +100,15 @@ export const useStationsStore = defineStore("stations", {
     },
   },
 });
+
+export function statsAvgDistance(stats) {
+  if (stats && stats.count) {
+    return Math.round(stats.distSum / stats.count);
+  }
+}
+
+export function statsAvgDuration(stats) {
+  if (stats && stats.count) {
+    return Math.round(stats.durSum / stats.count);
+  }
+}

@@ -270,21 +270,6 @@ import { useRidesStore } from "../stores/ridesStore";
 import { useStationsStore } from "../stores/stationsStore";
 import { utilities } from "../webapi/utilities";
 
-function formatTimespan(totalSeconds) {
-  var rounded = Math.floor(totalSeconds);
-  var seconds = rounded % 60;
-  var totalMinutes = (rounded - seconds) / 60;
-  var minutes = totalMinutes % 60;
-  var hours = (totalMinutes - minutes) / 60;
-  return (
-    hours.toString() +
-    ":" +
-    minutes.toString().padStart(2, "0") +
-    ":" +
-    seconds.toString().padStart(2, "0")
-  );
-}
-
 const ridesColumns = [
   // {
   //   // There must be an ID key in a q-table, but it doesn't need to show as column!
@@ -339,7 +324,7 @@ const ridesColumns = [
   {
     name: "duration",
     label: "Duration",
-    field: (row) => formatTimespan(row.duration),
+    field: (row) => utilities.formatTimespan(row.duration),
     align: "right",
     classes: "colWidthDuration",
     headerClasses: "colWidthDuration",

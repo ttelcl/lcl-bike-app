@@ -195,9 +195,14 @@
 <script>
 import { useAppstateStore } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
-import { useStationsStore } from "src/stores/stationsStore";
+import {
+  useStationsStore,
+  statsAvgDistance,
+  statsAvgDuration,
+} from "src/stores/stationsStore";
 import { useStationsViewStore } from "../stores/stationsViewStore";
 import { useRideCountStore } from "src/stores/rideCountStore";
+import { utilities } from "../webapi/utilities";
 import DesignNote from "components/DesignNote.vue";
 import StationNameColumn from "src/components/StationNameColumn.vue";
 
@@ -303,6 +308,42 @@ const stationColumns = [
     align: "right",
     sortable: true,
     required: false, // hide by default
+  },
+  {
+    name: "avg_dist_in",
+    label: "Avg dist IN",
+    field: (row) => statsAvgDistance(row.retStats) / 1000 || 0,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "avg_dist_out",
+    label: "Avg dist OUT",
+    field: (row) => statsAvgDistance(row.depStats) / 1000 || 0,
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "avg_dur_in",
+    label: "Avg dur IN",
+    field: (row) => utilities.formatTimespan(statsAvgDuration(row.retStats)),
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
+  },
+  {
+    name: "avg_dur_out",
+    label: "Avg dur OUT",
+    field: (row) => utilities.formatTimespan(statsAvgDuration(row.depStats)),
+    classes: "colStyleRideCount",
+    align: "right",
+    sortable: true,
+    required: true,
   },
   {
     // virtual column to put action buttons in

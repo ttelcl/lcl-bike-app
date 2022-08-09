@@ -39,4 +39,23 @@ export const utilities = {
       pad(Math.abs(tzo) % 60)
     );
   },
+
+  formatTimespan(totalSeconds) {
+    if (Number.isFinite(totalSeconds)) {
+      var rounded = Math.floor(totalSeconds);
+      var seconds = rounded % 60;
+      var totalMinutes = (rounded - seconds) / 60;
+      var minutes = totalMinutes % 60;
+      var hours = (totalMinutes - minutes) / 60;
+      return (
+        hours.toString() +
+        ":" +
+        minutes.toString().padStart(2, "0") +
+        ":" +
+        seconds.toString().padStart(2, "0")
+      );
+    } else {
+      return "";
+    }
+  },
 };
