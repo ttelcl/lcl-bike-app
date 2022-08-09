@@ -257,6 +257,7 @@ FROM [dbo].[Stations]
       return stations.ToList();
     }
 
+#if UNUSED
     List<Ride> ICitybikeQueries.GetRidesPage(
       int pageSize, int pageOffset, DateTime? fromTime, DateTime? toTime)
     {
@@ -325,6 +326,7 @@ WHERE DepTime >= @TFrom AND DepTime <= @TTo
       }
     }
 
+
     /// <summary>
     /// Get a single station record
     /// </summary>
@@ -344,6 +346,8 @@ WHERE Id = @StationId
 ", new { StationId = id });
       return station;
     }
+
+#endif
 
     List<Ride> ICitybikeQueries.GetRidesPage2(
       int pageSize,

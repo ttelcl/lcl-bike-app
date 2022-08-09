@@ -34,65 +34,10 @@ namespace LclBikeApp.Database
     IReadOnlyList<Station> GetStations();
 
     /// <summary>
-    /// Get a single station record
-    /// </summary>
-    /// <param name="id">
-    /// The station ID to find
-    /// </param>
-    /// <returns>
-    /// The station if found, or null if not found
-    /// </returns>
-    Station? GetStation(int id);
-
-    /// <summary>
     /// Get the range of Departure times in the rides table, or null if there
     /// are no rides.
     /// </summary>
     TimeRange? GetTimeRange();
-
-    /// <summary>
-    /// Return a page from the Rides table, sorted in the order
-    /// DepTime, RetTime, DepStation, RetStation, Distance, Duration,
-    /// in the specified departure time range
-    /// </summary>
-    /// <param name="pageSize">
-    /// The page size
-    /// </param>
-    /// <param name="pageOffset">
-    /// The row offset of the page to return
-    /// </param>
-    /// <param name="fromTime">
-    /// The earliest departure time to report (or null to not restrict)
-    /// </param>
-    /// <param name="toTime">
-    /// The final departure time to report (or null to not restrict)
-    /// </param>
-    /// <returns>
-    /// The requested page of rides
-    /// </returns>
-    List<Ride> GetRidesPage(
-      int pageSize,
-      int pageOffset,
-      DateTime? fromTime = null,
-      DateTime? toTime = null);
-
-    /// <summary>
-    /// Return the total number of rides in the given departure time range
-    /// (suitable for calculating the number of pages available from
-    /// GetRidesPage())
-    /// </summary>
-    /// <param name="fromTime">
-    /// The earliest departure time to report (or null to not restrict)
-    /// </param>
-    /// <param name="toTime">
-    /// The final departure time to report (or null to not restrict)
-    /// </param>
-    /// <returns>
-    /// The number of rides in the specified time range
-    /// </returns>
-    int GetRidesCount(
-      DateTime? fromTime = null,
-      DateTime? toTime = null);
 
     /// <summary>
     /// Generic Rides Query, returning one page of query results
@@ -197,6 +142,26 @@ namespace LclBikeApp.Database
       int durMax = Int32.MaxValue);
 
     /// <summary>
+    /// Return the total number of rides between all pairs of stations,
+    /// optionally constrained to a specific time interval.
+    /// </summary>
+    /// <param name="fromTime">
+    /// If not null: the oldest ride departure time to include.
+    /// </param>
+    /// <param name="toTime">
+    /// If not null: the newest ride _departure_ time to include.
+    /// Yes, "departure time", not "return time", for the sake of database
+    /// efficiency.
+    /// </param>
+    /// <returns>
+    /// A list of departure station - return station - count triplets, in no
+    /// particular order.
+    /// </returns>
+    StationPairCount[] GetStationPairCounts(
+      DateTime? fromTime = null,
+      DateTime? toTime = null);
+
+    /// <summary>
     /// Returns a list of (DepartureStation, DepartureDay, RideCount) triplets.
     /// </summary>
     /// <returns>
@@ -230,25 +195,65 @@ namespace LclBikeApp.Database
     /// </remarks>
     StationDateCount[] GetReturnStats();
 
+#if UNUSED
+
     /// <summary>
-    /// Return the total number of rides between all pairs of stations,
-    /// optionally constrained to a specific time interval.
+    /// Get a single station record
     /// </summary>
-    /// <param name="fromTime">
-    /// If not null: the oldest ride departure time to include.
-    /// </param>
-    /// <param name="toTime">
-    /// If not null: the newest ride _departure_ time to include.
-    /// Yes, "departure time", not "return time", for the sake of database
-    /// efficiency.
+    /// <param name="id">
+    /// The station ID to find
     /// </param>
     /// <returns>
-    /// A list of departure station - return station - count triplets, in no
-    /// particular order.
+    /// The station if found, or null if not found
     /// </returns>
-    StationPairCount[] GetStationPairCounts(
+    Station? GetStation(int id);
+
+    /// <summary>
+    /// Return a page from the Rides table, sorted in the order
+    /// DepTime, RetTime, DepStation, RetStation, Distance, Duration,
+    /// in the specified departure time range
+    /// </summary>
+    /// <param name="pageSize">
+    /// The page size
+    /// </param>
+    /// <param name="pageOffset">
+    /// The row offset of the page to return
+    /// </param>
+    /// <param name="fromTime">
+    /// The earliest departure time to report (or null to not restrict)
+    /// </param>
+    /// <param name="toTime">
+    /// The final departure time to report (or null to not restrict)
+    /// </param>
+    /// <returns>
+    /// The requested page of rides
+    /// </returns>
+    List<Ride> GetRidesPage(
+      int pageSize,
+      int pageOffset,
       DateTime? fromTime = null,
       DateTime? toTime = null);
+
+    /// <summary>
+    /// Return the total number of rides in the given departure time range
+    /// (suitable for calculating the number of pages available from
+    /// GetRidesPage())
+    /// </summary>
+    /// <param name="fromTime">
+    /// The earliest departure time to report (or null to not restrict)
+    /// </param>
+    /// <param name="toTime">
+    /// The final departure time to report (or null to not restrict)
+    /// </param>
+    /// <returns>
+    /// The number of rides in the specified time range
+    /// </returns>
+    int GetRidesCount(
+      DateTime? fromTime = null,
+      DateTime? toTime = null);
+
+#endif
+
   }
 }
 

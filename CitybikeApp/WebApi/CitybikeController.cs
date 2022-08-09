@@ -392,7 +392,7 @@ namespace CitybikeApp.WebApi
     /// <response code="200">On success</response>
     /// <response code="400">On unrecognized date/time format</response>
     [HttpGet("stationpaircounts")]
-    public ActionResult<StationPairCount[]> GetStationPairCounts(
+    public ActionResult<StationPairCount[]> GetStationPairCounts( 
       [FromServices] ICitybikeDb db,
       [FromQuery] string? t0 = null,
       [FromQuery] string? t1 = null,
@@ -436,11 +436,11 @@ namespace CitybikeApp.WebApi
     /// The result is intended to be cached by the client. It can be used for instance
     /// to either project departures-by-day or departures-by-station.
     /// 
-    /// As an alternative, use the API calls that aggregate the same data already.
+    /// Currently not in use by the frontend app, but left in as a demo.
     /// </remarks>
     /// <response code="200">On success</response>
     [HttpGet("stationdaydepstats")]
-    public List<StationDateCount> GetStationDayDepartureStats(
+    public List<StationDateCount> GetStationDayDepartureStats( // Unused, but left as demo
       [FromServices] RideStatsService rss,
       [FromQuery] int cap = 0)
     {
@@ -472,11 +472,11 @@ namespace CitybikeApp.WebApi
     /// The result is intended to be cached by the client. It can be used for instance
     /// to either project returns-by-day or returns-by-station.
     /// 
-    /// As an alternative, use the API calls that aggregate the same data already.
+    /// Currently not in use by the frontend app, but left in as a demo.
     /// </remarks>
     /// <response code="200">On success</response>
     [HttpGet("stationdayretstats")]
-    public List<StationDateCount> GetStationDayReturnStats(
+    public List<StationDateCount> GetStationDayReturnStats( // Unused, but left as demo
       [FromServices] RideStatsService rss,
       [FromQuery] int cap = 0)
     {
@@ -486,6 +486,8 @@ namespace CitybikeApp.WebApi
         : rss.ReturnStats.ToList();
       return r;
     }
+
+#if UNUSED
 
     /// <summary>
     /// Get the number of rides departing from each station,
@@ -826,6 +828,7 @@ namespace CitybikeApp.WebApi
       var rides = icq.GetRidesPage(pagesize, offset, dt0, dt1);
       return rides;
     }
+#endif
 
     private static readonly string[] __dateOnlyPatterns =
       new[] { "yyyy-MM-dd", "yyyyMMdd" };
