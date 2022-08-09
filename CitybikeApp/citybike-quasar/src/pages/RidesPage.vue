@@ -238,11 +238,66 @@
       <div>Not yet initialized.</div>
     </div>
     <hr />
+    <div>
+      <q-expansion-item
+        expand-separator
+        label="Hints &amp; tips"
+        switch-toggle-side
+        v-model="appstateStore.showHintsInRidesBrowser"
+      >
+        <ul>
+          <li>
+            Use any of the
+            <q-btn
+              icon="search"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons in the To or From columns to filter on the station as
+            departure or return station.
+          </li>
+          <li>
+            Use any of the
+            <q-btn
+              icon="search_off"
+              color="red-14"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons in the To or From columns to clear the filter for that
+            station.
+          </li>
+          <li>
+            Sorry, sorting is not supported in the Rides Browser for performance
+            reasons.
+          </li>
+          <li>
+            Use any of the fields in the area above the table to filter the
+            visible rides.
+          </li>
+          <li>
+            Data only includes rides with a length between 400 m and 8 km.
+          </li>
+          <li>
+            Data only includes rides with a duration between 2 minutes and 4
+            hours.
+          </li>
+          <li>
+            Data only includes rides where the duration agrees with the
+            difference between the departure and return time (within a 20
+            seconds tolerance).
+          </li>
+        </ul>
+      </q-expansion-item>
+    </div>
+    <!-- <hr />
     <div class="text-grey-5 text-italic bg-brown-10">
       <h6 class="q-my-sm">Temporary Dev / Debug section</h6>
       <ul>
         <li>All Rides Count: {{ ridesStore.allRidesCount }}</li>
-        <!-- <li><q-btn label="fetch" @click="reloadRidesMetadata" /></li> -->
         <li>
           First ride started:
           {{
@@ -259,7 +314,7 @@
           }}
         </li>
       </ul>
-    </div>
+    </div> -->
   </q-page>
 </template>
 

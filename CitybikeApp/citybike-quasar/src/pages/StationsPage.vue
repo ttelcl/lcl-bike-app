@@ -165,6 +165,65 @@
         />
       </div>
     </div>
+    <div>
+      <q-expansion-item
+        expand-separator
+        label="Hints &amp; tips"
+        switch-toggle-side
+        v-model="appstateStore.showHintsInStationsList"
+      >
+        <ul>
+          <li>
+            Use any of the
+            <q-btn
+              icon="logout"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons to preselect the station as departure station in the rides
+            browser.
+          </li>
+          <li>
+            Use any of the
+            <q-btn
+              icon="login"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            buttons to preselect the station as return station in the rides
+            browser.
+          </li>
+          <li>Click on column headers to sort.</li>
+          <li>
+            Click on the link in the Name column to see the details page for the
+            station.
+          </li>
+          <li>
+            Type in the <q-icon name="search" size="sm" /> text box to search
+            station names and addresses in any of the supported languages.
+          </li>
+          <li>
+            "Rank" is based on total number of incoming and outgoing rides
+          </li>
+          <li>
+            Data only includes rides with a length between 400 m and 8 km.
+          </li>
+          <li>
+            Data only includes rides with a duration between 2 minutes and 4
+            hours.
+          </li>
+          <li>
+            Data only includes rides where the duration agrees with the
+            difference between the departure and return time (within a 20
+            seconds tolerance).
+          </li>
+        </ul>
+      </q-expansion-item>
+    </div>
     <div class="dbginfo" v-if="loading || stationsStore.errorMessage">
       <h6 class="q-my-md">Debug / Develop Temporary section</h6>
       <ul>
