@@ -12,7 +12,6 @@ export const useStationsViewStore = defineStore("stationsview", {
       sortBy: undefined,
       descending: false,
     },
-    columnSetKey: "FI",
     searchText: null,
     lastSearch: null, // used in distinguishing a new search from a state restore
   }),
@@ -22,7 +21,6 @@ export const useStationsViewStore = defineStore("stationsview", {
       this.pagination.rowsPerPage = 15;
       this.pagination.sortBy = undefined;
       this.pagination.descending = false;
-      this.columnSetKey = "FI";
       this.searchText = null;
     },
   },

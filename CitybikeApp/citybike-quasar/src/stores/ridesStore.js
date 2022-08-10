@@ -5,6 +5,7 @@
 import { defineStore } from "pinia";
 import { backend } from "../webapi/backend";
 import { utilities } from "../webapi/utilities";
+import { useAppstateStore } from "./appstateStore";
 import { useStationsStore } from "./stationsStore";
 
 export const useRidesStore = defineStore("rides", {
@@ -17,7 +18,6 @@ export const useRidesStore = defineStore("rides", {
     firstRideStart: new Date("2021-05-01T00:00:00"), // best guess placeholder until loaded!
     lastRideStart: new Date("2021-07-31T23:59:59"), // best guess placeholder until loaded!
 
-    stationNameLanguage: "FI", // Valid values: "FI", "SE", and "EN"
     autoApplyQuery: true,
 
     currentPagination: {
@@ -70,7 +70,12 @@ export const useRidesStore = defineStore("rides", {
     },
     nextDepStationName() {
       const station = this.nextDepStation;
-      return station ? this.getStationName(station) : "(( all stations ))";
+      if (station) {
+        const appstateStore = useAppstateStore();
+        return appstateStore.getStationName(station);
+      } else {
+        return "(( all stations ))";
+      }
     },
     nextRetStation() {
       if (this.nextQueryParameters.retId <= 0) {
@@ -82,18 +87,15 @@ export const useRidesStore = defineStore("rides", {
     },
     nextRetStationName() {
       const station = this.nextRetStation;
-      return station ? this.getStationName(station) : "(( all stations ))";
+      if (station) {
+        const appstateStore = useAppstateStore();
+        return appstateStore.getStationName(station);
+      } else {
+        return "(( all stations ))";
+      }
     },
   },
   actions: {
-    getStationName(station) {
-      const lang = this.stationNameLanguage;
-      return lang == "SE"
-        ? station.nameSe
-        : lang == "EN"
-        ? station.nameEn
-        : station.nameFi;
-    },
     // Create a new ride query state object (used for server-side pagination)
     newRideQuery(
       pageSize = 15,

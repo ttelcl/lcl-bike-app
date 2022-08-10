@@ -77,7 +77,7 @@
               </div>
               <div class="row">
                 <q-btn-toggle
-                  v-model="viewStore.columnSetKey"
+                  v-model="appstateStore.nameLanguage"
                   toggle-color="primary"
                   :options="[
                     { label: 'FI', value: 'FI' },
@@ -469,7 +469,7 @@ export default {
       myName: "Citybike Station Index",
       columnDefs: stationColumns,
       columnSets: columnSetDefs,
-      searchText: null,
+      searchText: null, // local version, synced with store via watch
       currentSearch: null,
       filteredStations: null,
     };
@@ -480,7 +480,7 @@ export default {
   },
   computed: {
     currentColumnSet() {
-      return this.columnSets[this.viewStore.columnSetKey];
+      return this.columnSets[this.appstateStore.nameLanguage];
     },
     citiesMap() {
       return this.citiesStore.cities;

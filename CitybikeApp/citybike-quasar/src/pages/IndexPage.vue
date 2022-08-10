@@ -56,6 +56,13 @@
         </div>
       </div>
     </div>
+    <div class="row q-pt-xl text-warning">
+      <h4>
+        <q-icon name="construction" />
+        This Site is still Under Construction!
+        <q-icon name="construction" />
+      </h4>
+    </div>
     <div class="q-mt-xl">
       <hr />
       <DesignNote :expand="false" title="Development Settings" :alt="true">
@@ -73,7 +80,6 @@
 </template>
 
 <script>
-import { mapWritableState } from "pinia";
 import { useAppstateStore } from "../stores/appstateStore";
 import DesignNote from "components/DesignNote.vue";
 

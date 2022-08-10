@@ -204,7 +204,7 @@
             </div>
             <div class="row">
               <q-btn-toggle
-                v-model="ridesStore.stationNameLanguage"
+                v-model="appstateStore.nameLanguage"
                 toggle-color="primary"
                 :options="[
                   { label: 'FI', value: 'FI' },
@@ -228,7 +228,7 @@
                   :to="`/stations/${props.row.depStationId}`"
                   class="text-green-2"
                 >
-                  {{ ridesStore.getStationName(props.row.depStation) }}
+                  {{ appstateStore.getStationName(props.row.depStation) }}
                 </router-link>
               </div>
               <div class="col-auto">
@@ -252,7 +252,7 @@
                   :to="`/stations/${props.row.retStationId}`"
                   class="text-green-2"
                 >
-                  {{ ridesStore.getStationName(props.row.retStation) }}
+                  {{ appstateStore.getStationName(props.row.retStation) }}
                 </router-link>
               </div>
               <div class="col-auto">
@@ -485,7 +485,6 @@ export default {
       retErr: false,
       parametersChanged: false,
       queryPending: false,
-      TEMP: null,
     };
   },
   computed: {
