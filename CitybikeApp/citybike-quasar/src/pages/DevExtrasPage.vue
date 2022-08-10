@@ -6,7 +6,7 @@
     </q-breadcrumbs>
     <h2 class="q-my-md">{{ myName }}</h2>
     <div class="simple-text">
-      <h4>Some links to assist with development</h4>
+      <h4>Some links to assist during development</h4>
       <p>
         For these to work, the backend must be reachable. During development,
         that means both frontend server (http://localhost:9000/) and backend
@@ -82,7 +82,7 @@ export default {
       myName: "Development Extras",
       backendData: null,
       errorMessage: "",
-      statRecords: [], // TEMPORARY
+      statRecords: [],
       station42Departures: 0,
     };
   },

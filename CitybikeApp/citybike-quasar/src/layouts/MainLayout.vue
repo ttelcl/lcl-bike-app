@@ -11,7 +11,9 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Citybike App - {{ currentSection }}</q-toolbar-title>
+        <q-toolbar-title>
+          Citybike App - {{ appstateStore.currentSection }}</q-toolbar-title
+        >
 
         <!-- <div>Quasar v{{ $q.version }}</div> -->
       </q-toolbar>
@@ -79,6 +81,11 @@ const sectionsList = [
 export default defineComponent({
   name: "MainLayout",
 
+  setup() {
+    const appstateStore = useAppstateStore();
+    return { appstateStore };
+  },
+
   components: {
     AppSectionHeader,
   },
@@ -97,8 +104,6 @@ export default defineComponent({
     },
   },
 
-  computed: {
-    ...mapState(useAppstateStore, ["currentSection"]),
-  },
+  computed: {},
 });
 </script>

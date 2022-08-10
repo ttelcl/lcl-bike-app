@@ -26,26 +26,36 @@ export const useStationFocusStore = defineStore("stationfocus", {
       sortBy: undefined,
       descending: false,
     },
-    columnSetKey: "FI",
   }),
-  getters: {},
+  getters: {
+    stationId() {
+      return this.station ? this.station.id : undefined;
+    },
+  },
   actions: {
     // re-initialize this store's content and ensure the required
     // info has been loaded in stationsStore and rideCountStore
     async reset(stationId) {
-      console.log(
-        "Loading station data for station " + JSON.stringify(stationId)
-      );
       const stationsStore = useStationsStore();
       const rideCountStore = useRideCountStore();
       await stationsStore.loadIfNotDoneSoYet();
+      await rideCountStore.load(false);
+      this.resetCore(stationId);
+    },
+    // Re-initialize this store's content. Does not ensure that
+    // the dependent stores are initialized.
+    resetCore(stationId) {
+      const stationsStore = useStationsStore();
+      const rideCountStore = useRideCountStore();
       if (!this.station || this.station.id != stationId) {
+        console.log(
+          "Loading station data for station " + JSON.stringify(stationId)
+        );
         this.station = null; // unload first
         this.linkStats = {};
         this.linkStatsList = [];
         const station = stationsStore.stations[stationId];
         if (station) {
-          await rideCountStore.load(false);
           const allDepRetStats = rideCountStore.allDepRetStats;
           const linkStats = {};
           for (const remoteStation of Object.values(stationsStore.stations)) {
@@ -123,7 +133,11 @@ export const useStationFocusStore = defineStore("stationfocus", {
           // );
           // console.log("Runner up: " + JSON.stringify(linkStatsList[1]));
         } // else: invalid ID: skip load
-      } // else: already loaded
+      } else {
+        console.log(
+          "Already loaded station data for station " + JSON.stringify(stationId)
+        );
+      }
     },
   },
 });

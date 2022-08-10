@@ -20,18 +20,6 @@
         </ul>
         <p class="q-my-none">To Do:</p>
         <ul class="q-my-none">
-          <li>
-            <s>
-              Add a link to a per-station page to act as entry point for a lot
-              more details
-            </s>
-          </li>
-          <li>
-            <s>
-              Make the state of pagination, search and language hint persist
-              through navigation.
-            </s>
-          </li>
           <li>Add a better pagination control.</li>
         </ul>
       </div>
@@ -77,7 +65,7 @@
               </div>
               <div class="row">
                 <q-btn-toggle
-                  v-model="viewStore.columnSetKey"
+                  v-model="appstateStore.nameLanguage"
                   toggle-color="primary"
                   :options="[
                     { label: 'FI', value: 'FI' },
@@ -273,9 +261,7 @@ const stationColumns = [
     field: "id",
     required: true,
     align: "right",
-    // classes: "q-table--col-auto-width",
     classes: "colStyleId",
-    // headerClasses: "q-table--col-auto-width",
     sortable: true,
   },
   {
@@ -469,7 +455,7 @@ export default {
       myName: "Citybike Station Index",
       columnDefs: stationColumns,
       columnSets: columnSetDefs,
-      searchText: null,
+      searchText: null, // local version, synced with store via watch
       currentSearch: null,
       filteredStations: null,
     };
@@ -480,7 +466,7 @@ export default {
   },
   computed: {
     currentColumnSet() {
-      return this.columnSets[this.viewStore.columnSetKey];
+      return this.columnSets[this.appstateStore.nameLanguage];
     },
     citiesMap() {
       return this.citiesStore.cities;
@@ -601,11 +587,12 @@ export default {
 .colStyleId {
   width: 3rem;
 }
+
 .colStyleName {
-  width: 15rem;
+  width: 17rem;
 }
 .colStyleAddr {
-  width: 16rem;
+  width: 17rem;
 }
 .colStyleCity {
   width: 6rem;
