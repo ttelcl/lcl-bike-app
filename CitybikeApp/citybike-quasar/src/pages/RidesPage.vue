@@ -14,6 +14,7 @@
     <div class="row q-gutter-md q-py-sm">
       <div class="col-auto">
         <div class="row q-col-gutter-md q-pb-sm">
+          <!-- Query parameters top row -->
           <q-input
             v-model.number="depStationId"
             type="number"
@@ -66,6 +67,7 @@
             :rules="distanceRules"
             :hint="distMinHint"
             @focus="(input) => input.target.select()"
+            clearable
           />
           <q-input
             v-model="durationMin"
@@ -79,9 +81,11 @@
             :rules="timespanRules"
             :hint="durationMinHint"
             @focus="(input) => input.target.select()"
+            clearable
           />
         </div>
         <div class="row q-col-gutter-md">
+          <!-- Query parameters bottom row -->
           <q-input
             v-model.number="retStationId"
             type="number"
@@ -134,6 +138,7 @@
             :rules="distanceRules"
             :hint="distMaxHint"
             @focus="(input) => input.target.select()"
+            clearable
           />
           <q-input
             v-model="durationMax"
@@ -147,10 +152,12 @@
             :rules="timespanRules"
             :hint="durationMaxHint"
             @focus="(input) => input.target.select()"
+            clearable
           />
         </div>
       </div>
       <div class="column col-auto">
+        <!-- Query action buttons (Apply / Reset) -->
         <div class="row rounded-borders" :class="applyButtonColorClass">
           <q-btn
             label="Apply"
@@ -230,6 +237,7 @@
                 >
                   {{ appstateStore.getStationName(props.row.depStation) }}
                 </router-link>
+                &nbsp;<i>[{{ props.row.depStation.id }}]</i>
               </div>
               <div class="col-auto">
                 <q-btn
@@ -254,6 +262,7 @@
                 >
                   {{ appstateStore.getStationName(props.row.retStation) }}
                 </router-link>
+                &nbsp;<i>[{{ props.row.retStation.id }}]</i>
               </div>
               <div class="col-auto">
                 <q-btn
@@ -315,8 +324,21 @@
             visible rides.
           </li>
           <li>
-            Known Issue: the minimum / maximum duration fields act a bit
-            "funny".
+            <span class="text-warning">Known Issue:</span>
+            The minimum / maximum duration fields act a bit "funny".
+          </li>
+          <li>
+            <span class="text-warning">Known Issue / TODO</span>: The station ID
+            filter fields should default to being blank, but for technical
+            reasons currently aren't. They also should have a "clear me" button
+            when not empty.
+          </li>
+          <li>
+            <span class="text-warning">Known Issue / TODO</span>: The start /
+            end date filter fields also should have a "clear me" button when not
+            empty.
+            <!-- They don't because the <q-input> "clearable" flag doesn't work
+            with them because they are actually read-only. -->
           </li>
           <li>
             Data only includes rides with a length between 400 m and 8 km.
@@ -882,7 +904,7 @@ export default {
 
 <style lang="scss">
 .colWidthStation {
-  width: 16rem;
+  width: 18rem;
 }
 .colWidthDay {
   width: 6rem;

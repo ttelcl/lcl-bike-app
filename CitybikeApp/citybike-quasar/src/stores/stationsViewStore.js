@@ -9,7 +9,7 @@ export const useStationsViewStore = defineStore("stationsview", {
     pagination: {
       page: 1,
       rowsPerPage: 15,
-      sortBy: undefined,
+      sortBy: "rank",
       descending: false,
     },
     searchText: null,
@@ -19,7 +19,7 @@ export const useStationsViewStore = defineStore("stationsview", {
     reset() {
       this.pagination.page = 1;
       this.pagination.rowsPerPage = 15;
-      this.pagination.sortBy = undefined;
+      this.pagination.sortBy = "rank";
       this.pagination.descending = false;
       this.searchText = null;
     },
