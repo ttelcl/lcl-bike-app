@@ -106,7 +106,8 @@
             <div class="row fit justify-between">
               <div class="row">
                 <div class="q-table__title">
-                  Info on rides to or from: {{ stationNameEx }}
+                  Info on rides to or from:
+                  <span class="text-blue-3"> {{ stationNameEx }} </span>
                 </div>
               </div>
               <div class="row">
@@ -126,16 +127,29 @@
             <q-td :props="props">
               <div class="row">
                 <div class="col">
-                  <router-link
-                    :to="`/stations/${props.row.id}`"
-                    class="text-green-3"
-                    v-if="!isLoop(props.row.id)"
-                  >
-                    {{ appstateStore.getStationName(props.row.station) }}
-                  </router-link>
-                  <div v-else class="row">
-                    <div class="text-blue-3">
+                  <div class="row items-baseline" v-if="!isLoop(props.row.id)">
+                    <router-link
+                      :to="`/stations/${props.row.id}`"
+                      class="text-green-3"
+                    >
                       {{ appstateStore.getStationName(props.row.station) }}
+                    </router-link>
+                    <!-- <span class="smaller">
+                      &nbsp; ({{
+                        appstateStore.getStationCity(props.row.station)
+                      }})
+                    </span> -->
+                  </div>
+                  <div v-else class="row">
+                    <div class="row items-baseline">
+                      <span class="text-blue-3">
+                        {{ appstateStore.getStationName(props.row.station) }}
+                      </span>
+                      <!-- <span class="smaller">
+                        &nbsp; ({{
+                          appstateStore.getStationCity(props.row.station)
+                        }})
+                      </span> -->
                     </div>
                     <q-icon
                       name="sync_problem"
@@ -157,6 +171,62 @@
               </div>
             </q-td>
           </template>
+          <template #body-cell-incount="props">
+            <q-td :props="props">
+              <div class="row">
+                <div class="col">
+                  {{ props.row.incoming.count }}
+                </div>
+                <div class="col-auto">
+                  <q-btn
+                    icon="directions_bike"
+                    size="xs"
+                    color="primary"
+                    dense
+                    class="q-px-xs q-ml-xs"
+                    :to="`/rides?dep=${props.row.id}&ret=${stationId}`"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides from
+                      <span class="text-green-3">
+                        {{ appstateStore.getStationName(props.row.station) }}
+                      </span>
+                      to
+                      <span class="text-blue-3"> {{ stationName }} </span>
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </q-td>
+          </template>
+          <template #body-cell-outcount="props">
+            <q-td :props="props">
+              <div class="row">
+                <div class="col">
+                  {{ props.row.outgoing.count }}
+                </div>
+                <div class="col-auto">
+                  <q-btn
+                    icon="directions_bike"
+                    size="xs"
+                    color="primary"
+                    dense
+                    class="q-px-xs q-ml-xs"
+                    :to="`/rides?dep=${stationId}&ret=${props.row.id}`"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides from
+                      <span class="text-blue-3"> {{ stationName }} </span>
+                      to
+                      <span class="text-green-3">
+                        {{ appstateStore.getStationName(props.row.station) }}
+                      </span>
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </q-td>
+          </template>
         </q-table>
       </div>
     </div>
@@ -166,18 +236,95 @@
         <q-icon name="warning" size="lg" color="warning" /> {{ loadStatus }}
       </div>
     </div>
-    <div class="row q-pt-xl text-warning">
+    <div>
+      <q-expansion-item
+        expand-separator
+        label="Hints &amp; tips"
+        switch-toggle-side
+        v-model="appstateStore.showHintsInStationPage"
+      >
+        <ul>
+          <li>
+            Use the
+            <q-btn
+              icon="directions_bike"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            button in the "Incoming" column to see rides from the row's station
+            to <span class="text-blue-3"> {{ stationName }} </span>.
+          </li>
+          <li>
+            Use the
+            <q-btn
+              icon="directions_bike"
+              color="primary"
+              dense
+              size="xs"
+              class="q-mx-xs q-px-xs"
+            />
+            button in the "Outgoing" column to see rides from
+            <span class="text-blue-3"> {{ stationName }} </span> to the row's
+            station.
+          </li>
+          <li>Click on column headers to sort.</li>
+          <li>
+            Click on the link in the "Origin or Destination" column to visit the
+            details page for the row's station.
+          </li>
+          <li>
+            The <q-icon name="sync_problem" size="xs" color="warning" /> icon
+            indicates the row for roundtrip rides both starting and ending at
+            <span class="text-blue-3"> {{ stationName }} </span>.
+          </li>
+          <li>
+            "Rank" is based on total number of incoming and outgoing rides.
+          </li>
+          <li>
+            There are also separate columns for rank based on incoming or
+            outgoing rides only. Sort on those columns to see the most popular
+            origin or destination stations for
+            <span class="text-blue-3"> {{ stationName }} </span>.
+          </li>
+          <li>
+            Or, equivalently, sort on the Incoming or Outgoing columns (they
+            sort biggest first, showing the most popular stations on top).
+          </li>
+          <li>
+            Only stations with any rides to or from
+            <span class="text-blue-3"> {{ stationName }} </span> are shown in
+            the table.
+          </li>
+          <li>
+            Data only includes rides with a length between 400 m and 8 km.
+          </li>
+          <li>
+            Data only includes rides with a duration between 2 minutes and 4
+            hours.
+          </li>
+          <li>
+            Data only includes rides where the duration agrees with the
+            difference between the departure and return time (within a 20
+            seconds tolerance).
+          </li>
+        </ul>
+      </q-expansion-item>
+    </div>
+
+    <!-- <div class="row q-pt-xl text-warning">
       <h4>
         <q-icon name="construction" />
         This Page is still Under Construction!
         <q-icon name="construction" />
       </h4>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
 <script>
-import { useAppstateStore } from "../stores/appstateStore";
+import { useAppstateStore, stationName } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
 import {
   useStationsStore,
@@ -188,11 +335,6 @@ import { useRideCountStore } from "src/stores/rideCountStore";
 import { useStationFocusStore } from "src/stores/stationFocusStore";
 import { utilities } from "../webapi/utilities";
 import DesignNote from "components/DesignNote.vue";
-
-function remoteName(row) {
-  // TEMPORARY
-  return `${row.station.nameFi} (${row.station.city.CityFi})`;
-}
 
 const linkColumns = [
   {
@@ -207,7 +349,7 @@ const linkColumns = [
   {
     name: "name",
     label: "Origin or Destination",
-    field: (row) => remoteName(row), // TO BE REMOVED
+    field: (row) => stationName(row.station), // value is used for sorting
     align: "left",
     classes: "colStyleLinkName",
     sortable: true,
@@ -249,10 +391,19 @@ const linkColumns = [
     required: true,
   },
   {
+    name: "count",
+    label: "Total",
+    field: (row) => row.count,
+    classes: "colStyleLinkRideCount",
+    align: "right",
+    sortable: true,
+    sortOrder: "da",
+  },
+  {
     name: "incount",
     label: "Incoming",
     field: (row) => row.incoming.count,
-    classes: "colStyleLinkRideCount",
+    classes: "colStyleLinkCount2",
     align: "right",
     sortable: true,
     sortOrder: "da",
@@ -261,16 +412,7 @@ const linkColumns = [
     name: "outcount",
     label: "Outgoing",
     field: (row) => row.outgoing.count,
-    classes: "colStyleLinkRideCount",
-    align: "right",
-    sortable: true,
-    sortOrder: "da",
-  },
-  {
-    name: "count",
-    label: "Total",
-    field: (row) => row.count,
-    classes: "colStyleLinkRideCount",
+    classes: "colStyleLinkCount2",
     align: "right",
     sortable: true,
     sortOrder: "da",
@@ -411,7 +553,8 @@ export default {
   beforeUpdate() {
     // Unusually we need a "beforUpdate" event for this page, sharing part of the
     // functionality of "mounted". Without this, router navigation from one
-    // station page to another isn't properly initialized.
+    // station page to another isn't properly initialized (since the "mounted" event
+    // doesn't fire for that case)
 
     // console.log(
     //   "Station Page " + JSON.stringify(this.stationId) + ": beforeUpdate"
@@ -438,6 +581,10 @@ export default {
 .larger {
   font-size: 120%;
 }
+.smaller {
+  font-size: 80%;
+}
+
 .colStyleLinkId {
   width: 3rem;
 }
@@ -452,5 +599,8 @@ export default {
 }
 .colStyleLinkRideCount {
   width: 4rem;
+}
+.colStyleLinkCount2 {
+  width: 5rem;
 }
 </style>

@@ -7,6 +7,7 @@ export const useAppstateStore = defineStore("appstate", {
     manualLoadStations: false,
     showHintsInStationsList: true,
     showHintsInRidesBrowser: true,
+    showHintsInStationPage: true,
     /*
       Language (FI, SE, EN) used for name and address display.
       Used in multiple places - this state is shared.
@@ -36,3 +37,8 @@ export const useAppstateStore = defineStore("appstate", {
     },
   },
 });
+
+export function stationName(station) {
+  const appstateStore = useAppstateStore();
+  return appstateStore.getStationName(station);
+}
