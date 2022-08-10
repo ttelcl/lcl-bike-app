@@ -8,6 +8,7 @@ using LclBikeApp.Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CitybikeApp.WebApi
 {
@@ -33,12 +34,40 @@ namespace CitybikeApp.WebApi
       return d;
     }
 
-    // ((Works, but even without values this is a security hole.))
+    //// ((Works, but even without values this is a security hole.))
     //[HttpGet("cfgkeys")]
     //public IReadOnlyList<string> GetCfgKeys([FromServices] IConfiguration cfg)
     //{
     //  return cfg.AsEnumerable().Select(kvp => kvp.Key).ToList();
     //}
+
+    /// <summary>
+    /// Connection string debug aid
+    /// </summary>
+    [HttpGet("conndbg")]
+    public IReadOnlyList<string> GetConnectionStringNames(
+      [FromServices] IConfiguration cfg)
+    {
+      var section = cfg.GetSection("ConnectionStrings");
+      return section.AsEnumerable(true).Where(kvp => kvp.Value!=null).Select(kvp => kvp.Key).ToList();
+    }
+
+    /// <summary>
+    /// Connection string debug aid
+    /// </summary>
+    [HttpGet("conndbg2")]
+    public IReadOnlyList<string> GetConnectionStringNames2(
+      [FromServices] IServiceProvider services)
+    {
+      var cfg = services.GetService<IConfiguration>();
+      if(cfg == null)
+      {
+        throw new InvalidOperationException(
+          $"Configuration error: cannot access config service");
+      }
+      var section = cfg.GetSection("ConnectionStrings");
+      return section.AsEnumerable(true).Where(kvp => kvp.Value!=null).Select(kvp => kvp.Key).ToList();
+    }
 
     /// <summary>
     /// Causes an exception to be thrown, to test how that is handled
