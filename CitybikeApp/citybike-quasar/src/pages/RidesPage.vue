@@ -24,8 +24,8 @@
             debounce="750"
             :hint="depStationHint"
             :rules="stationIdRules"
-            ref="depIdField"
             @focus="(input) => input.target.select()"
+            clearable
           />
           <q-input
             v-model="startDate"
@@ -95,8 +95,8 @@
             debounce="750"
             :hint="retStationHint"
             :rules="stationIdRules"
-            ref="retIdField"
             @focus="(input) => input.target.select()"
+            clearable
           />
           <q-input
             v-model="endDate"
@@ -328,14 +328,8 @@
             The minimum / maximum duration fields act a bit "funny".
           </li>
           <li>
-            <span class="text-warning">Known Issue / TODO</span>: The station ID
-            filter fields should default to being blank, but for technical
-            reasons currently aren't. They also should have a "clear me" button
-            when not empty.
-          </li>
-          <li>
             <span class="text-warning">Known Issue / TODO</span>: The start /
-            end date filter fields also should have a "clear me" button when not
+            end date filter fields should have a "clear me" button when not
             empty.
             <!-- They don't because the <q-input> "clearable" flag doesn't work
             with them because they are actually read-only. -->
@@ -469,7 +463,11 @@ export default {
     const stationsStore = useStationsStore();
     const stationIdRules = [
       (val) => (val >= 0 && val <= 999) || "0 <= ID <= 999",
-      (val) => val == 0 || stationsStore.stations[val] || "Unknown station",
+      (val) =>
+        val == 0 ||
+        val == null ||
+        stationsStore.stations[val] ||
+        "Unknown station",
     ];
     const distanceRules = [
       (val) =>
@@ -498,7 +496,7 @@ export default {
     return {
       myName: "Rides Browser",
       ridesColumns: ridesColumns,
-      rideQuery: this.ridesStore.newRideQuery(15, null, null),
+      rideQuery: this.ridesStore.newRideQuery(15),
       dateRange: {
         from: "2021/06/01",
         to: "2021/06/30",
@@ -545,22 +543,46 @@ export default {
     },
     retStationId: {
       get() {
-        return this.ridesStore.nextQueryParameters.retId;
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.retId)) {
+          return null;
+        } else {
+          return this.ridesStore.nextQueryParameters.retId;
+        }
       },
       set(n) {
-        const changed = this.ridesStore.nextQueryParameters.retId != n;
-        this.ridesStore.nextQueryParameters.retId = n;
-        this.parametersChanged = changed;
+        if (!Number.isFinite(n)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.retId
+          );
+          this.ridesStore.nextQueryParameters.retId = null;
+          this.parametersChanged = changed;
+        } else {
+          const changed = this.ridesStore.nextQueryParameters.retId != n;
+          this.ridesStore.nextQueryParameters.retId = n;
+          this.parametersChanged = changed;
+        }
       },
     },
     depStationId: {
       get() {
-        return this.ridesStore.nextQueryParameters.depId;
+        if (!Number.isFinite(this.ridesStore.nextQueryParameters.depId)) {
+          return null;
+        } else {
+          return this.ridesStore.nextQueryParameters.depId;
+        }
       },
       set(n) {
-        const changed = this.ridesStore.nextQueryParameters.depId != n;
-        this.ridesStore.nextQueryParameters.depId = n;
-        this.parametersChanged = changed;
+        if (!Number.isFinite(n)) {
+          const changed = Number.isFinite(
+            this.ridesStore.nextQueryParameters.depId
+          );
+          this.ridesStore.nextQueryParameters.depId = null;
+          this.parametersChanged = changed;
+        } else {
+          const changed = this.ridesStore.nextQueryParameters.depId != n;
+          this.ridesStore.nextQueryParameters.depId = n;
+          this.parametersChanged = changed;
+        }
       },
     },
     distMin: {
@@ -740,8 +762,8 @@ export default {
     async resetQuery(soft = false) {
       this.ridesStore.nextQueryParameters.t0 = null;
       this.ridesStore.nextQueryParameters.t1 = null;
-      this.ridesStore.nextQueryParameters.depId = 0;
-      this.ridesStore.nextQueryParameters.retId = 0;
+      this.ridesStore.nextQueryParameters.depId = null;
+      this.ridesStore.nextQueryParameters.retId = null;
       this.ridesStore.nextQueryParameters.distMin = null;
       this.ridesStore.nextQueryParameters.distMax = null;
       this.ridesStore.nextQueryParameters.secMin = null;
@@ -807,7 +829,7 @@ export default {
         if (row.depStationId != this.depStationId) {
           this.depStationId = row.depStationId;
         } else {
-          this.depStationId = 0; // clear the departure search
+          this.depStationId = null; // clear the departure search
         }
       }
     },
@@ -822,7 +844,7 @@ export default {
         if (row.retStationId != this.retStationId) {
           this.retStationId = row.retStationId;
         } else {
-          this.retStationId = 0; // clear the departure search
+          this.retStationId = null; // clear the departure search
         }
       }
     },

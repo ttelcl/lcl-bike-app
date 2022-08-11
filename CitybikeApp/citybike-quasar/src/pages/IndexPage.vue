@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col-md-8 col-lg-6">
         <h4 class="q-my-md">About</h4>
-        <div class="q-pl-xl">
+        <div class="q-pl-xl simple-text">
           <p>
             This site provides access to information and statistics on the usage
             of the Helsinki & Espoo citybike system, showing data from May-July
@@ -15,9 +15,14 @@
           </p>
           <p>
             This site was developed as an educational assignment for
-            <span class="text-italic text-orange-4">
-              [to be completed later...]
-            </span>
+            <a href="https://www.solita.fi/en/"> Solita</a>'s
+            <a href="https://github.com/solita/dev-academy-2022-fall-exercise">
+              Fall 2022 Dev Academy pre-assignment </a
+            >. See the
+            <a href="https://github.com/solita/dev-academy-2022-fall-exercise">
+              assignment's GitHub page
+            </a>
+            for a description (and for links to the original data files).
           </p>
         </div>
       </div>
@@ -57,11 +62,14 @@
       </div>
     </div>
     <div class="row q-pt-xl text-warning">
-      <h4>
-        <q-icon name="construction" />
-        This Site is still Under Construction!
-        <q-icon name="construction" />
-      </h4>
+      <div class="col">
+        <h4>
+          <q-icon name="construction" />
+          This Site is still Under Construction!
+          <q-icon name="construction" />
+        </h4>
+        <p>Fixable bug: clearing to/from station in rides browser</p>
+      </div>
     </div>
     <div class="q-mt-xl">
       <hr />
