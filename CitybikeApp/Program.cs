@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 using CitybikeApp.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 #pragma warning disable CS1591
 
@@ -49,6 +50,10 @@ namespace CitybikeApp
 
       var app = builder.Build();
 
+      ILogger logger = app.Services.GetService<ILogger<Program>>()!;
+      logger.LogInformation($"ContentRootPath is {app.Environment.ContentRootPath}");
+      logger.LogInformation($"WebRootPath is {app.Environment.WebRootPath}");
+
       // Configure the HTTP request pipeline.
       if(!app.Environment.IsDevelopment())
       {
@@ -83,9 +88,19 @@ namespace CitybikeApp
       app.MapRazorPages();
       app.MapControllers();
 
-      app.UseSpa(cfg => {
-        cfg.Options.DefaultPage = "/index.html";
-      });
+      var isDeployed = Directory.Exists(Path.Combine(app.Environment.WebRootPath, "spa"));
+      if (isDeployed)
+      {
+        logger.LogInformation("Detected that this is a deployed instance, enabling SPA hook");
+        app.UseSpa(cfg => {
+          cfg.Options.DefaultPage = "/index.html";
+        });
+      }
+      else
+      {
+        logger.LogInformation("Detected that this is a not-deployed instance, disabling SPA hook");
+        logger.LogWarning("The root page will therefore cause a 404 instead of being redirected to SPA");
+      }
 
       app.Run();
     }
