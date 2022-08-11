@@ -61,16 +61,16 @@
         </div>
       </div>
     </div>
-    <div class="row q-pt-xl text-warning">
+    <!-- <div class="row q-pt-xl text-warning">
       <div class="col">
         <h4>
           <q-icon name="construction" />
           This Site is still Under Construction!
           <q-icon name="construction" />
         </h4>
-        <p>Fixable bug: clearing to/from station in rides browser</p>
+        <p><s>Fixable bug: clearing to/from station in rides browser</s></p>
       </div>
-    </div>
+    </div> -->
     <div class="q-mt-xl">
       <hr />
       <DesignNote :expand="false" title="Development Settings" :alt="true">
