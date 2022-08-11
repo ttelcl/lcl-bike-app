@@ -169,15 +169,20 @@ of that same folder.
   - "CitybikeUtility.exe" will look for a "_data" folder in any of
   the parent folders from the folder where you run it. 
 - Download the ride data files and the stations data file into that
-"_data" folder. The ride data files are expected to be named
-"2021-05.csv", "2021-06.csv", and "2021-07.csv". The station data file
+"_data" folder. The ride data files are named "2021-05.csv",
+"2021-06.csv", and "2021-07.csv" (their name doesn't really matter,
+since you specify the name on the command line). The station data file
 can either be named "stations.csv" or
-"Helsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv".
+"Helsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv". Those two names
+are hard-coded to be recognized by `CitybikeUtility`.
 
 ## Load data into the database (and validate data)
 
 To validate data and put accepted data into your main database use
-the CitybikeUtility program.
+the CitybikeUtility program. Additional information on that utility
+and its use is available in the
+[Data Loading](design-and-implementation-notes/DatabaseLoading.md)
+design document.
 
 - Start a command prompt in the folder where the CitybikeUtility was
 built (`CitybikeUtility\bin\Debug\net6.0`).
@@ -285,7 +290,7 @@ server.
 page is deliberately is kept light-weight, and not depending on the
 backend nor the database.
 - From there you can navigate to the "Citybike Stations" page or the
-"Rides Browser" page. Both of those happen to have links to various
+"Rides Browser" page. Both of those happen to have various
 instances of links to the "single station" page.
 - On the left side bar of the main layout you can also find links
 to the "City" page (a leftover from early design) and the
