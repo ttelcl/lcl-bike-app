@@ -4,26 +4,6 @@
       <q-breadcrumbs-el icon="home" to="/" />
       <q-breadcrumbs-el label="Stations" icon="warehouse" />
     </q-breadcrumbs>
-    <DesignNote>
-      <div>
-        <p class="q-my-none">Known Issues:</p>
-        <ul class="q-my-none">
-          <li>
-            I am not really happy with the out-of-the box table pagination UI
-            provided by Quasar. I mean - functionally it is great, but the UI
-            could be improved a bit: Move the pagination UI to the top, simplify
-            the UI for selecting the row count, move the pagination controls to
-            the center, improve the distinction between enabled and disabled
-            buttons, etc. For now, fixing that is low on my priority list
-            though.
-          </li>
-        </ul>
-        <p class="q-my-none">To Do:</p>
-        <ul class="q-my-none">
-          <li>Add a better pagination control.</li>
-        </ul>
-      </div>
-    </DesignNote>
     <h2 class="q-my-md">{{ myName }}</h2>
     <div class="q-pa-md">
       <q-input
@@ -212,6 +192,26 @@
         </ul>
       </q-expansion-item>
     </div>
+    <DesignNote>
+      <div>
+        <p class="q-my-none">Known Issues:</p>
+        <ul class="q-my-none">
+          <li>
+            I am not really happy with the out-of-the box table pagination UI
+            provided by Quasar. I mean - functionally it is great, but the UI
+            could be improved a bit: Move the pagination UI to the top, simplify
+            the UI for selecting the row count, move the pagination controls to
+            the center, improve the distinction between enabled and disabled
+            buttons, etc. For now, fixing that is low on my priority list
+            though.
+          </li>
+        </ul>
+        <p class="q-my-none">To Do:</p>
+        <ul class="q-my-none">
+          <li>Add a better pagination control.</li>
+        </ul>
+      </div>
+    </DesignNote>
     <div class="dbginfo" v-if="loading || stationsStore.errorMessage">
       <h6 class="q-my-md">Debug / Develop Temporary section</h6>
       <ul>
