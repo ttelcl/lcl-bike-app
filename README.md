@@ -29,11 +29,12 @@ In this page:
   - Rides browser: Display rides, Start station, End station, Day, Start
     and end times, Duration, Distance. Links to the station detail pages. 
     Filter by start station, end station, date range, distance range, 
-    duration range. Server side pagination.
+    duration range. Server side pagination. Support for URL query
+    parameters.
   - Station detail page: List of other stations having rides to or from
     the focused station. Popularity of origin stations, Popularity of
     destination stations, Links to rides browser, Average incoming /
-    outgoing ride distance and duration.
+    outgoing ride distance and duration. Client side pagination and sorting.
   - Built with [Quasar](https://quasar.dev/) (on top of
     [Vue 3](https://vuejs.org/))
 - Backend server:
@@ -41,8 +42,9 @@ In this page:
   - Swagger documentation for that REST API
   - Built using C# in
   [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core)
-  - An initial server side UI, based on
-  [Razor Pages](https://docs.microsoft.com/en-us/aspnet/core/razor-pages/)
+  - Server side UI, based on
+  [Razor Pages](https://docs.microsoft.com/en-us/aspnet/core/razor-pages/).
+  (Not really used).
 - Data handling:
   - [Analysis](design-and-implementation-notes/DataReview.md) of the data
   files to derive reasonable data validation limits.
