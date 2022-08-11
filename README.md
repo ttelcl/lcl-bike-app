@@ -1,12 +1,10 @@
 # City bike application
 
-> :warning: This is a work in progress. _As long as this banner is present,
-> the assignment has not been submitted for evaluation yet!_
->
-> Status 2021-08-11: still progressing ... almost there.
-
-This repository will receive my submission to the City Bike pre-assignment
-(deadline 2022-08-14).
+This repository contains my submission to
+[Solita's](https://www.solita.fi/en/)
+_Fall 2022 Dev Academy pre-assignment_. You can find the problem statement
+and links to the data on the
+[assignment's own GitHub page](https://github.com/solita/dev-academy-2022-fall-exercise).
 
 <!-- (see https://github.com/solita/dev-academy-2022-fall-exercise ) -->
 
@@ -68,20 +66,22 @@ dev mode, deploying, etc. have been moved to their own
 
 - Currently the app requires a "tandem" setup to run, using a separate
 frontend server process and backend server process.
-  - Initial steps have been takn to test deployment to IIS and while
+  - Initial steps have been taken to test deployment to IIS and while
   the basics work, there are still issues to resolve.
 - The data loading app has a performance issue with bulk data upload.
-It works well enough for use with SQL Server LocalDb, but is too slow
+It works well enough for use with SQL Server _LocalDb_, but is too slow
 for non-local SQL Server instances (I tested this using Azure SQL).
 - The rides browser does not support sorting. (The sorting in the
 station list and the station detail page however works fine, for
 all columns)
-- Looking at the frontend and backend code you probably realize soon
-that my primary skillset is C# coding, and my JavaScript skills are 
-not at the same level.
 - Make sure to follow the steps in the [instructions](#instructions).
-After cloning th repo there are some initial steps to be taken _before_
-compiling.
+After cloning the repo there are some initial steps to be taken
+_before_ compiling.
+- Throughout the code and UI there are still some development phase
+artefacts.
+- Looking at the frontend and backend code you probably realize
+that my "native" skillset is C# coding, and my JavaScript skills are 
+not yet at the same level.
 
 ## Coding technologies
 
@@ -132,7 +132,7 @@ This section describes the various technologies used.
     the Web API that it implements though.
 - Links about the technologies used in the backend:
   - [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core)
-  - Dapper (the micro-ORM library I used): https://github.com/DapperLib/Dapper .
+  - Dapper (the micro-ORM library I used): [https://github.com/DapperLib/Dapper](https://github.com/DapperLib/Dapper).
 - The front-end code went through a few initial attempts and finally
   ended up with the version you can find at `CitybikeApp/citybike-quasar/`.
   Technologies used:
@@ -145,6 +145,9 @@ This section describes the various technologies used.
     quite a few technologies to re-learn in their modern day version,
     I didn't want to further complicate it by adding _"learn TypeScript"_
     to the to-do list for this project :)
+  - _Note_: When you look through the GIT timeline you can still see
+    the dead ends; I didn't delete them, but left them "for educational
+    purposes".
 - To aid with database development (including the creation of an initial empty
   database) I used SMSS (SQL Server Management Studio), see
   https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms
@@ -180,4 +183,4 @@ links to more detailed information)
     development server running at htt<span>p:/</span>/localhost:9000/ , which is set up
     to proxy certain URLs to the backend server which runs at htt<span>ps:/</span>/localhost:7185/ .
 - Phase 8: make sure documentation is OK
-- Phase 9: Server deployment _\[It seems I am not going to have enough time for that\]_
+- ~~Phase 9: Server deployment~~ _\[I am not going to have enough time for that\]_
