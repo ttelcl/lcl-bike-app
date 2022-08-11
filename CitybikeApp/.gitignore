@@ -1,0 +1,7 @@
+# This is a sub-gitignore for stuff to be ignored specifically in
+# CitybikeApp (but there is another ignore file for the SPA folder
+# inside, citybike-quasar)
+
+/wwwroot/spa/*
+/.config/dotnet-tools.json
+/Properties/PublishProfiles/bikeapp-iis-local.pubxml

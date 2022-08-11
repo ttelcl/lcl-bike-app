@@ -4,9 +4,6 @@
 .vs/
 
 /.vscode
-!/CitybikeApp/citybike-quasar/.vscode/
-/CitybikeApp/citybike-quasar/.vscode/*
-!/CitybikeApp/citybike-quasar/.vscode/extensions.json
 
 .git/
 .hg/
@@ -14,6 +11,7 @@
 *.tmp
 *.bak
 *.out.csv
+
 
 Generated/*.cs
 packages/
@@ -38,6 +36,7 @@ local.settings.json
 
 /dist
 node_modules/
+
 
 
 

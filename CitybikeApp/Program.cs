@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using CitybikeApp.Services;
+using Microsoft.AspNetCore.Http;
 
 #pragma warning disable CS1591
 
@@ -28,6 +29,10 @@ namespace CitybikeApp
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "LclBikeApp.Database.xml"));
+      });
+
+      builder.Services.AddSpaStaticFiles(cfg => {
+        cfg.RootPath = "wwwroot/spa";
       });
 
       // Add our own services
@@ -61,8 +66,13 @@ namespace CitybikeApp
         app.UseSwaggerUI();
       }
 
-      app.UseHttpsRedirection();
+      // app.UseHttpsRedirection();
+      app.UseDefaultFiles(new DefaultFilesOptions {
+        RequestPath = new PathString(""),
+      });
+
       app.UseStaticFiles();
+      app.UseSpaStaticFiles();
 
       app.UseRouting();
 
@@ -72,6 +82,10 @@ namespace CitybikeApp
 
       app.MapRazorPages();
       app.MapControllers();
+
+      app.UseSpa(cfg => {
+        cfg.Options.DefaultPage = "/index.html";
+      });
 
       app.Run();
     }

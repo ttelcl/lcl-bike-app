@@ -47,11 +47,20 @@ namespace CitybikeApp.Services
       IServiceProvider services, string dbKey)
     {
       var configuration = services.GetService<IConfiguration>();
-      var cs = configuration.GetConnectionString(dbKey);
-      if(String.IsNullOrEmpty(cs))
+      if(configuration == null)
       {
         throw new InvalidOperationException(
-          $"Configuration error: missing DB connection string with name '{dbKey}'");
+          $"Configuration error: cannot access config service");
+      }
+      // var cs = configuration.GetConnectionString(dbKey);
+      var cs = configuration.GetSection("ConnectionStrings")[dbKey];
+      if(String.IsNullOrEmpty(cs))
+      {
+        var section = configuration.GetSection("ConnectionStrings");
+        var keys = section.AsEnumerable(true).Where(kvp => kvp.Value!=null).Select(kvp => kvp.Key).ToList();
+        var keyList = "'" + String.Join("', '", keys) + "'";
+        throw new InvalidOperationException(
+          $"Configuration error: missing DB connection string with name '{dbKey}'. Known keys are {keyList}");
       }
       return new CitybikeDbSqlServer(cs);
     }
