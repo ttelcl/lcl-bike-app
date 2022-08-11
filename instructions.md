@@ -151,9 +151,9 @@ system in .NET Core, which is also directly supported in the VS2022 UI.
     via a commandline parameter ("default" is the default if you
     pass none).
 
-If all is well, you can now build the solution without errors, and
-you can use the CitybikeUtility application to load data into your
-main database (see below)
+If all is well, you can now build the solution without errors (via
+"Build Solution" in VS2022), and you can use the CitybikeUtility
+application to load data into your main database (see below)
 
 ## Putting the data files in place
 
