@@ -20,14 +20,14 @@
           <a href="/home/">Backend Home</a>
         </li>
         <li>
-          <a href="/api/scratch/dummy"
-            >Direct API call example (without hitting DB)</a
-          >
+          <a href="/api/scratch/dummy">
+            Direct API call example (without hitting DB)
+          </a>
         </li>
         <li>
-          <a href="/api/citybike/ridespage2?offset=0&amp;pagesize=3"
-            >Direct API call example (hitting DB)</a
-          >
+          <a href="/api/citybike/ridespage2?offset=0&amp;pagesize=3">
+            Direct API call example (hitting DB)
+          </a>
         </li>
       </ul>
       <hr />

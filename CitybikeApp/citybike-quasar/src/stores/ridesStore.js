@@ -39,8 +39,8 @@ export const useRidesStore = defineStore("rides", {
     nextQueryParameters: {
       t0: null, // null or a string like 'YYYY-MM-DD'
       t1: null, // null or a string like 'YYYY-MM-DD'
-      depId: 0,
-      retId: 0,
+      depId: null,
+      retId: null,
       distMin: null,
       distmax: null,
       secMin: null,
@@ -123,23 +123,29 @@ export const useRidesStore = defineStore("rides", {
       ) {
         throw "t1 must be a null or a string of the form 'yyyy-mm-dd'";
       }
-      if (depSid !== null && !Number.isFinite(depSid)) {
-        throw "depSid (departure station id) must be null or an integer";
+      // if (depSid !== null && !Number.isFinite(depSid)) {
+      //   throw (
+      //     "depSid (departure station id) must be null or an integer. It is " +
+      //     JSON.stringify(depSid)
+      //   );
+      // }
+      if (!Number.isFinite(depSid)) {
+        depSid = null;
       }
-      if (retSid !== null && !Number.isFinite(retSid)) {
-        throw "retSid (return station id) must be null or an integer";
+      if (!Number.isFinite(retSid)) {
+        retSid = null;
       }
-      if (distMin !== null && !Number.isFinite(distMin)) {
-        throw "distMin (minimum distance in meters) must be null or an integer";
+      if (!Number.isFinite(distMin)) {
+        distMin = null;
       }
-      if (distMax !== null && !Number.isFinite(distMax)) {
-        throw "distMax (maximum distance in meters) must be null or an integer";
+      if (!Number.isFinite(distMax)) {
+        distMax = null;
       }
-      if (secMin !== null && !Number.isFinite(secMin)) {
-        throw "secMin (minimum duration in seconds) must be null or an integer";
+      if (!Number.isFinite(secMin)) {
+        secMin = null;
       }
-      if (secMax !== null && !Number.isFinite(secMax)) {
-        throw "secMax (maximum duration in seconds) must be null or an integer";
+      if (!Number.isFinite(secMax)) {
+        secMax = null;
       }
       return {
         offset: 0,

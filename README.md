@@ -3,7 +3,7 @@
 > :warning: This is a work in progress. _As long as this banner is present,
 > the assignment has not been submitted for evaluation yet!_
 >
-> Status 2021-08-05: still progressing ... Apologies for it taking so long.
+> Status 2021-08-11: still progressing ... almost there.
 
 This repository will receive my submission to the City Bike pre-assignment
 (deadline 2022-08-14).
@@ -21,17 +21,20 @@ In this page:
 ## Features and Overview
 
 - Front-end user interface:
-  - Citybike stations list: Browse, Filter by name, Sort by any column, 
+  - [Citybike stations list](design-and-implementation-notes/screenshots.md#stations-list):
+    Browse, Filter by name, Sort by any column, 
     Incoming and outgoing ride counts, Ranking by ride count, Links to rides
     browser, Links to Google maps, Average incoming and outgoing ride
     distance, Average incoming and outgoing ride duration, Name and address
     display language selection. Client side pagination and sorting.
-  - Rides browser: Display rides, Start station, End station, Day, Start
+  - [Rides browser](design-and-implementation-notes/screenshots.md#rides-browser):
+    Display rides, Start station, End station, Day, Start
     and end times, Duration, Distance. Links to the station detail pages. 
     Filter by start station, end station, date range, distance range, 
     duration range. Server side pagination. Support for URL query
     parameters.
-  - Station detail page: List of other stations having rides to or from
+  - [Station detail page](design-and-implementation-notes/screenshots.md#single-station-view):
+    List of other stations having rides to or from
     the focused station. Popularity of origin stations, Popularity of
     destination stations, Links to rides browser, Average incoming /
     outgoing ride distance and duration. Client side pagination and sorting.
