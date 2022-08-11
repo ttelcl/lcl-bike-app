@@ -1,3 +1,12 @@
+# This is a third-level .gitignore!
+# This directory is also affected by [repo]/.gitignore
+# and [repo]/CitybikeApp/.gitignore
+# (This .gitignore originated from the Quasar template)
+
+!/.vscode/
+/.vscode/*
+!/.vscode/extensions.json
+
 .DS_Store
 .thumbs.db
 node_modules
