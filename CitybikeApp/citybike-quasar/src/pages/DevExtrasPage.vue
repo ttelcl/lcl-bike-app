@@ -25,7 +25,7 @@
           >
         </li>
         <li>
-          <a href="/api/citybike/cities-raw"
+          <a href="/api/citybike/ridespage2?offset=0&amp;pagesize=3"
             >Direct API call example (hitting DB)</a
           >
         </li>

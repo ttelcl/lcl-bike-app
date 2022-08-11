@@ -12,14 +12,73 @@ This repository will receive my submission to the City Bike pre-assignment
 
 In this page:
 
+- [Features and Overview](#features-and-overview)
 - [Instructions](#instructions)
+- [Known Issues](#known-issues)
 - [Coding Technologies](#coding-technologies)
 - [Development process](#development-process)
 
+## Features and Overview
+
+- Front-end user interface:
+  - Citybike stations list: Browse, Filter by name, Sort by any column, 
+    Incoming and outgoing ride counts, Ranking by ride count, Links to rides
+    browser, Links to Google maps, Average incoming and outgoing ride
+    distance, Average incoming and outgoing ride duration, Name and address
+    display language selection. Client side pagination and sorting.
+  - Rides browser: Display rides, Start station, End station, Day, Start
+    and end times, Duration, Distance. Links to the station detail pages. 
+    Filter by start station, end station, date range, distance range, 
+    duration range. Server side pagination. Support for URL query
+    parameters.
+  - Station detail page: List of other stations having rides to or from
+    the focused station. Popularity of origin stations, Popularity of
+    destination stations, Links to rides browser, Average incoming /
+    outgoing ride distance and duration. Client side pagination and sorting.
+  - Built with [Quasar](https://quasar.dev/) (on top of
+    [Vue 3](https://vuejs.org/))
+- Backend server:
+  - Serving the data as REST API.
+  - Swagger documentation for that REST API
+  - Built using C# in
+  [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core)
+  - Server side UI, based on
+  [Razor Pages](https://docs.microsoft.com/en-us/aspnet/core/razor-pages/).
+  (Not really used).
+- Data handling:
+  - [Analysis](design-and-implementation-notes/DataReview.md) of the data
+  files to derive reasonable data validation limits.
+  - Database design, targeting SQL Server.
+  - Database adaptation layer implemented using
+  [Dapper](https://github.com/DapperLib/Dapper).
+  - Data validation and database loading via a commandline app
+  implemented in F# (and using the same C# libraries as used in the
+  backend)
+
 ## Instructions
 
-((Instructions for building, setting up and loading the DB, running in
-dev mode, deploying, etc. will be added here later.))
+Instructions for building, setting up and loading the DB, running in
+dev mode, deploying, etc. have been moved to their own
+[instructions document](instructions.md).
+
+## Known Issues
+
+- Currently the app requires a "tandem" setup to run, using a separate
+frontend server process and backend server process.
+  - Initial steps have been takn to test deployment to IIS and while
+  the basics work, there are still issues to resolve.
+- The data loading app has a performance issue with bulk data upload.
+It works well enough for use with SQL Server LocalDb, but is too slow
+for non-local SQL Server instances (I tested this using Azure SQL).
+- The rides browser does not support sorting. (The sorting in the
+station list and the station detail page however works fine, for
+all columns)
+- Looking at the frontend and backend code you probably realize soon
+that my primary skillset is C# coding, and my JavaScript skills are 
+not at the same level.
+- Make sure to follow the steps in the [instructions](#instructions).
+After cloning th repo there are some initial steps to be taken _before_
+compiling.
 
 ## Coding technologies
 
