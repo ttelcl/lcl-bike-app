@@ -37,6 +37,9 @@ SQL Server databases.
   - You can 
   [download it from microsoft](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms).
   - For the record, I used version "v18.12.1".
+  - Note! Reports are that you can create the empty databases in VS2022
+  as well as an alternative to using SMSS. I haven't used that
+  functionality in VS2022 myself though.
 - `Node.js` ([nodejs.org](https://nodejs.org/)). I used version "v16.15.1" (to check your
 version, use "node --version")
 - `Quasar CLI` ([quasar.dev](https.//quasar.dev/)). Once you have node.js
@@ -50,7 +53,9 @@ For the record: I am using version 1.0.5.
 The system assumes availability of **two** independent databases to the
 development environment. One is only used for Unit Testing (and will
 be small), the other is the "real" database (at least for as far as
-frontend and backend development is concerned).
+frontend and backend development is concerned). Note that some of the
+unit tests wipe the entire database, so you definitely want to keep 
+them separate!
 
 I assume you will use SQL Server LocalDb to host these databases on your
 development machine.
@@ -109,11 +114,17 @@ system in .NET Core, which is also directly supported in the VS2022 UI.
   - For the two Unit Test projects (`UnitTests.Database` and 
   `UnitTests.DataWrangling`), the content should be like below, with
   `<<<your-connection-string-for-biketests>>>` replaced by your
-  biketests' connection string. and minus the comment.
+  biketests' connection string.
+    - The "_comments" field isn't actually
+      used, it is just for your convenience, to help keeping multiple
+      `secrets.json` files apart (if JSON would have supported
+      comments it would have been a comment instead).
 
     ```json
-    // User secrets for the Unit Test projects
     {
+      "_comments": [
+        "User secrets for the Unit Test projects"
+      ],
       "TestDb": {
         "ConnectionString": "<<<your-connection-string-for-biketests>>>"
       }
@@ -123,11 +134,13 @@ system in .NET Core, which is also directly supported in the VS2022 UI.
   - For the loader and backend app projects (`CitybikeUtility` and 
   `CitybikeApp`), the content should be like this, with
   `<<<your-connection-string-for-bicycle01>>>` replaced by your
-  bicycle01's connection string. and minus the comment.
+  bicycle01's connection string.
 
     ```json
-    // User secrets for the CitybikeUtility and CitybikeApp projects
     {
+      "_comments": [
+        "User secrets for the CitybikeUtility and CitybikeApp projects"
+      ],
       "ConnectionStrings": {
         "default": "<<<your-connection-string-for-bicycle01>>>"
       }
@@ -211,7 +224,7 @@ You can run the backend in the following ways:
   - Right-click the `CitybikeApp` and select "Set as Startup Project"
   (only needs to be done once). Then click the green arrow "Run" button
   in the toolbar to start the app running in the Kestrel server. You
-  can configure addition run options from the drop-down sub-button on
+  can configure additional run options from the drop-down sub-button on
   that button if you wish, such as selecting which browser to open,
   or not to open any browser at all.
   - Alternatively, just right-click the `CitybikeApp` and select
@@ -273,46 +286,14 @@ page is deliberately is kept light-weight, and not depending on the
 backend nor the database.
 - From there you can navigate to the "Citybike Stations" page or the
 "Rides Browser" page. Both of those happen to have links to various
-instance of the "single station" page.
+instances of links to the "single station" page.
 - On the left side bar of the main layout you can also find links
 to the "City" page (a leftover from early design) and the
 "Development Extras" page with some debugging tools and a link
 to the backend home page and swagger page.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-((Work in progress))
+- If you want to play around with the front-end code, I recommend
+starting VS Code in the frontend root folder
+(`CitybikeApp\citybike-quasar`). The Quasar dev server picks up
+changes automatically when you save them, making for a quick and
+effective edit cycle.
 
