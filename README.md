@@ -184,3 +184,7 @@ links to more detailed information)
     to proxy certain URLs to the backend server which runs at htt<span>ps:/</span>/localhost:7185/ .
 - Phase 8: make sure documentation is OK
 - ~~Phase 9: Server deployment~~ _\[I am not going to have enough time for that\]_
+  - _Update 2021-08-14_ Actually I got local deployment
+    to IIS working. See
+    [my publishing notes](design-and-implementation-notes/publish-local-iis.md)
+    for hints on how to make that work.

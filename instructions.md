@@ -270,8 +270,12 @@ connected to the front-end server think that both servers are one.
 Note that this tandem setup is only for the development setup.
 In a deployed scenario, a hook is activated in the backend that
 serves the (passive!) front-end files at its root.
-Or that is at least the theory; I got that deployed scenario
-partially to work, but not yet completely.
+~~Or that is at least the theory; I got that deployed scenario
+partially to work, but not yet completely.~~
+- _Update, 2021-08-14_: I now got the local deployment to IIS
+  working. See
+  [my publishing notes](design-and-implementation-notes/publish-local-iis.md)
+  for hints on how to make that work.
 
 ## Running the front-end server
 
