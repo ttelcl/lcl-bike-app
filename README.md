@@ -66,8 +66,12 @@ dev mode, deploying, etc. have been moved to their own
 
 - Currently the app requires a "tandem" setup to run, using a separate
 frontend server process and backend server process.
-  - Initial steps have been taken to test deployment to IIS and while
-  the basics work, there are still issues to resolve.
+  - ~~Initial steps have been taken to test deployment to IIS and while
+  the basics work, there are still issues to resolve.~~
+    - _Update 2021-08-14_ Actually I got local deployment
+    to IIS working. See
+    [my publishing notes](design-and-implementation-notes/publish-local-iis.md)
+    for hints on how to make that work.
 - The data loading app has a performance issue with bulk data upload.
 It works well enough for use with SQL Server _LocalDb_, but is too slow
 for non-local SQL Server instances (I tested this using Azure SQL).
