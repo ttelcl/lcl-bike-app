@@ -80,6 +80,47 @@
               <StationNameColumn :row="props.row" name-field="nameEn" />
             </q-td>
           </template>
+          <template #body-cell-name="props">
+            <q-td :props="props">
+              <!-- <span> !! {{ appstateStore.getStationName(props.row) }} !! </span> -->
+              <div class="row">
+                <div class="col">
+                  <router-link
+                    :to="`/stations/${props.row.id}`"
+                    class="text-green-2"
+                  >
+                    {{ appstateStore.getStationName(props.row) }}
+                  </router-link>
+                </div>
+                <div class="col-auto">
+                  <q-btn
+                    icon="logout"
+                    :to="`/rides?dep=${props.row.id}`"
+                    color="primary"
+                    dense
+                    size="xs"
+                    class="q-mx-xs q-px-xs"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides starting here
+                    </q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    icon="login"
+                    :to="`/rides?ret=${props.row.id}`"
+                    color="primary"
+                    dense
+                    size="xs"
+                    class="q-px-xs"
+                  >
+                    <q-tooltip :delay="500" class="text-body2">
+                      Show rides ending here
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </q-td>
+          </template>
           <template #body-cell-addrFi="props">
             <q-td :props="props">
               <span> {{ props.row.addrFi }} </span>
@@ -291,7 +332,7 @@ const stationColumns = [
   {
     name: "name",
     label: "Name",
-    field: (row) => stationName(row),
+    field: (row) => stationName(row), // value is used for sorting (not rendering)
     align: "left",
     classes: "colStyleName",
     sortable: true,
