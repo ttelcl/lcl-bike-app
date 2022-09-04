@@ -60,10 +60,19 @@
             Design Note! We solve the "how to show names in different languages?"
             problem here in a different way than on the rides page (for historical
             reasons ...).
-            Here we have three separate columns, and we show/hide columns based on
+            Here we have separate columns, and we show/hide columns based on
             the language selector.
             To avoid duplication, I introduced a dedicated component for the
-            content of the name columns
+            content of the name columns.
+
+            Addendum 2022-09-04:
+            Originally the above strategy was applied for each of (station name),
+            (address), and (city name).
+            It turned out that there was a bug (in Quasar or Vue) that made using
+            a sub component like I did for the name columns made them not update
+            in deployed mode (even though they worked fine in dev mode).
+            I now replaced the three name columns with a single "name" column.
+            For now I left the address and city columns as they were before.
           -->
           <template #body-cell-nameFi="props">
             <q-td :props="props">
@@ -292,7 +301,6 @@ import { useStationsViewStore } from "../stores/stationsViewStore";
 import { useRideCountStore } from "src/stores/rideCountStore";
 import { utilities } from "../webapi/utilities";
 import DesignNote from "components/DesignNote.vue";
-import StationNameColumn from "src/components/StationNameColumn.vue";
 
 // ref https://quasar.dev/vue-components/table
 const stationColumns = [
@@ -306,30 +314,6 @@ const stationColumns = [
     sortable: true,
   },
   {
-    name: "nameFi",
-    label: "Name (FI)",
-    field: "nameFi",
-    align: "left",
-    classes: "colStyleName",
-    sortable: true,
-  },
-  {
-    name: "nameSe",
-    label: "Name (SE)",
-    field: "nameSe",
-    align: "left",
-    classes: "colStyleName",
-    sortable: true,
-  },
-  {
-    name: "nameEn",
-    label: "Name (EN/FI)",
-    field: "nameEn",
-    align: "left",
-    classes: "colStyleName",
-    sortable: true,
-  },
-  {
     name: "name",
     label: "Name",
     field: (row) => stationName(row), // value is used for sorting (not rendering)
@@ -339,7 +323,7 @@ const stationColumns = [
   },
   {
     name: "addrFi",
-    label: "Address (FI)",
+    label: "Address",
     field: "addrFi",
     classes: "colStyleAddr",
     align: "left",
@@ -347,7 +331,7 @@ const stationColumns = [
   },
   {
     name: "addrSe",
-    label: "Address (SE)",
+    label: "Address",
     field: "addrSe",
     classes: "colStyleAddr",
     align: "left",
@@ -362,7 +346,7 @@ const stationColumns = [
   },
   {
     name: "citySe",
-    label: "City (SE)",
+    label: "City",
     field: (row) => row.city.CitySe,
     classes: "colStyleCity",
     align: "left",
@@ -453,7 +437,6 @@ const stationColumns = [
 const columnSetDefs = {
   FI: [
     "id",
-    "nameFi",
     "name",
     "addrFi",
     "city",
@@ -468,7 +451,6 @@ const columnSetDefs = {
   ],
   SE: [
     "id",
-    "nameSe",
     "name",
     "addrSe",
     "citySe",
@@ -483,7 +465,6 @@ const columnSetDefs = {
   ],
   EN: [
     "id",
-    "nameEn",
     "name",
     "addrFi",
     "city",
@@ -526,7 +507,6 @@ export default {
   },
   components: {
     DesignNote,
-    StationNameColumn,
   },
   computed: {
     currentColumnSet() {
