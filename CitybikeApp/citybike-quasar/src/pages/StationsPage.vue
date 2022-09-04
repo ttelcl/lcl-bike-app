@@ -240,7 +240,7 @@
 </template>
 
 <script>
-import { useAppstateStore } from "../stores/appstateStore";
+import { useAppstateStore, stationName } from "../stores/appstateStore";
 import { useCitiesStore } from "../stores/citiesStore";
 import {
   useStationsStore,
@@ -284,6 +284,14 @@ const stationColumns = [
     name: "nameEn",
     label: "Name (EN/FI)",
     field: "nameEn",
+    align: "left",
+    classes: "colStyleName",
+    sortable: true,
+  },
+  {
+    name: "name",
+    label: "Name",
+    field: (row) => stationName(row),
     align: "left",
     classes: "colStyleName",
     sortable: true,
@@ -405,31 +413,46 @@ const columnSetDefs = {
   FI: [
     "id",
     "nameFi",
+    "name",
     "addrFi",
     "city",
     "rank",
     "depCount",
     "retCount",
+    "avg_dist_in",
+    "avg_dist_out",
+    "avg_dur_in",
+    "avg_dur_out",
     "actions",
   ],
   SE: [
     "id",
     "nameSe",
+    "name",
     "addrSe",
     "citySe",
     "rank",
     "depCount",
     "retCount",
+    "avg_dist_in",
+    "avg_dist_out",
+    "avg_dur_in",
+    "avg_dur_out",
     "actions",
   ],
   EN: [
     "id",
     "nameEn",
+    "name",
     "addrFi",
     "city",
     "rank",
     "depCount",
     "retCount",
+    "avg_dist_in",
+    "avg_dist_out",
+    "avg_dur_in",
+    "avg_dur_out",
     "actions",
   ],
 };
