@@ -74,21 +74,6 @@
             I now replaced the three name columns with a single "name" column.
             For now I left the address and city columns as they were before.
           -->
-          <template #body-cell-nameFi="props">
-            <q-td :props="props">
-              <StationNameColumn :row="props.row" name-field="nameFi" />
-            </q-td>
-          </template>
-          <template #body-cell-nameSe="props">
-            <q-td :props="props">
-              <StationNameColumn :row="props.row" name-field="nameSe" />
-            </q-td>
-          </template>
-          <template #body-cell-nameEn="props">
-            <q-td :props="props">
-              <StationNameColumn :row="props.row" name-field="nameEn" />
-            </q-td>
-          </template>
           <template #body-cell-name="props">
             <q-td :props="props">
               <!-- <span> !! {{ appstateStore.getStationName(props.row) }} !! </span> -->
